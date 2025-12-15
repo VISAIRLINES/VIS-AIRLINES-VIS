@@ -9,7 +9,8 @@
 <body>
     <!-- Górny pasek nawigacyjny -->
     <nav class="top-nav">
-        <div class="container">
+        <div class="nav-container">
+            <div class="logo">VIS AIRLINES</div>
             <div class="nav-links">
                 <a href="#" class="nav-link active">Zarezerwuj</a>
                 <a href="#" class="nav-link">Odpraw się</a>
@@ -19,16 +20,15 @@
             </div>
             <div class="language-selector">
                 <button class="lang-btn" id="langBtn">
-                    <span class="flag">🇵🇱</span>
-                    <span class="lang-text">Polski</span>
-                    <span class="arrow">▼</span>
+                    <span class="flag">PL</span>
+                    <span class="arrow-down">▼</span>
                 </button>
                 <div class="lang-dropdown hidden" id="langDropdown">
-                    <a href="#" class="lang-option" data-lang="pl">🇵🇱 Polski</a>
-                    <a href="#" class="lang-option" data-lang="en">🇬🇧 English</a>
-                    <a href="#" class="lang-option" data-lang="de">🇩🇪 Deutsch</a>
-                    <a href="#" class="lang-option" data-lang="fr">🇫🇷 Français</a>
-                    <a href="#" class="lang-option" data-lang="es">🇪🇸 Español</a>
+                    <a href="#" class="lang-option" data-lang="pl">Polski</a>
+                    <a href="#" class="lang-option" data-lang="en">English</a>
+                    <a href="#" class="lang-option" data-lang="de">Deutsch</a>
+                    <a href="#" class="lang-option" data-lang="fr">Français</a>
+                    <a href="#" class="lang-option" data-lang="es">Español</a>
                 </div>
             </div>
         </div>
@@ -36,7 +36,7 @@
 
     <header>
         <div class="container">
-            <h1>✈️ Vis Airlines</h1>
+            <h1>VIS AIRLINES</h1>
             <p class="tagline">Twoja podróż zaczyna się tutaj</p>
         </div>
     </header>
@@ -45,13 +45,25 @@
         <section class="search-section">
             <h2>Zarezerwuj swój lot</h2>
             
+            <!-- Wybór rodzaju podróży -->
+            <div class="trip-type">
+                <label class="trip-option">
+                    <input type="radio" name="tripType" value="oneway" checked>
+                    <span>W jedną stronę</span>
+                </label>
+                <label class="trip-option">
+                    <input type="radio" name="tripType" value="roundtrip">
+                    <span>W obie strony</span>
+                </label>
+            </div>
+
             <form id="searchForm" class="search-form">
                 <div class="form-group">
                     <label for="from">Skąd</label>
                     <select id="from" required>
                         <option value="">Wybierz lotnisko</option>
-                        <option value="CPK">CPK (CPK)</option>
-                        <option value="GDN">Gdańsk (GDN)</option>
+                        <option value="CPK">CPK</option>
+                        <option value="GDN">Gdańsk</option>
                     </select>
                 </div>
 
@@ -59,8 +71,8 @@
                     <label for="to">Dokąd</label>
                     <select id="to" required>
                         <option value="">Wybierz lotnisko</option>
-                        <option value="CPK">CPK (CPK)</option>
-                        <option value="GDN">Gdańsk (GDN)</option>
+                        <option value="CPK">CPK</option>
+                        <option value="GDN">Gdańsk</option>
                     </select>
                 </div>
 
@@ -68,17 +80,25 @@
                     <label for="date">Data wylotu</label>
                     <div class="date-input-wrapper">
                         <input type="text" id="dateDisplay" readonly placeholder="Wybierz datę" required>
-                        <span class="calendar-icon">📅</span>
                     </div>
                     <input type="hidden" id="date">
                     <div id="calendarDropdown" class="calendar-dropdown hidden"></div>
+                </div>
+
+                <div class="form-group" id="returnDateGroup" style="display: none;">
+                    <label for="returnDate">Data powrotu</label>
+                    <div class="date-input-wrapper">
+                        <input type="text" id="returnDateDisplay" readonly placeholder="Wybierz datę">
+                    </div>
+                    <input type="hidden" id="returnDate">
+                    <div id="returnCalendarDropdown" class="calendar-dropdown hidden"></div>
                 </div>
 
                 <div class="form-group">
                     <label>Pasażerowie i klasa</label>
                     <button type="button" class="passenger-button" id="passengerBtn">
                         <span id="passengerSummary">1 Dorosły, Ekonomiczna</span>
-                        <span class="arrow">▼</span>
+                        <span class="arrow-down">▼</span>
                     </button>
                 </div>
 
