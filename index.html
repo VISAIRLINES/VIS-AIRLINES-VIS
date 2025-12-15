@@ -1,16 +1,145 @@
 <!DOCTYPE html>
 <html lang="pl">
-<głowa>
-    <meta zestaw znaków="UTF-8">
-    <meta imię="widok" treść="width=szerokość urządzenia, skala początkowa=1,0">
-    <tytuł>Vis Airlines - Rezerwacja Lotów</tytuł>
-    <skrypt crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></skrypt>
-    <skrypt crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></skrypt>
-    <skrypt src="https://unpkg.com/@babel/standalone/babel.min.js"></skrypt>
-    <skrypt src="https://cdn.tailwindcss.com"></skrypt>
-</głowa>
-<ciało>
-    <div identyfikator="korzeń"></div>
-    <skrypt typ="tekst/babel" src="aplikacja.js"></skrypt>
-</ciało>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vis Airlines - Rezerwacja Lotów</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1>✈️ Vis Airlines</h1>
+            <p class="tagline">Twoja podróż zaczyna się tutaj</p>
+        </div>
+    </header>
+
+    <main class="container">
+        <section class="search-section">
+            <h2>Zarezerwuj swój lot</h2>
+            
+            <form id="searchForm" class="search-form">
+                <div class="form-group">
+                    <label for="from">Skąd</label>
+                    <select id="from" required>
+                        <option value="">Wybierz lotnisko</option>
+                        <option value="WAW">Warszawa (WAW)</option>
+                        <option value="KRK">Kraków (KRK)</option>
+                        <option value="GDN">Gdańsk (GDN)</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="to">Dokąd</label>
+                    <select id="to" required>
+                        <option value="">Wybierz lotnisko</option>
+                        <option value="WAW">Warszawa (WAW)</option>
+                        <option value="KRK">Kraków (KRK)</option>
+                        <option value="GDN">Gdańsk (GDN)</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="date">Data wylotu</label>
+                    <input type="date" id="date" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Pasażerowie i klasa</label>
+                    <button type="button" class="passenger-button" id="passengerBtn">
+                        <span id="passengerSummary">1 Dorosły, Ekonomiczna</span>
+                        <span class="arrow">▼</span>
+                    </button>
+                </div>
+
+                <button type="submit" class="btn-search">Szukaj lotów</button>
+            </form>
+
+            <!-- Panel wyboru pasażerów -->
+            <div id="passengerPanel" class="passenger-panel hidden">
+                <div class="passenger-section">
+                    <h3>Liczba pasażerów</h3>
+                    
+                    <div class="passenger-row">
+                        <div class="passenger-info">
+                            <strong>Dorośli</strong>
+                            <span>14+ lat</span>
+                        </div>
+                        <div class="counter">
+                            <button type="button" class="btn-counter" data-type="adult" data-action="minus">−</button>
+                            <span id="adultCount">1</span>
+                            <button type="button" class="btn-counter" data-type="adult" data-action="plus">+</button>
+                        </div>
+                    </div>
+
+                    <div class="passenger-row">
+                        <div class="passenger-info">
+                            <strong>Nastolatki</strong>
+                            <span>3-13 lat</span>
+                        </div>
+                        <div class="counter">
+                            <button type="button" class="btn-counter" data-type="teen" data-action="minus">−</button>
+                            <span id="teenCount">0</span>
+                            <button type="button" class="btn-counter" data-type="teen" data-action="plus">+</button>
+                        </div>
+                    </div>
+
+                    <div class="passenger-row">
+                        <div class="passenger-info">
+                            <strong>Dzieci</strong>
+                            <span>Do 2 lat</span>
+                        </div>
+                        <div class="counter">
+                            <button type="button" class="btn-counter" data-type="child" data-action="minus">−</button>
+                            <span id="childCount">0</span>
+                            <button type="button" class="btn-counter" data-type="child" data-action="plus">+</button>
+                        </div>
+                    </div>
+
+                    <div class="passenger-row">
+                        <div class="passenger-info">
+                            <strong>Osoby niepełnosprawne</strong>
+                            <span>Wymagana pomoc</span>
+                        </div>
+                        <div class="counter">
+                            <button type="button" class="btn-counter" data-type="disabled" data-action="minus">−</button>
+                            <span id="disabledCount">0</span>
+                            <button type="button" class="btn-counter" data-type="disabled" data-action="plus">+</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="class-section">
+                    <h3>Klasa podróży</h3>
+                    <label class="class-option">
+                        <input type="radio" name="class" value="economy" checked>
+                        <span>Ekonomiczna</span>
+                    </label>
+                    <label class="class-option">
+                        <input type="radio" name="class" value="premium">
+                        <span>Premium</span>
+                    </label>
+                    <label class="class-option">
+                        <input type="radio" name="class" value="business">
+                        <span>Biznes</span>
+                    </label>
+                    <label class="class-option">
+                        <input type="radio" name="class" value="first">
+                        <span>Pierwsza</span>
+                    </label>
+                </div>
+
+                <button type="button" class="btn-done" id="doneBtn">Gotowe</button>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2024 Vis Airlines. Wszystkie prawa zastrzeżone.</p>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
 </html>
