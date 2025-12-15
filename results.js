@@ -81,6 +81,9 @@ function displayFlights(searchData) {
         resultsDiv.innerHTML += flightCard;
     });
 
+    // Dodaj event listenery po wygenerowaniu HTML
+    attachFlightButtonListeners();
+
     // Jeśli podróż w obie strony, pokaż loty powrotne
     if (searchData.tripType === 'roundtrip' && searchData.returnDate) {
         const returnRoute = `${searchData.to}-${searchData.from}`;
@@ -98,8 +101,33 @@ function displayFlights(searchData) {
                 }, totalPassengers);
                 resultsDiv.innerHTML += returnCard;
             });
+            
+            // Dodaj listenery także dla lotów powrotnych
+            attachFlightButtonListeners();
         }
     }
+}
+
+function attachFlightButtonListeners() {
+    // Przyciski szczegółów
+    const detailBtns = document.querySelectorAll('.btn-details');
+    detailBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            const flightNumber = btn.getAttribute('data-flight');
+            const fromCode = btn.getAttribute('data-from');
+            const toCode = btn.getAttribute('data-to');
+            showFlightDetails(flightNumber, fromCode, toCode);
+        });
+    });
+
+    // Przyciski przejdź dalej
+    const continueBtns = document.querySelectorAll('.btn-continue:not([disabled])');
+    continueBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            const flightNumber = btn.getAttribute('data-flight');
+            continueFlight(flightNumber);
+        });
+    });
 }
 
 function createFlightCard(flight, searchData, totalPassengers) {
@@ -138,10 +166,10 @@ function createFlightCard(flight, searchData, totalPassengers) {
                     </div>
                 </div>
                 <div class="action-buttons">
-                    <button class="btn-details" onclick="showFlightDetails('${flight.number}', '${searchData.from}', '${searchData.to}')">
+                    <button class="btn-details" data-flight="${flight.number}" data-from="${searchData.from}" data-to="${searchData.to}">
                         Szczegóły
                     </button>
-                    <button class="btn-continue" onclick="continueFlight('${flight.number}')">
+                    <button class="btn-continue" data-flight="${flight.number}">
                         Przejdź dalej
                     </button>
                 </div>
