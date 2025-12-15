@@ -14,19 +14,33 @@ let currentYear = new Date().getFullYear();
 function initCalendar() {
     const dateDisplay = document.getElementById('dateDisplay');
     const calendarDropdown = document.getElementById('calendarDropdown');
-    const dateInputWrapper = document.querySelector('.date-input-wrapper');
+    const calendarIcon = document.querySelector('.calendar-icon');
 
-    dateInputWrapper.addEventListener('click', (e) => {
+    // Kliknięcie na pole lub ikonę
+    const toggleCalendar = (e) => {
+        e.preventDefault();
         e.stopPropagation();
-        calendarDropdown.classList.toggle('hidden');
-        if (!calendarDropdown.classList.contains('hidden')) {
+        const isHidden = calendarDropdown.classList.contains('hidden');
+        
+        if (isHidden) {
+            calendarDropdown.classList.remove('hidden');
             renderCalendar();
+        } else {
+            calendarDropdown.classList.add('hidden');
         }
-    });
+    };
+
+    dateDisplay.addEventListener('click', toggleCalendar);
+    if (calendarIcon) {
+        calendarIcon.addEventListener('click', toggleCalendar);
+    }
 
     // Zamknij kalendarz przy kliknięciu poza nim
     document.addEventListener('click', (e) => {
-        if (!e.target.closest('.date-input-wrapper') && !e.target.closest('.calendar-dropdown')) {
+        const formGroup = e.target.closest('.form-group');
+        const clickedCalendar = e.target.closest('.calendar-dropdown');
+        
+        if (!formGroup && !clickedCalendar) {
             calendarDropdown.classList.add('hidden');
         }
     });
@@ -56,8 +70,8 @@ function renderCalendar() {
         <div class="calendar-header">
             <h3>${monthNames[currentMonth]} ${currentYear}</h3>
             <div class="calendar-nav">
-                <button type="button" class="cal-nav-btn" data-dir="-1">‹</button>
-                <button type="button" class="cal-nav-btn" data-dir="1">›</button>
+                <button type="button" class="cal-nav-btn cal-prev">‹</button>
+                <button type="button" class="cal-nav-btn cal-next">›</button>
             </div>
         </div>
         <div class="calendar-weekdays">
@@ -94,20 +108,28 @@ function renderCalendar() {
             ${isPast ? 'disabled' : ''}>${day}</button>`;
     }
 
-    calendarHTML += '</div></div>';
+    calendarHTML += '</div>';
     calendarDropdown.innerHTML = calendarHTML;
 
-    // Dodaj event listenery do przycisków nawigacji
-    const navBtns = calendarDropdown.querySelectorAll('.cal-nav-btn');
-    navBtns.forEach(btn => {
-        btn.addEventListener('click', (e) => {
+    // Dodaj event listenery po wygenerowaniu HTML
+    const prevBtn = calendarDropdown.querySelector('.cal-prev');
+    const nextBtn = calendarDropdown.querySelector('.cal-next');
+    
+    if (prevBtn) {
+        prevBtn.addEventListener('click', (e) => {
             e.stopPropagation();
-            const dir = parseInt(btn.getAttribute('data-dir'));
-            changeMonth(dir);
+            changeMonth(-1);
         });
-    });
+    }
+    
+    if (nextBtn) {
+        nextBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            changeMonth(1);
+        });
+    }
 
-    // Dodaj event listenery do dni
+    // Event listenery dla dni
     const dayBtns = calendarDropdown.querySelectorAll('.calendar-day:not(.disabled):not(.empty)');
     dayBtns.forEach(btn => {
         btn.addEventListener('click', (e) => {
@@ -139,8 +161,6 @@ function selectDate(year, month, day) {
     document.getElementById('date').value = dateStr;
     document.getElementById('dateDisplay').value = formatDateDisplay(selectedDate);
     document.getElementById('calendarDropdown').classList.add('hidden');
-    
-    renderCalendar();
 }
 
 function formatDateDisplay(date) {
