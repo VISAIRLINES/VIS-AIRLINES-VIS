@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wyniki wyszukiwania - Vis Airlines</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1><a href="index.html" style="color: white; text-decoration: none;">✈️ Vis Airlines</a></h1>
+        </div>
+    </header>
+
+    <main class="container">
+        <section class="results-section">
+            <div class="search-summary" id="searchSummary"></div>
+
+            <div id="flightResults" class="flight-list"></div>
+
+            <div id="noResults" class="no-results hidden">
+                <h3>Brak dostępnych lotów</h3>
+                <p>Przepraszamy, nie znaleźliśmy lotów spełniających Twoje kryteria.</p>
+                <a href="index.html" class="btn-search">Wróć do wyszukiwania</a>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2024 Vis Airlines. Wszystkie prawa zastrzeżone.</p>
+        </div>
+    </footer>
+
+    <script src="results.js"></script>
+</body>
+</html>
