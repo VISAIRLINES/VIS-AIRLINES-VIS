@@ -1,138 +1,13 @@
 // Baza danych lotów z cenami
 const flightDatabase = {
-    'WAW-KRK': {
+    'CPK-GDN': {
         available: true,
         flights: [
             {
                 number: 'VA101',
-                departure: '08:00',
-                arrival: '09:15',
-                duration: '1h 15min',
-                prices: {
-                    economy: 100,
-                    business: 400
-                }
-            },
-            {
-                number: 'VA103',
-                departure: '14:30',
-                arrival: '15:45',
-                duration: '1h 15min',
-                prices: {
-                    economy: 100,
-                    business: 400
-                }
-            },
-            {
-                number: 'VA105',
-                departure: '19:00',
-                arrival: '20:15',
-                duration: '1h 15min',
-                prices: {
-                    economy: 100,
-                    business: 400
-                }
-            }
-        ]
-    },
-    'KRK-WAW': {
-        available: true,
-        flights: [
-            {
-                number: 'VA102',
-                departure: '10:30',
-                arrival: '11:45',
-                duration: '1h 15min',
-                prices: {
-                    economy: 100,
-                    business: 400
-                }
-            },
-            {
-                number: 'VA104',
-                departure: '16:00',
-                arrival: '17:15',
-                duration: '1h 15min',
-                prices: {
-                    economy: 100,
-                    business: 400
-                }
-            }
-        ]
-    },
-    'WAW-GDN': {
-        available: true,
-        flights: [
-            {
-                number: 'VA201',
-                departure: '07:00',
-                arrival: '08:10',
-                duration: '1h 10min',
-                prices: {
-                    economy: 100,
-                    business: 400
-                }
-            },
-            {
-                number: 'VA203',
-                departure: '15:30',
-                arrival: '16:40',
-                duration: '1h 10min',
-                prices: {
-                    economy: 100,
-                    business: 400
-                }
-            }
-        ]
-    },
-    'GDN-WAW': {
-        available: true,
-        flights: [
-            {
-                number: 'VA202',
-                departure: '09:00',
-                arrival: '10:10',
-                duration: '1h 10min',
-                prices: {
-                    economy: 100,
-                    business: 400
-                }
-            },
-            {
-                number: 'VA204',
-                departure: '17:30',
-                arrival: '18:40',
-                duration: '1h 10min',
-                prices: {
-                    economy: 100,
-                    business: 400
-                }
-            }
-        ]
-    },
-    'KRK-GDN': {
-        available: true,
-        flights: [
-            {
-                number: 'VA301',
-                departure: '11:00',
-                arrival: '12:30',
-                duration: '1h 30min',
-                prices: {
-                    economy: 100,
-                    business: 400
-                }
-            }
-        ]
-    },
-    'GDN-KRK': {
-        available: true,
-        flights: [
-            {
-                number: 'VA302',
-                departure: '13:30',
-                arrival: '15:00',
-                duration: '1h 30min',
+                departure: '04:00',
+                arrival: '04:55',
+                duration: '55min',
                 prices: {
                     economy: 100,
                     business: 400
@@ -142,9 +17,9 @@ const flightDatabase = {
     }
 };
 
+// Nazwy miast
 const cityNames = {
-    'WAW': 'Warszawa',
-    'KRK': 'Kraków',
+    'CPK': 'CPK',
     'GDN': 'Gdańsk'
 };
 
