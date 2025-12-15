@@ -1,6 +1,7 @@
-// Baza danych lotów z cenami
+// BAZA LOTÓW - TUTAJ DODAWAJ NOWE POŁĄCZENIA
+// Jeśli nie podasz ceny (prices = null), wyświetli się "Wyprzedane"
 const flightDatabase = {
-    'CPK-GDN': {
+    'GDN-CPK': {
         available: true,
         flights: [
             {
@@ -17,7 +18,7 @@ const flightDatabase = {
     }
 };
 
-// Nazwy miast
+// NAZWY MIAST - DODAJ TUTAJ WSZYSTKIE LOTNISKA
 const cityNames = {
     'CPK': 'CPK',
     'GDN': 'Gdańsk'
@@ -78,12 +79,31 @@ function displayFlights(searchData) {
 
 function createFlightCard(flight, searchData, totalPassengers) {
     const selectedClass = searchData.class;
-    const price = flight.prices[selectedClass];
+    
+    // Sprawdź czy lot ma w ogóle jakiekolwiek ceny (nie jest wyprzedany)
+    const hasPrices = flight.prices !== null && flight.prices !== undefined;
+    const price = hasPrices ? flight.prices[selectedClass] : null;
     
     let priceSection = '';
-    let unavailableNotice = '';
+    let noticeSection = '';
 
-    if (price) {
+    if (!hasPrices) {
+        // Lot całkowicie wyprzedany
+        noticeSection = `
+            <div class="sold-out-notice">
+                <strong>🚫 Wyprzedane</strong>
+                Wszystkie miejsca na tym locie zostały wyprzedane.
+            </div>
+        `;
+        priceSection = `
+            <div class="flight-price">
+                <button class="btn-book" style="opacity: 0.5; cursor: not-allowed; background: #dc3545;" disabled>
+                    Wyprzedane
+                </button>
+            </div>
+        `;
+    } else if (price) {
+        // Klasa dostępna i ma cenę
         const totalPrice = price * totalPassengers;
         priceSection = `
             <div class="flight-price">
@@ -98,7 +118,8 @@ function createFlightCard(flight, searchData, totalPassengers) {
             </div>
         `;
     } else {
-        unavailableNotice = `
+        // Klasa nie jest dostępna na tym połączeniu
+        noticeSection = `
             <div class="unavailable-notice">
                 <strong>⚠️ Niedostępne</strong>
                 Klasa ${classNames[selectedClass]} nie jest dostępna na tym połączeniu.
@@ -144,13 +165,15 @@ function createFlightCard(flight, searchData, totalPassengers) {
                 </div>
             </div>
 
-            ${unavailableNotice}
+            ${noticeSection}
             ${priceSection}
         </div>
     `;
 }
 
 function getAvailableClasses(flight) {
+    if (!flight.prices) return 'Brak dostępnych klas';
+    
     const available = [];
     if (flight.prices.economy) available.push('Ekonomiczna');
     if (flight.prices.premium) available.push('Premium');
@@ -173,3 +196,54 @@ function formatDate(dateString) {
 function bookFlight(flightNumber) {
     alert(`Dziękujemy za wybór Vis Airlines!\n\nLot ${flightNumber} został dodany do koszyka.\n\nW pełnej wersji strony tutaj nastąpiłoby przekierowanie do systemu płatności.`);
 }
+
+// ============================================
+// INSTRUKCJA DODAWANIA NOWYCH POŁĄCZEŃ
+// ============================================
+// 
+// 1. Z CENĄ - dodaj do flightDatabase:
+//
+// 'WAW-KRK': {
+//     available: true,
+//     flights: [
+//         {
+//             number: 'VA201',
+//             departure: '10:00',
+//             arrival: '11:15',
+//             duration: '1h 15min',
+//             prices: {
+//                 economy: 100,
+//                 business: 400
+//                 // premium: 250,  // opcjonalnie
+//                 // first: 600     // opcjonalnie
+//             }
+//         }
+//     ]
+// }
+//
+// 2. WYPRZEDANE (bez ceny) - ustaw prices: null:
+//
+// 'KRK-GDN': {
+//     available: true,
+//     flights: [
+//         {
+//             number: 'VA301',
+//             departure: '14:00',
+//             arrival: '15:30',
+//             duration: '1h 30min',
+//             prices: null  // <- to spowoduje "Wyprzedane"
+//         }
+//     ]
+// }
+//
+// 3. DODAJ MIASTA do cityNames:
+//
+// const cityNames = {
+//     'CPK': 'CPK',
+//     'GDN': 'Gdańsk',
+//     'WAW': 'Warszawa',  // <- dodaj nowe
+//     'KRK': 'Kraków'      // <- dodaj nowe
+// };
+//
+// 4. DODAJ MIASTA do index.html (w obu listach select)
+// ============================================
