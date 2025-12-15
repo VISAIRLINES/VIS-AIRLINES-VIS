@@ -1,12 +1,29 @@
-// Inicjalizacja po załadowaniu strony
 document.addEventListener('DOMContentLoaded', () => {
     initCalendar();
+    initReturnCalendar();
     initLanguageSelector();
     initPassengerPanel();
+    initTripType();
     initFormHandler();
 });
 
-// ========== KALENDARZ ==========
+// ========== WYBÓR RODZAJU PODRÓŻY ==========
+function initTripType() {
+    const tripTypeInputs = document.querySelectorAll('input[name="tripType"]');
+    const returnDateGroup = document.getElementById('returnDateGroup');
+
+    tripTypeInputs.forEach(input => {
+        input.addEventListener('change', (e) => {
+            if (e.target.value === 'roundtrip') {
+                returnDateGroup.style.display = 'block';
+            } else {
+                returnDateGroup.style.display = 'none';
+            }
+        });
+    });
+}
+
+// ========== KALENDARZ WYLOTU ==========
 let selectedDate = null;
 let currentMonth = new Date().getMonth();
 let currentYear = new Date().getFullYear();
@@ -14,38 +31,23 @@ let currentYear = new Date().getFullYear();
 function initCalendar() {
     const dateDisplay = document.getElementById('dateDisplay');
     const calendarDropdown = document.getElementById('calendarDropdown');
-    const calendarIcon = document.querySelector('.calendar-icon');
 
-    // Kliknięcie na pole lub ikonę
-    const toggleCalendar = (e) => {
+    dateDisplay.addEventListener('click', (e) => {
         e.preventDefault();
         e.stopPropagation();
-        const isHidden = calendarDropdown.classList.contains('hidden');
+        calendarDropdown.classList.toggle('hidden');
         
-        if (isHidden) {
-            calendarDropdown.classList.remove('hidden');
+        if (!calendarDropdown.classList.contains('hidden')) {
             renderCalendar();
-        } else {
-            calendarDropdown.classList.add('hidden');
         }
-    };
+    });
 
-    dateDisplay.addEventListener('click', toggleCalendar);
-    if (calendarIcon) {
-        calendarIcon.addEventListener('click', toggleCalendar);
-    }
-
-    // Zamknij kalendarz przy kliknięciu poza nim
     document.addEventListener('click', (e) => {
-        const formGroup = e.target.closest('.form-group');
-        const clickedCalendar = e.target.closest('.calendar-dropdown');
-        
-        if (!formGroup && !clickedCalendar) {
+        if (!e.target.closest('.form-group') || e.target.closest('#returnDateGroup')) {
             calendarDropdown.classList.add('hidden');
         }
     });
 
-    // Ustaw dzisiejszą datę jako domyślną
     const today = new Date();
     selectDate(today.getFullYear(), today.getMonth(), today.getDate());
 }
@@ -70,8 +72,8 @@ function renderCalendar() {
         <div class="calendar-header">
             <h3>${monthNames[currentMonth]} ${currentYear}</h3>
             <div class="calendar-nav">
-                <button type="button" class="cal-nav-btn cal-prev">‹</button>
-                <button type="button" class="cal-nav-btn cal-next">›</button>
+                <button type="button" class="cal-prev">&lt;</button>
+                <button type="button" class="cal-next">&gt;</button>
             </div>
         </div>
         <div class="calendar-weekdays">
@@ -86,12 +88,10 @@ function renderCalendar() {
         <div class="calendar-days">
     `;
 
-    // Dni z poprzedniego miesiąca
     for (let i = firstDayIndex; i > 0; i--) {
-        calendarHTML += `<button type="button" class="calendar-day empty disabled">${prevLastDayDate - i + 1}</button>`;
+        calendarHTML += `<button type="button" class="calendar-day empty"></button>`;
     }
 
-    // Dni bieżącego miesiąca
     for (let day = 1; day <= lastDayDate; day++) {
         const date = new Date(currentYear, currentMonth, day);
         const isPast = date < today;
@@ -111,25 +111,19 @@ function renderCalendar() {
     calendarHTML += '</div>';
     calendarDropdown.innerHTML = calendarHTML;
 
-    // Dodaj event listenery po wygenerowaniu HTML
     const prevBtn = calendarDropdown.querySelector('.cal-prev');
     const nextBtn = calendarDropdown.querySelector('.cal-next');
     
-    if (prevBtn) {
-        prevBtn.addEventListener('click', (e) => {
-            e.stopPropagation();
-            changeMonth(-1);
-        });
-    }
+    prevBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        changeMonth(-1);
+    });
     
-    if (nextBtn) {
-        nextBtn.addEventListener('click', (e) => {
-            e.stopPropagation();
-            changeMonth(1);
-        });
-    }
+    nextBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        changeMonth(1);
+    });
 
-    // Event listenery dla dni
     const dayBtns = calendarDropdown.querySelectorAll('.calendar-day:not(.disabled):not(.empty)');
     dayBtns.forEach(btn => {
         btn.addEventListener('click', (e) => {
@@ -164,14 +158,145 @@ function selectDate(year, month, day) {
 }
 
 function formatDateDisplay(date) {
-    const options = { weekday: 'short', day: 'numeric', month: 'long', year: 'numeric' };
+    const options = { day: 'numeric', month: 'long', year: 'numeric' };
     return date.toLocaleDateString('pl-PL', options);
+}
+
+// ========== KALENDARZ POWROTU ==========
+let selectedReturnDate = null;
+let returnCurrentMonth = new Date().getMonth();
+let returnCurrentYear = new Date().getFullYear();
+
+function initReturnCalendar() {
+    const returnDateDisplay = document.getElementById('returnDateDisplay');
+    const returnCalendarDropdown = document.getElementById('returnCalendarDropdown');
+
+    if (!returnDateDisplay) return;
+
+    returnDateDisplay.addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        returnCalendarDropdown.classList.toggle('hidden');
+        
+        if (!returnCalendarDropdown.classList.contains('hidden')) {
+            renderReturnCalendar();
+        }
+    });
+
+    document.addEventListener('click', (e) => {
+        if (!e.target.closest('#returnDateGroup')) {
+            returnCalendarDropdown.classList.add('hidden');
+        }
+    });
+}
+
+function renderReturnCalendar() {
+    const returnCalendarDropdown = document.getElementById('returnCalendarDropdown');
+    const monthNames = ['Styczeń', 'Luty', 'Marzec', 'Kwiecień', 'Maj', 'Czerwiec', 
+                       'Lipiec', 'Sierpień', 'Wrzesień', 'Październik', 'Listopad', 'Grudzień'];
+    
+    const firstDay = new Date(returnCurrentYear, returnCurrentMonth, 1);
+    const lastDay = new Date(returnCurrentYear, returnCurrentMonth + 1, 0);
+    
+    const firstDayIndex = firstDay.getDay() === 0 ? 6 : firstDay.getDay() - 1;
+    const lastDayDate = lastDay.getDate();
+    
+    const minDate = selectedDate ? new Date(selectedDate.getTime() + 86400000) : new Date();
+    minDate.setHours(0, 0, 0, 0);
+
+    let calendarHTML = `
+        <div class="calendar-header">
+            <h3>${monthNames[returnCurrentMonth]} ${returnCurrentYear}</h3>
+            <div class="calendar-nav">
+                <button type="button" class="ret-cal-prev">&lt;</button>
+                <button type="button" class="ret-cal-next">&gt;</button>
+            </div>
+        </div>
+        <div class="calendar-weekdays">
+            <div class="calendar-weekday">Pn</div>
+            <div class="calendar-weekday">Wt</div>
+            <div class="calendar-weekday">Śr</div>
+            <div class="calendar-weekday">Cz</div>
+            <div class="calendar-weekday">Pt</div>
+            <div class="calendar-weekday">So</div>
+            <div class="calendar-weekday">Nd</div>
+        </div>
+        <div class="calendar-days">
+    `;
+
+    for (let i = firstDayIndex; i > 0; i--) {
+        calendarHTML += `<button type="button" class="calendar-day empty"></button>`;
+    }
+
+    for (let day = 1; day <= lastDayDate; day++) {
+        const date = new Date(returnCurrentYear, returnCurrentMonth, day);
+        const isPast = date < minDate;
+        const isSelected = selectedReturnDate && date.getTime() === selectedReturnDate.getTime();
+        
+        let classes = 'calendar-day';
+        if (isPast) classes += ' disabled';
+        if (isSelected) classes += ' selected';
+
+        calendarHTML += `<button type="button" class="${classes}" 
+            data-year="${returnCurrentYear}" data-month="${returnCurrentMonth}" data-day="${day}"
+            ${isPast ? 'disabled' : ''}>${day}</button>`;
+    }
+
+    calendarHTML += '</div>';
+    returnCalendarDropdown.innerHTML = calendarHTML;
+
+    const prevBtn = returnCalendarDropdown.querySelector('.ret-cal-prev');
+    const nextBtn = returnCalendarDropdown.querySelector('.ret-cal-next');
+    
+    prevBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        changeReturnMonth(-1);
+    });
+    
+    nextBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        changeReturnMonth(1);
+    });
+
+    const dayBtns = returnCalendarDropdown.querySelectorAll('.calendar-day:not(.disabled):not(.empty)');
+    dayBtns.forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const year = parseInt(btn.getAttribute('data-year'));
+            const month = parseInt(btn.getAttribute('data-month'));
+            const day = parseInt(btn.getAttribute('data-day'));
+            selectReturnDate(year, month, day);
+        });
+    });
+}
+
+function changeReturnMonth(direction) {
+    returnCurrentMonth += direction;
+    if (returnCurrentMonth < 0) {
+        returnCurrentMonth = 11;
+        returnCurrentYear--;
+    } else if (returnCurrentMonth > 11) {
+        returnCurrentMonth = 0;
+        returnCurrentYear++;
+    }
+    renderReturnCalendar();
+}
+
+function selectReturnDate(year, month, day) {
+    selectedReturnDate = new Date(year, month, day);
+    const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+    
+    document.getElementById('returnDate').value = dateStr;
+    document.getElementById('returnDateDisplay').value = formatDateDisplay(selectedReturnDate);
+    document.getElementById('returnCalendarDropdown').classList.add('hidden');
 }
 
 // ========== SELEKTOR JĘZYKA ==========
 function initLanguageSelector() {
     const langBtn = document.getElementById('langBtn');
     const langDropdown = document.getElementById('langDropdown');
+
+    if (!langBtn) return;
 
     langBtn.addEventListener('click', (e) => {
         e.stopPropagation();
@@ -286,10 +411,17 @@ function handleSubmit(e) {
     const from = document.getElementById('from').value;
     const to = document.getElementById('to').value;
     const date = document.getElementById('date').value;
+    const tripType = document.querySelector('input[name="tripType"]:checked').value;
+    const returnDate = tripType === 'roundtrip' ? document.getElementById('returnDate').value : null;
     const travelClass = document.querySelector('input[name="class"]:checked').value;
 
     if (!date) {
         alert('Proszę wybrać datę wylotu');
+        return;
+    }
+
+    if (tripType === 'roundtrip' && !returnDate) {
+        alert('Proszę wybrać datę powrotu');
         return;
     }
 
@@ -302,6 +434,8 @@ function handleSubmit(e) {
         from,
         to,
         date,
+        tripType,
+        returnDate,
         class: travelClass,
         passengers: { ...passengers }
     };
