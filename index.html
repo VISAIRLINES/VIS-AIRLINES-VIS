@@ -7,6 +7,33 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
+    <!-- Górny pasek nawigacyjny -->
+    <nav class="top-nav">
+        <div class="container">
+            <div class="nav-links">
+                <a href="#" class="nav-link active">Zarezerwuj</a>
+                <a href="#" class="nav-link">Odpraw się</a>
+                <a href="#" class="nav-link">Zarządzaj podróżą</a>
+                <a href="#" class="nav-link">Zaplanuj podróż</a>
+                <a href="#" class="nav-link">Informacje i pomoc</a>
+            </div>
+            <div class="language-selector">
+                <button class="lang-btn" id="langBtn">
+                    <span class="flag">🇵🇱</span>
+                    <span class="lang-text">Polski</span>
+                    <span class="arrow">▼</span>
+                </button>
+                <div class="lang-dropdown hidden" id="langDropdown">
+                    <a href="#" class="lang-option" data-lang="pl">🇵🇱 Polski</a>
+                    <a href="#" class="lang-option" data-lang="en">🇬🇧 English</a>
+                    <a href="#" class="lang-option" data-lang="de">🇩🇪 Deutsch</a>
+                    <a href="#" class="lang-option" data-lang="fr">🇫🇷 Français</a>
+                    <a href="#" class="lang-option" data-lang="es">🇪🇸 Español</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
     <header>
         <div class="container">
             <h1>✈️ Vis Airlines</h1>
@@ -39,7 +66,12 @@
 
                 <div class="form-group">
                     <label for="date">Data wylotu</label>
-                    <input type="date" id="date" required>
+                    <div class="date-input-wrapper">
+                        <input type="text" id="dateDisplay" readonly placeholder="Wybierz datę" required>
+                        <span class="calendar-icon">📅</span>
+                    </div>
+                    <input type="hidden" id="date">
+                    <div id="calendarDropdown" class="calendar-dropdown hidden"></div>
                 </div>
 
                 <div class="form-group">
