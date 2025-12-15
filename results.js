@@ -1,5 +1,4 @@
-// BAZA LOTÓW - TUTAJ DODAWAJ NOWE POŁĄCZENIA
-// Jeśli nie podasz ceny (prices = null), wyświetli się "Wyprzedane"
+// BAZA LOTÓW
 const flightDatabase = {
     'GDN-CPK': {
         available: true,
@@ -9,6 +8,7 @@ const flightDatabase = {
                 departure: '04:00',
                 arrival: '04:55',
                 duration: '55min',
+                aircraft: 'Airbus A220-100',
                 prices: {
                     economy: 100,
                     business: 400
@@ -18,7 +18,6 @@ const flightDatabase = {
     }
 };
 
-// NAZWY MIAST - DODAJ TUTAJ WSZYSTKIE LOTNISKA
 const cityNames = {
     'CPK': 'CPK',
     'GDN': 'Gdańsk'
@@ -41,16 +40,22 @@ document.addEventListener('DOMContentLoaded', () => {
 
     displaySearchSummary(searchData);
     displayFlights(searchData);
+    initModal();
 });
 
 function displaySearchSummary(data) {
     const summaryDiv = document.getElementById('searchSummary');
     const totalPassengers = Object.values(data.passengers).reduce((a, b) => a + b, 0);
+    
+    let tripTypeText = data.tripType === 'roundtrip' ? 'W obie strony' : 'W jedną stronę';
+    let returnDateText = data.returnDate ? `<p><strong>Data powrotu:</strong> ${formatDate(data.returnDate)}</p>` : '';
 
     summaryDiv.innerHTML = `
         <h3>Wyniki wyszukiwania</h3>
         <p><strong>Trasa:</strong> ${cityNames[data.from]} → ${cityNames[data.to]}</p>
-        <p><strong>Data:</strong> ${formatDate(data.date)}</p>
+        <p><strong>Rodzaj podróży:</strong> ${tripTypeText}</p>
+        <p><strong>Data wylotu:</strong> ${formatDate(data.date)}</p>
+        ${returnDateText}
         <p><strong>Pasażerowie:</strong> ${totalPassengers} osób</p>
         <p><strong>Klasa:</strong> ${classNames[data.class]}</p>
     `;
@@ -75,12 +80,30 @@ function displayFlights(searchData) {
         const flightCard = createFlightCard(flight, searchData, totalPassengers);
         resultsDiv.innerHTML += flightCard;
     });
+
+    // Jeśli podróż w obie strony, pokaż loty powrotne
+    if (searchData.tripType === 'roundtrip' && searchData.returnDate) {
+        const returnRoute = `${searchData.to}-${searchData.from}`;
+        const returnRouteData = flightDatabase[returnRoute];
+
+        if (returnRouteData && returnRouteData.available && returnRouteData.flights.length > 0) {
+            resultsDiv.innerHTML += `<h3 style="margin: 30px 0 20px; color: #2c3e50;">Loty powrotne</h3>`;
+            
+            returnRouteData.flights.forEach(flight => {
+                const returnCard = createFlightCard(flight, {
+                    ...searchData,
+                    from: searchData.to,
+                    to: searchData.from,
+                    date: searchData.returnDate
+                }, totalPassengers);
+                resultsDiv.innerHTML += returnCard;
+            });
+        }
+    }
 }
 
 function createFlightCard(flight, searchData, totalPassengers) {
     const selectedClass = searchData.class;
-    
-    // Sprawdź czy lot ma w ogóle jakiekolwiek ceny (nie jest wyprzedany)
     const hasPrices = flight.prices !== null && flight.prices !== undefined;
     const price = hasPrices ? flight.prices[selectedClass] : null;
     
@@ -88,47 +111,53 @@ function createFlightCard(flight, searchData, totalPassengers) {
     let noticeSection = '';
 
     if (!hasPrices) {
-        // Lot całkowicie wyprzedany
         noticeSection = `
             <div class="sold-out-notice">
-                <strong>🚫 Wyprzedane</strong>
+                <strong>Wyprzedane</strong>
                 Wszystkie miejsca na tym locie zostały wyprzedane.
             </div>
         `;
         priceSection = `
-            <div class="flight-price">
-                <button class="btn-book" style="opacity: 0.5; cursor: not-allowed; background: #dc3545;" disabled>
+            <div class="flight-actions">
+                <button class="btn-continue" style="opacity: 0.5; cursor: not-allowed; background: #dc3545;" disabled>
                     Wyprzedane
                 </button>
             </div>
         `;
     } else if (price) {
-        // Klasa dostępna i ma cenę
         const totalPrice = price * totalPassengers;
         priceSection = `
-            <div class="flight-price">
+            <div class="flight-actions">
                 <div>
-                    <div style="font-size: 0.9rem; color: #888;">Łączna cena dla ${totalPassengers} pasażera/ów</div>
+                    <div style="font-size: 0.85rem; color: #888; margin-bottom: 4px;">
+                        Łączna cena dla ${totalPassengers} pasażera/ów
+                    </div>
                     <div class="price">${totalPrice} zł</div>
-                    <div style="font-size: 0.85rem; color: #888; margin-top: 5px;">
+                    <div style="font-size: 0.8rem; color: #888; margin-top: 4px;">
                         ${price} zł za osobę
                     </div>
                 </div>
-                <button class="btn-book" onclick="bookFlight('${flight.number}')">Rezerwuj</button>
+                <div class="action-buttons">
+                    <button class="btn-details" onclick="showFlightDetails('${flight.number}', '${searchData.from}', '${searchData.to}')">
+                        Szczegóły
+                    </button>
+                    <button class="btn-continue" onclick="continueFlight('${flight.number}')">
+                        Przejdź dalej
+                    </button>
+                </div>
             </div>
         `;
     } else {
-        // Klasa nie jest dostępna na tym połączeniu
         noticeSection = `
             <div class="unavailable-notice">
-                <strong>⚠️ Niedostępne</strong>
+                <strong>Niedostępne</strong>
                 Klasa ${classNames[selectedClass]} nie jest dostępna na tym połączeniu.
                 Dostępne klasy: ${getAvailableClasses(flight)}
             </div>
         `;
         priceSection = `
-            <div class="flight-price">
-                <button class="btn-book" style="opacity: 0.5; cursor: not-allowed;" disabled>
+            <div class="flight-actions">
+                <button class="btn-continue" style="opacity: 0.5; cursor: not-allowed;" disabled>
                     Niedostępne
                 </button>
             </div>
@@ -193,57 +222,92 @@ function formatDate(dateString) {
     return date.toLocaleDateString('pl-PL', options);
 }
 
-function bookFlight(flightNumber) {
-    alert(`Dziękujemy za wybór Vis Airlines!\n\nLot ${flightNumber} został dodany do koszyka.\n\nW pełnej wersji strony tutaj nastąpiłoby przekierowanie do systemu płatności.`);
+// ========== MODAL SZCZEGÓŁÓW ==========
+function initModal() {
+    const modal = document.getElementById('flightModal');
+    const modalClose = document.getElementById('modalClose');
+
+    modalClose.addEventListener('click', () => {
+        modal.classList.add('hidden');
+    });
+
+    modal.addEventListener('click', (e) => {
+        if (e.target === modal) {
+            modal.classList.add('hidden');
+        }
+    });
+}
+
+function showFlightDetails(flightNumber, fromCode, toCode) {
+    const route = `${fromCode}-${toCode}`;
+    const routeData = flightDatabase[route];
+    
+    if (!routeData) return;
+    
+    const flight = routeData.flights.find(f => f.number === flightNumber);
+    if (!flight) return;
+
+    const modal = document.getElementById('flightModal');
+    const modalBody = document.getElementById('modalBody');
+
+    modalBody.innerHTML = `
+        <div class="modal-detail">
+            <div class="modal-label">Numer lotu</div>
+            <div class="modal-value">${flight.number}</div>
+        </div>
+        <div class="modal-detail">
+            <div class="modal-label">Trasa</div>
+            <div class="modal-value">${cityNames[fromCode]} → ${cityNames[toCode]}</div>
+        </div>
+        <div class="modal-detail">
+            <div class="modal-label">Godzina wylotu</div>
+            <div class="modal-value">${flight.departure}</div>
+        </div>
+        <div class="modal-detail">
+            <div class="modal-label">Godzina przylotu</div>
+            <div class="modal-value">${flight.arrival}</div>
+        </div>
+        <div class="modal-detail">
+            <div class="modal-label">Czas lotu</div>
+            <div class="modal-value">${flight.duration}</div>
+        </div>
+        <div class="modal-detail">
+            <div class="modal-label">Model samolotu</div>
+            <div class="modal-value">${flight.aircraft}</div>
+        </div>
+        <div class="modal-detail">
+            <div class="modal-label">Dostępne klasy</div>
+            <div class="modal-value">${getAvailableClasses(flight)}</div>
+        </div>
+    `;
+
+    modal.classList.remove('hidden');
+}
+
+function continueFlight(flightNumber) {
+    alert(`Lot ${flightNumber} - przejście do płatności\n\nW pełnej wersji nastąpi przekierowanie do systemu rezerwacji.`);
 }
 
 // ============================================
 // INSTRUKCJA DODAWANIA NOWYCH POŁĄCZEŃ
 // ============================================
 // 
-// 1. Z CENĄ - dodaj do flightDatabase:
-//
+// Przykład z ceną:
 // 'WAW-KRK': {
 //     available: true,
-//     flights: [
-//         {
-//             number: 'VA201',
-//             departure: '10:00',
-//             arrival: '11:15',
-//             duration: '1h 15min',
-//             prices: {
-//                 economy: 100,
-//                 business: 400
-//                 // premium: 250,  // opcjonalnie
-//                 // first: 600     // opcjonalnie
-//             }
+//     flights: [{
+//         number: 'VA201',
+//         departure: '10:00',
+//         arrival: '11:15',
+//         duration: '1h 15min',
+//         aircraft: 'Boeing 737-800',
+//         prices: {
+//             economy: 100,
+//             business: 400
 //         }
-//     ]
+//     }]
 // }
 //
-// 2. WYPRZEDANE (bez ceny) - ustaw prices: null:
-//
-// 'KRK-GDN': {
-//     available: true,
-//     flights: [
-//         {
-//             number: 'VA301',
-//             departure: '14:00',
-//             arrival: '15:30',
-//             duration: '1h 30min',
-//             prices: null  // <- to spowoduje "Wyprzedane"
-//         }
-//     ]
-// }
-//
-// 3. DODAJ MIASTA do cityNames:
-//
-// const cityNames = {
-//     'CPK': 'CPK',
-//     'GDN': 'Gdańsk',
-//     'WAW': 'Warszawa',  // <- dodaj nowe
-//     'KRK': 'Kraków'      // <- dodaj nowe
-// };
-//
-// 4. DODAJ MIASTA do index.html (w obu listach select)
+// Przykład wyprzedane:
+// prices: null
 // ============================================
