@@ -8,6 +8,17 @@ const airports = [
 let currentSelectType = null;
 
 document.addEventListener('DOMContentLoaded', () => {
+    console.log('=== START INICJALIZACJI ===');
+    
+    // Test czy modal istnieje
+    const testModal = document.getElementById('airportModal');
+    console.log('Modal lotnisk exists:', testModal ? 'TAK' : 'NIE');
+    
+    if (testModal) {
+        console.log('Modal classList:', testModal.classList);
+        console.log('Modal style.display:', testModal.style.display);
+    }
+    
     initCustomSelects();
     initCalendar();
     initReturnCalendar();
@@ -16,6 +27,8 @@ document.addEventListener('DOMContentLoaded', () => {
     initPassengerPanel();
     initTripType();
     initFormHandler();
+    
+    console.log('=== KONIEC INICJALIZACJI ===');
 });
 
 // ========== CUSTOM SELECT DROPDOWNS ==========
