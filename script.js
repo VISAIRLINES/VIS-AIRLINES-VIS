@@ -87,6 +87,7 @@ function renderAirportList(container, inputId) {
         label.textContent = country;
         group.appendChild(label);
         
+        // Dodaj lotniska z tego kraju
         countries[country].forEach(airport => {
             const option = document.createElement('div');
             option.className = 'airport-option';
@@ -102,6 +103,8 @@ function renderAirportList(container, inputId) {
         
         container.appendChild(group);
     });
+    
+    console.log('Airport list rendered with', airports.length, 'airports');
 }
 
 function selectAirport(value, name, inputId) {
