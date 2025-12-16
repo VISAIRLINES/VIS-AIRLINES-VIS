@@ -68,6 +68,7 @@ function displaySearchSummary(data) {
 function displayFlights(searchData) {
     const resultsDiv = document.getElementById('flightResults');
     const noResultsDiv = document.getElementById('noResults');
+    const returnFlightsSection = document.getElementById('returnFlights');
     const route = `${searchData.from}-${searchData.to}`;
 
     const routeData = flightDatabase[route];
@@ -87,13 +88,12 @@ function displayFlights(searchData) {
 
     attachFlightButtonListeners();
 
-    // Jeśli podróż w obie strony
+    // Przygotuj loty powrotne jeśli podróż w obie strony
     if (searchData.tripType === 'roundtrip' && searchData.returnDate) {
         const returnRoute = `${searchData.to}-${searchData.from}`;
         const returnRouteData = flightDatabase[returnRoute];
 
         if (returnRouteData && returnRouteData.available && returnRouteData.flights.length > 0) {
-            const returnFlightsSection = document.getElementById('returnFlights');
             const returnResultsDiv = document.getElementById('returnFlightResults');
             
             returnRouteData.flights.forEach(flight => {
@@ -107,6 +107,15 @@ function displayFlights(searchData) {
             });
             
             attachFlightButtonListeners();
+        } else {
+            // Brak lotów powrotnych - pokaż komunikat
+            returnFlightsSection.innerHTML = `
+                <h3 class="section-title">Loty powrotne</h3>
+                <div class="no-results" style="margin-top: 20px;">
+                    <h3>Brak dostępnych lotów powrotnych</h3>
+                    <p>Przepraszamy, nie znaleźliśmy lotów powrotnych na wybranej trasie.</p>
+                </div>
+            `;
         }
     }
 }
@@ -278,10 +287,15 @@ function selectFlight(flightNumber, flightType, price) {
 
     updateSelectedSummary();
 
-    // Jeśli w obie strony, pokaż sekcję lotów powrotnych
+    // Jeśli w obie strony i wybrano lot wylotowy, pokaż sekcję lotów powrotnych
     if (searchData.tripType === 'roundtrip' && flightType === 'outbound') {
-        document.getElementById('returnFlights').classList.remove('hidden');
-        document.getElementById('returnFlights').scrollIntoView({ behavior: 'smooth', block: 'start' });
+        const returnFlightsSection = document.getElementById('returnFlights');
+        returnFlightsSection.classList.remove('hidden');
+        
+        // Przewiń do lotów powrotnych
+        setTimeout(() => {
+            returnFlightsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }, 100);
     }
 }
 
