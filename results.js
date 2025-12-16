@@ -30,8 +30,12 @@ const classNames = {
     first: 'Pierwsza'
 };
 
+let searchData = null;
+let selectedOutboundFlight = null;
+let selectedReturnFlight = null;
+
 document.addEventListener('DOMContentLoaded', () => {
-    const searchData = JSON.parse(localStorage.getItem('searchData'));
+    searchData = JSON.parse(localStorage.getItem('searchData'));
 
     if (!searchData) {
         window.location.href = 'index.html';
@@ -77,20 +81,20 @@ function displayFlights(searchData) {
     const totalPassengers = Object.values(searchData.passengers).reduce((a, b) => a + b, 0);
 
     flights.forEach(flight => {
-        const flightCard = createFlightCard(flight, searchData, totalPassengers);
+        const flightCard = createFlightCard(flight, searchData, totalPassengers, 'outbound');
         resultsDiv.innerHTML += flightCard;
     });
 
-    // Dodaj event listenery po wygenerowaniu HTML
     attachFlightButtonListeners();
 
-    // Jeśli podróż w obie strony, pokaż loty powrotne
+    // Jeśli podróż w obie strony
     if (searchData.tripType === 'roundtrip' && searchData.returnDate) {
         const returnRoute = `${searchData.to}-${searchData.from}`;
         const returnRouteData = flightDatabase[returnRoute];
 
         if (returnRouteData && returnRouteData.available && returnRouteData.flights.length > 0) {
-            resultsDiv.innerHTML += `<h3 style="margin: 30px 0 20px; color: #2c3e50;">Loty powrotne</h3>`;
+            const returnFlightsSection = document.getElementById('returnFlights');
+            const returnResultsDiv = document.getElementById('returnFlightResults');
             
             returnRouteData.flights.forEach(flight => {
                 const returnCard = createFlightCard(flight, {
@@ -98,44 +102,21 @@ function displayFlights(searchData) {
                     from: searchData.to,
                     to: searchData.from,
                     date: searchData.returnDate
-                }, totalPassengers);
-                resultsDiv.innerHTML += returnCard;
+                }, totalPassengers, 'return');
+                returnResultsDiv.innerHTML += returnCard;
             });
             
-            // Dodaj listenery także dla lotów powrotnych
             attachFlightButtonListeners();
         }
     }
 }
 
-function attachFlightButtonListeners() {
-    // Przyciski szczegółów
-    const detailBtns = document.querySelectorAll('.btn-details');
-    detailBtns.forEach(btn => {
-        btn.addEventListener('click', () => {
-            const flightNumber = btn.getAttribute('data-flight');
-            const fromCode = btn.getAttribute('data-from');
-            const toCode = btn.getAttribute('data-to');
-            showFlightDetails(flightNumber, fromCode, toCode);
-        });
-    });
-
-    // Przyciski przejdź dalej
-    const continueBtns = document.querySelectorAll('.btn-continue:not([disabled])');
-    continueBtns.forEach(btn => {
-        btn.addEventListener('click', () => {
-            const flightNumber = btn.getAttribute('data-flight');
-            continueFlight(flightNumber);
-        });
-    });
-}
-
-function createFlightCard(flight, searchData, totalPassengers) {
+function createFlightCard(flight, searchData, totalPassengers, flightType) {
     const selectedClass = searchData.class;
     const hasPrices = flight.prices !== null && flight.prices !== undefined;
     const price = hasPrices ? flight.prices[selectedClass] : null;
     
-    let priceSection = '';
+    let actionSection = '';
     let noticeSection = '';
 
     if (!hasPrices) {
@@ -145,7 +126,7 @@ function createFlightCard(flight, searchData, totalPassengers) {
                 Wszystkie miejsca na tym locie zostały wyprzedane.
             </div>
         `;
-        priceSection = `
+        actionSection = `
             <div class="flight-actions">
                 <button class="btn-continue" style="opacity: 0.5; cursor: not-allowed; background: #dc3545;" disabled>
                     Wyprzedane
@@ -154,7 +135,7 @@ function createFlightCard(flight, searchData, totalPassengers) {
         `;
     } else if (price) {
         const totalPrice = price * totalPassengers;
-        priceSection = `
+        actionSection = `
             <div class="flight-actions">
                 <div>
                     <div style="font-size: 0.85rem; color: #888; margin-bottom: 4px;">
@@ -169,8 +150,8 @@ function createFlightCard(flight, searchData, totalPassengers) {
                     <button class="btn-details" data-flight="${flight.number}" data-from="${searchData.from}" data-to="${searchData.to}">
                         Szczegóły
                     </button>
-                    <button class="btn-continue" data-flight="${flight.number}">
-                        Przejdź dalej
+                    <button class="btn-select" data-flight="${flight.number}" data-type="${flightType}" data-price="${totalPrice}">
+                        Wybierz
                     </button>
                 </div>
             </div>
@@ -183,7 +164,7 @@ function createFlightCard(flight, searchData, totalPassengers) {
                 Dostępne klasy: ${getAvailableClasses(flight)}
             </div>
         `;
-        priceSection = `
+        actionSection = `
             <div class="flight-actions">
                 <button class="btn-continue" style="opacity: 0.5; cursor: not-allowed;" disabled>
                     Niedostępne
@@ -193,7 +174,7 @@ function createFlightCard(flight, searchData, totalPassengers) {
     }
 
     return `
-        <div class="flight-card">
+        <div class="flight-card" data-flight="${flight.number}" data-type="${flightType}">
             <div class="flight-header">
                 <div>
                     <div class="flight-route">
@@ -223,9 +204,141 @@ function createFlightCard(flight, searchData, totalPassengers) {
             </div>
 
             ${noticeSection}
-            ${priceSection}
+            ${actionSection}
         </div>
     `;
+}
+
+function attachFlightButtonListeners() {
+    // Przyciski szczegółów
+    document.querySelectorAll('.btn-details').forEach(btn => {
+        btn.replaceWith(btn.cloneNode(true));
+    });
+    
+    document.querySelectorAll('.btn-details').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const flightNumber = this.getAttribute('data-flight');
+            const fromCode = this.getAttribute('data-from');
+            const toCode = this.getAttribute('data-to');
+            showFlightDetails(flightNumber, fromCode, toCode);
+        });
+    });
+
+    // Przyciski wyboru
+    document.querySelectorAll('.btn-select').forEach(btn => {
+        btn.replaceWith(btn.cloneNode(true));
+    });
+    
+    document.querySelectorAll('.btn-select').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const flightNumber = this.getAttribute('data-flight');
+            const flightType = this.getAttribute('data-type');
+            const price = this.getAttribute('data-price');
+            selectFlight(flightNumber, flightType, price);
+        });
+    });
+}
+
+function selectFlight(flightNumber, flightType, price) {
+    const route = flightType === 'outbound' 
+        ? `${searchData.from}-${searchData.to}` 
+        : `${searchData.to}-${searchData.from}`;
+    
+    const routeData = flightDatabase[route];
+    if (!routeData) return;
+    
+    const flight = routeData.flights.find(f => f.number === flightNumber);
+    if (!flight) return;
+
+    // Usuń poprzednie zaznaczenie
+    document.querySelectorAll(`.flight-card[data-type="${flightType}"]`).forEach(card => {
+        card.classList.remove('selected');
+    });
+    document.querySelectorAll(`.btn-select[data-type="${flightType}"]`).forEach(btn => {
+        btn.classList.remove('selected');
+        btn.textContent = 'Wybierz';
+    });
+
+    // Zaznacz nowy
+    const card = document.querySelector(`.flight-card[data-flight="${flightNumber}"][data-type="${flightType}"]`);
+    const btn = document.querySelector(`.btn-select[data-flight="${flightNumber}"][data-type="${flightType}"]`);
+    
+    if (card) card.classList.add('selected');
+    if (btn) {
+        btn.classList.add('selected');
+        btn.textContent = 'Wybrany';
+    }
+
+    // Zapisz wybór
+    if (flightType === 'outbound') {
+        selectedOutboundFlight = { flight, price };
+    } else {
+        selectedReturnFlight = { flight, price };
+    }
+
+    updateSelectedSummary();
+
+    // Jeśli w obie strony, pokaż sekcję lotów powrotnych
+    if (searchData.tripType === 'roundtrip' && flightType === 'outbound') {
+        document.getElementById('returnFlights').classList.remove('hidden');
+        document.getElementById('returnFlights').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+}
+
+function updateSelectedSummary() {
+    const summaryDiv = document.getElementById('selectedFlightsSummary');
+    const outboundDiv = document.getElementById('selectedOutbound');
+    const returnDiv = document.getElementById('selectedReturn');
+    const finalBtn = document.getElementById('finalContinueBtn');
+
+    if (!selectedOutboundFlight && !selectedReturnFlight) {
+        summaryDiv.classList.add('hidden');
+        return;
+    }
+
+    summaryDiv.classList.remove('hidden');
+
+    // Lot wylotowy
+    if (selectedOutboundFlight) {
+        const f = selectedOutboundFlight.flight;
+        outboundDiv.innerHTML = `
+            <div class="selected-flight-info">
+                <strong>Lot wylotowy: ${f.number}</strong>
+                <p>${cityNames[searchData.from]} → ${cityNames[searchData.to]}</p>
+                <p>Wylot: ${f.departure} | Przylot: ${f.arrival}</p>
+                <p>Cena: ${selectedOutboundFlight.price} zł</p>
+            </div>
+        `;
+    }
+
+    // Lot powrotny
+    if (searchData.tripType === 'roundtrip') {
+        if (selectedReturnFlight) {
+            const f = selectedReturnFlight.flight;
+            returnDiv.innerHTML = `
+                <div class="selected-flight-info">
+                    <strong>Lot powrotny: ${f.number}</strong>
+                    <p>${cityNames[searchData.to]} → ${cityNames[searchData.from]}</p>
+                    <p>Wylot: ${f.departure} | Przylot: ${f.arrival}</p>
+                    <p>Cena: ${selectedReturnFlight.price} zł</p>
+                </div>
+            `;
+            finalBtn.classList.remove('hidden');
+        } else {
+            returnDiv.innerHTML = '<p style="color: #888;">Wybierz lot powrotny</p>';
+            finalBtn.classList.add('hidden');
+        }
+    } else {
+        // W jedną stronę - pokaż przycisk od razu
+        returnDiv.innerHTML = '';
+        finalBtn.classList.remove('hidden');
+    }
+
+    // Event listener dla końcowego przycisku
+    finalBtn.onclick = () => {
+        const total = selectedOutboundFlight.price + (selectedReturnFlight ? selectedReturnFlight.price : 0);
+        alert(`Przejście do płatności\n\nŁączna kwota: ${total} zł\n\nW pełnej wersji nastąpi przekierowanie do systemu rezerwacji.`);
+    };
 }
 
 function getAvailableClasses(flight) {
@@ -254,6 +367,8 @@ function formatDate(dateString) {
 function initModal() {
     const modal = document.getElementById('flightModal');
     const modalClose = document.getElementById('modalClose');
+
+    if (!modalClose) return;
 
     modalClose.addEventListener('click', () => {
         modal.classList.add('hidden');
@@ -311,31 +426,3 @@ function showFlightDetails(flightNumber, fromCode, toCode) {
 
     modal.classList.remove('hidden');
 }
-
-function continueFlight(flightNumber) {
-    alert(`Lot ${flightNumber} - przejście do płatności\n\nW pełnej wersji nastąpi przekierowanie do systemu rezerwacji.`);
-}
-
-// ============================================
-// INSTRUKCJA DODAWANIA NOWYCH POŁĄCZEŃ
-// ============================================
-// 
-// Przykład z ceną:
-// 'WAW-KRK': {
-//     available: true,
-//     flights: [{
-//         number: 'VA201',
-//         departure: '10:00',
-//         arrival: '11:15',
-//         duration: '1h 15min',
-//         aircraft: 'Boeing 737-800',
-//         prices: {
-//             economy: 100,
-//             business: 400
-//         }
-//     }]
-// }
-//
-// Przykład wyprzedane:
-// prices: null
-// ============================================
