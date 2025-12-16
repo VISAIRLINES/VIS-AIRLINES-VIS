@@ -1,17 +1,10 @@
 // Lista lotnisk
 const airports = [
-    { value: 'CPK', name: 'CPK', country: '// Lista lotnisk
-const airports = [
     { value: 'CPK', name: 'CPK', country: 'Polska' },
     { value: 'GDN', name: 'Gdańsk', country: 'Polska' },
     { value: 'NCE', name: 'Nicea', country: 'Francja' },
     { value: 'JFK', name: 'Nowy Jork', country: 'USA' }
 ];
-
-// TEST - sprawdź czy się ładuje
-console.log('=== LOTNISKA ZAŁADOWANE ===');
-console.log('Liczba lotnisk:', airports.length);
-airports.forEach(a => console.log(`- ${a.name} (${a.country})`));
 
 let currentSelectType = null;
 
@@ -79,9 +72,6 @@ function initSingleSelect(selectElement, inputId) {
 function renderAirportList(container, inputId) {
     if (!container) return;
     
-    console.log('Renderuję lotniska, ilość:', airports.length);
-    console.log('Lista lotnisk:', airports);
-    
     const countries = {};
     
     airports.forEach(airport => {
@@ -90,8 +80,6 @@ function renderAirportList(container, inputId) {
         }
         countries[airport.country].push(airport);
     });
-    
-    console.log('Zgrupowane kraje:', countries);
     
     container.innerHTML = '';
     
@@ -121,8 +109,6 @@ function renderAirportList(container, inputId) {
         
         container.appendChild(group);
     });
-    
-    console.log('Dodano krajów:', sortedCountries.length);
 }
 
 function selectAirport(value, name, inputId) {
