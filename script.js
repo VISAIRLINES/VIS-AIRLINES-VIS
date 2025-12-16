@@ -1,3 +1,12 @@
+// Lista lotnisk
+const airports = [
+    { value: 'CPK', name: 'CPK', country: 'Polska' },
+    { value: 'GDN', name: 'Gdańsk', country: 'Polska' },
+    { value: 'NCE', name: 'Nicea', country: 'Francja' }
+];
+
+let currentSelectType = null;
+
 document.addEventListener('DOMContentLoaded', () => {
     initCustomSelects();
     initCalendar();
@@ -10,19 +19,13 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // ========== CUSTOM SELECT DROPDOWNS ==========
-const airports = [
-    { value: 'CPK', name: 'CPK', country: 'Polska' },
-    { value: 'GDN', name: 'Gdańsk', country: 'Polska' },
-    { value: 'NCE', name: 'Nicea', country: 'Francja' }
-];
-
-let currentSelectType = null; // 'from' lub 'to'
-
 function initCustomSelects() {
     const fromSelect = document.getElementById('fromSelect');
     const toSelect = document.getElementById('toSelect');
     const airportModal = document.getElementById('airportModal');
     const airportModalClose = document.getElementById('airportModalClose');
+
+    if (!fromSelect || !toSelect || !airportModal) return;
 
     initSingleSelect(fromSelect, 'from');
     initSingleSelect(toSelect, 'to');
@@ -49,13 +52,8 @@ function initSingleSelect(selectElement, inputId) {
         e.stopPropagation();
         currentSelectType = inputId;
         
-        // Ustaw tytuł modala
         airportModalTitle.textContent = inputId === 'from' ? 'Wybierz lotnisko wylotu' : 'Wybierz lotnisko przylotu';
-        
-        // Wypełnij listę lotnisk
         renderAirportList(airportList, inputId);
-        
-        // Otwórz modal
         airportModal.classList.remove('hidden');
     });
 }
@@ -63,7 +61,6 @@ function initSingleSelect(selectElement, inputId) {
 function renderAirportList(container, inputId) {
     const countries = {};
     
-    // Grupuj lotniska według kraju
     airports.forEach(airport => {
         if (!countries[airport.country]) {
             countries[airport.country] = [];
@@ -71,13 +68,10 @@ function renderAirportList(container, inputId) {
         countries[airport.country].push(airport);
     });
     
-    // Wyczyść kontener
     container.innerHTML = '';
     
-    // Sortuj kraje alfabetycznie
     const sortedCountries = Object.keys(countries).sort();
     
-    // Renderuj grupy krajów
     sortedCountries.forEach(country => {
         const group = document.createElement('div');
         group.className = 'airport-country-group';
@@ -87,7 +81,6 @@ function renderAirportList(container, inputId) {
         label.textContent = country;
         group.appendChild(label);
         
-        // Dodaj lotniska z tego kraju
         countries[country].forEach(airport => {
             const option = document.createElement('div');
             option.className = 'airport-option';
@@ -103,8 +96,6 @@ function renderAirportList(container, inputId) {
         
         container.appendChild(group);
     });
-    
-    console.log('Airport list rendered with', airports.length, 'airports');
 }
 
 function selectAirport(value, name, inputId) {
@@ -112,12 +103,10 @@ function selectAirport(value, name, inputId) {
     const valueSpan = selectElement.querySelector('.select-value');
     const hiddenInput = document.getElementById(inputId);
     
-    // Ustaw wartość
     valueSpan.textContent = name;
     valueSpan.classList.remove('placeholder');
     hiddenInput.value = value;
     
-    // Zamknij modal
     document.getElementById('airportModal').classList.add('hidden');
 }
 
@@ -132,7 +121,6 @@ function initAccountMenu() {
 
     if (!accountBtn) return;
 
-    // Kliknięcie w ikonę konta otwiera od razu modal
     accountBtn.addEventListener('click', (e) => {
         e.stopPropagation();
         loginModalTitle.textContent = 'Zaloguj się';
@@ -141,7 +129,6 @@ function initAccountMenu() {
         loginModal.classList.remove('hidden');
     });
 
-    // Zamknij modal
     loginModalClose.addEventListener('click', () => {
         loginModal.classList.add('hidden');
     });
@@ -152,7 +139,6 @@ function initAccountMenu() {
         }
     });
 
-    // Przełączanie między logowaniem a rejestracją
     switchToRegister.addEventListener('click', (e) => {
         e.preventDefault();
         if (loginModalTitle.textContent === 'Zaloguj się') {
@@ -166,7 +152,6 @@ function initAccountMenu() {
         }
     });
 
-    // Obsługa formularza
     loginForm.addEventListener('submit', (e) => {
         e.preventDefault();
         alert('Funkcja będzie dostępna wkrótce!');
@@ -226,11 +211,9 @@ function renderCalendar() {
     
     const firstDay = new Date(currentYear, currentMonth, 1);
     const lastDay = new Date(currentYear, currentMonth + 1, 0);
-    const prevLastDay = new Date(currentYear, currentMonth, 0);
     
     const firstDayIndex = firstDay.getDay() === 0 ? 6 : firstDay.getDay() - 1;
     const lastDayDate = lastDay.getDate();
-    const prevLastDayDate = prevLastDay.getDate();
     
     const today = new Date();
     today.setHours(0, 0, 0, 0);
@@ -472,11 +455,6 @@ function initLanguageSelector() {
 
     document.addEventListener('click', () => {
         langDropdown.classList.add('hidden');
-        // Zamknij też menu konta
-        const accountDropdown = document.getElementById('accountDropdown');
-        if (accountDropdown && !accountDropdown.classList.contains('hidden')) {
-            accountDropdown.classList.add('hidden');
-        }
     });
 
     const langOptions = document.querySelectorAll('.lang-option');
