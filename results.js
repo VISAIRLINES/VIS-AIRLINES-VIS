@@ -12,6 +12,41 @@ const flightDatabase = {
                 prices: {
                     economy: 100,
                     business: 400
+                },
+                connectionPrice: { // Cena jeśli to przesiadka
+                    economy: 50,
+                    business: 200
+                }
+            },
+            {
+                number: 'VA103',
+                departure: '23:45',
+                arrival: '00:40',
+                duration: '55min',
+                aircraft: 'Airbus A220-100',
+                prices: {
+                    economy: 100,
+                    business: 400
+                },
+                connectionPrice: {
+                    economy: 50,
+                    business: 200
+                }
+            }
+        ]
+    },
+    'CPK-GDN': {
+        available: true,
+        flights: [
+            {
+                number: 'VA102',
+                departure: '23:45',
+                arrival: '00:40',
+                duration: '55min',
+                aircraft: 'Airbus A220-100',
+                prices: {
+                    economy: 100,
+                    business: 400
                 }
             }
         ]
@@ -28,6 +63,26 @@ const flightDatabase = {
                 prices: {
                     economy: 250,
                     business: 1000
+                }
+            }
+        ]
+    },
+    'NCE-CPK': {
+        available: true,
+        flights: [
+            {
+                number: 'VA202',
+                departure: '09:30',
+                arrival: '12:10',
+                duration: '2h 40min',
+                aircraft: 'Airbus A321neo',
+                prices: {
+                    economy: 250,
+                    business: 1000
+                },
+                connectionPrice: {
+                    economy: 200,
+                    business: 800
                 }
             }
         ]
@@ -89,23 +144,34 @@ function displayFlights(searchData) {
     const route = `${searchData.from}-${searchData.to}`;
 
     const routeData = flightDatabase[route];
-
-    if (!routeData || !routeData.available || routeData.flights.length === 0) {
-        noResultsDiv.classList.remove('hidden');
-        return;
-    }
-
-    const flights = routeData.flights;
     const totalPassengers = Object.values(searchData.passengers).reduce((a, b) => a + b, 0);
 
-    flights.forEach(flight => {
-        const flightCard = createFlightCard(flight, searchData, totalPassengers, 'outbound');
-        resultsDiv.innerHTML += flightCard;
-    });
+    // Sprawdź połączenia bezpośrednie
+    if (routeData && routeData.available && routeData.flights.length > 0) {
+        routeData.flights.forEach(flight => {
+            const flightCard = createFlightCard(flight, searchData, totalPassengers, 'outbound');
+            resultsDiv.innerHTML += flightCard;
+        });
+        attachFlightButtonListeners();
+    } else {
+        // Sprawdź połączenia z przesiadką przez CPK
+        const connectionFlights = findConnectionFlights(searchData.from, searchData.to);
+        
+        if (connectionFlights.length > 0) {
+            resultsDiv.innerHTML += '<div style="background: #fff3cd; padding: 15px; border-radius: 6px; margin-bottom: 20px; border: 1px solid #ffc107;"><strong>ℹ️ Połączenia z przesiadką w CPK</strong><br>Wybierz lot do CPK, a następnie lot do miejsca docelowego.</div>';
+            
+            connectionFlights.forEach(conn => {
+                const connCard = createConnectionCard(conn, searchData, totalPassengers);
+                resultsDiv.innerHTML += connCard;
+            });
+            attachFlightButtonListeners();
+        } else {
+            noResultsDiv.classList.remove('hidden');
+            return;
+        }
+    }
 
-    attachFlightButtonListeners();
-
-    // Przygotuj loty powrotne jeśli podróż w obie strony
+    // Loty powrotne
     if (searchData.tripType === 'roundtrip' && searchData.returnDate) {
         const returnRoute = `${searchData.to}-${searchData.from}`;
         const returnRouteData = flightDatabase[returnRoute];
@@ -125,16 +191,161 @@ function displayFlights(searchData) {
             
             attachFlightButtonListeners();
         } else {
-            // Brak lotów powrotnych - pokaż komunikat
-            returnFlightsSection.innerHTML = `
-                <h3 class="section-title">Loty powrotne</h3>
-                <div class="no-results" style="margin-top: 20px;">
-                    <h3>Brak dostępnych lotów powrotnych</h3>
-                    <p>Przepraszamy, nie znaleźliśmy lotów powrotnych na wybranej trasie.</p>
-                </div>
-            `;
+            // Szukaj przesiadek dla lotu powrotnego
+            const returnConnectionFlights = findConnectionFlights(searchData.to, searchData.from);
+            
+            if (returnConnectionFlights.length > 0) {
+                const returnResultsDiv = document.getElementById('returnFlightResults');
+                returnResultsDiv.innerHTML += '<div style="background: #fff3cd; padding: 15px; border-radius: 6px; margin-bottom: 20px; border: 1px solid #ffc107;"><strong>ℹ️ Połączenia powrotne z przesiadką w CPK</strong></div>';
+                
+                returnConnectionFlights.forEach(conn => {
+                    const connCard = createConnectionCard(conn, {
+                        ...searchData,
+                        from: searchData.to,
+                        to: searchData.from,
+                        date: searchData.returnDate
+                    }, totalPassengers, 'return');
+                    returnResultsDiv.innerHTML += connCard;
+                });
+                attachFlightButtonListeners();
+            } else {
+                returnFlightsSection.innerHTML = `
+                    <h3 class="section-title">Loty powrotne</h3>
+                    <div class="no-results" style="margin-top: 20px;">
+                        <h3>Brak dostępnych lotów powrotnych</h3>
+                        <p>Przepraszamy, nie znaleźliśmy lotów powrotnych na wybranej trasie.</p>
+                    </div>
+                `;
+            }
         }
     }
+}
+
+function findConnectionFlights(from, to) {
+    // Wszystkie loty idą przez CPK jako hub
+    const leg1Route = `${from}-CPK`;
+    const leg2Route = `CPK-${to}`;
+    
+    const leg1Data = flightDatabase[leg1Route];
+    const leg2Data = flightDatabase[leg2Route];
+    
+    if (!leg1Data || !leg2Data) return [];
+    
+    const connections = [];
+    
+    leg1Data.flights.forEach(flight1 => {
+        leg2Data.flights.forEach(flight2 => {
+            connections.push({
+                leg1: flight1,
+                leg2: flight2,
+                from: from,
+                to: to
+            });
+        });
+    });
+    
+    return connections;
+}
+
+function createConnectionCard(connection, searchData, totalPassengers, flightType = 'outbound') {
+    const selectedClass = searchData.class;
+    const leg1 = connection.leg1;
+    const leg2 = connection.leg2;
+    
+    // Użyj ceny przesiadkowej dla pierwszego odcinka
+    const leg1Price = leg1.connectionPrice && leg1.connectionPrice[selectedClass] 
+        ? leg1.connectionPrice[selectedClass] 
+        : (leg1.prices ? leg1.prices[selectedClass] : null);
+    
+    const leg2Price = leg2.prices ? leg2.prices[selectedClass] : null;
+    
+    if (!leg1Price || !leg2Price) {
+        return `
+            <div class="flight-card">
+                <div class="flight-header">
+                    <div>
+                        <div class="flight-route">
+                            ${cityNames[connection.from]} → CPK → ${cityNames[connection.to]}
+                        </div>
+                        <div class="flight-number">Przesiadka w CPK</div>
+                    </div>
+                </div>
+                <div class="unavailable-notice">
+                    <strong>Niedostępne</strong>
+                    Klasa ${classNames[selectedClass]} nie jest dostępna na tym połączeniu.
+                </div>
+            </div>
+        `;
+    }
+    
+    const totalPrice = (leg1Price + leg2Price) * totalPassengers;
+    const connectionId = `${leg1.number}-${leg2.number}`;
+    
+    return `
+        <div class="flight-card connection-card" data-flight="${connectionId}" data-type="${flightType}">
+            <div class="flight-header">
+                <div>
+                    <div class="flight-route">
+                        ${cityNames[connection.from]} → CPK → ${cityNames[connection.to]}
+                    </div>
+                    <div class="flight-number">Loty ${leg1.number} + ${leg2.number} (Przesiadka w CPK)</div>
+                </div>
+            </div>
+            
+            <div style="background: #f8f9fa; padding: 15px; border-radius: 6px; margin-bottom: 15px;">
+                <strong style="color: #2c3e50; display: block; margin-bottom: 10px;">Odcinek 1: ${cityNames[connection.from]} → CPK</strong>
+                <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px;">
+                    <div>
+                        <span style="color: #888; font-size: 0.8rem;">Lot</span>
+                        <div style="font-weight: 600;">${leg1.number}</div>
+                    </div>
+                    <div>
+                        <span style="color: #888; font-size: 0.8rem;">Wylot → Przylot</span>
+                        <div style="font-weight: 600;">${leg1.departure} → ${leg1.arrival}</div>
+                    </div>
+                    <div>
+                        <span style="color: #888; font-size: 0.8rem;">Samolot</span>
+                        <div style="font-weight: 600;">${leg1.aircraft}</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div style="background: #f8f9fa; padding: 15px; border-radius: 6px; margin-bottom: 15px;">
+                <strong style="color: #2c3e50; display: block; margin-bottom: 10px;">Odcinek 2: CPK → ${cityNames[connection.to]}</strong>
+                <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px;">
+                    <div>
+                        <span style="color: #888; font-size: 0.8rem;">Lot</span>
+                        <div style="font-weight: 600;">${leg2.number}</div>
+                    </div>
+                    <div>
+                        <span style="color: #888; font-size: 0.8rem;">Wylot → Przylot</span>
+                        <div style="font-weight: 600;">${leg2.departure} → ${leg2.arrival}</div>
+                    </div>
+                    <div>
+                        <span style="color: #888; font-size: 0.8rem;">Samolot</span>
+                        <div style="font-weight: 600;">${leg2.aircraft}</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="flight-actions">
+                <div>
+                    <div style="font-size: 0.85rem; color: #888; margin-bottom: 4px;">
+                        Łączna cena dla ${totalPassengers} pasażera/ów
+                    </div>
+                    <div class="price">${totalPrice} zł</div>
+                    <div style="font-size: 0.8rem; color: #888; margin-top: 4px;">
+                        (${leg1Price} zł + ${leg2Price} zł) × ${totalPassengers}
+                    </div>
+                </div>
+                <div class="action-buttons">
+                    <button class="btn-select" data-flight="${connectionId}" data-type="${flightType}" data-price="${totalPrice}" data-leg1="${leg1.number}" data-leg2="${leg2.number}" data-connection="true">
+                        Wybierz
+                    </button>
+                </div>
+            </div>
+        </div>
+    `;
 }
 
 function createFlightCard(flight, searchData, totalPassengers, flightType) {
