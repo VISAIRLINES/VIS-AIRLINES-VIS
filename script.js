@@ -1,4 +1,5 @@
 document.addEventListener('DOMContentLoaded', () => {
+    initCustomSelects();
     initCalendar();
     initReturnCalendar();
     initLanguageSelector();
@@ -8,17 +9,113 @@ document.addEventListener('DOMContentLoaded', () => {
     initFormHandler();
 });
 
+// ========== CUSTOM SELECT DROPDOWNS ==========
+function initCustomSelects() {
+    const fromSelect = document.getElementById('fromSelect');
+    const toSelect = document.getElementById('toSelect');
+
+    initSingleSelect(fromSelect, 'from');
+    initSingleSelect(toSelect, 'to');
+}
+
+function initSingleSelect(selectElement, inputId) {
+    const header = selectElement.querySelector('.select-header');
+    const dropdown = selectElement.querySelector('.select-dropdown');
+    const valueSpan = selectElement.querySelector('.select-value');
+    const hiddenInput = document.getElementById(inputId);
+    const options = selectElement.querySelectorAll('.select-option');
+
+    // Grupuj opcje według kraju
+    organizeByCountry(dropdown, options);
+
+    header.addEventListener('click', (e) => {
+        e.stopPropagation();
+        
+        // Zamknij wszystkie inne dropdowny
+        document.querySelectorAll('.select-dropdown').forEach(d => {
+            if (d !== dropdown) d.classList.add('hidden');
+        });
+        document.querySelectorAll('.calendar-dropdown').forEach(c => c.classList.add('hidden'));
+        
+        dropdown.classList.toggle('hidden');
+    });
+
+    // Dodaj event listenery do opcji po reorganizacji
+    dropdown.querySelectorAll('.select-option').forEach(option => {
+        option.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const value = option.getAttribute('data-value');
+            const text = option.textContent.trim();
+            
+            // Usuń poprzednie zaznaczenie
+            dropdown.querySelectorAll('.select-option').forEach(opt => {
+                opt.classList.remove('selected');
+            });
+            
+            // Zaznacz wybraną opcję
+            option.classList.add('selected');
+            
+            // Ustaw wartość
+            valueSpan.textContent = text;
+            valueSpan.classList.remove('placeholder');
+            hiddenInput.value = value;
+            
+            dropdown.classList.add('hidden');
+        });
+    });
+
+    // Zamknij przy kliknięciu poza
+    document.addEventListener('click', () => {
+        dropdown.classList.add('hidden');
+    });
+}
+
+function organizeByCountry(dropdown, options) {
+    const countries = {};
+    
+    // Grupuj opcje według kraju
+    options.forEach(option => {
+        const country = option.getAttribute('data-country');
+        if (!countries[country]) {
+            countries[country] = [];
+        }
+        countries[country].push(option.cloneNode(true));
+    });
+    
+    // Wyczyść dropdown
+    dropdown.innerHTML = '';
+    
+    // Dodaj zgrupowane opcje
+    Object.keys(countries).forEach(country => {
+        // Dodaj label kraju tylko jeśli jest więcej niż jeden kraj
+        if (Object.keys(countries).length > 1) {
+            const countryLabel = document.createElement('div');
+            countryLabel.className = 'select-country-label';
+            countryLabel.textContent = country;
+            dropdown.appendChild(countryLabel);
+        }
+        
+        countries[country].forEach(option => {
+            dropdown.appendChild(option);
+        });
+    });
+}
+
 // ========== MENU KONTA ==========
 function initAccountMenu() {
     const accountBtn = document.getElementById('accountBtn');
     const accountDropdown = document.getElementById('accountDropdown');
+    const loginModal = document.getElementById('loginModal');
+    const loginModalClose = document.getElementById('loginModalClose');
+    const loginModalTitle = document.getElementById('loginModalTitle');
+    const switchToRegister = document.getElementById('switchToRegister');
+    const loginForm = document.getElementById('loginForm');
 
     if (!accountBtn) return;
 
     accountBtn.addEventListener('click', (e) => {
         e.stopPropagation();
         accountDropdown.classList.toggle('hidden');
-        // Zamknij inne dropdowny
         document.getElementById('langDropdown').classList.add('hidden');
     });
 
@@ -26,17 +123,58 @@ function initAccountMenu() {
         accountDropdown.classList.add('hidden');
     });
 
+    // Otwórz modal logowania/rejestracji
     const accountOptions = document.querySelectorAll('.account-option');
     accountOptions.forEach(option => {
         option.addEventListener('click', (e) => {
             e.preventDefault();
             const text = option.textContent;
+            
             if (text === 'Zaloguj się') {
-                alert('Funkcja logowania będzie dostępna wkrótce!');
+                loginModalTitle.textContent = 'Zaloguj się';
+                switchToRegister.textContent = 'Nie masz konta? Zarejestruj się';
+                loginForm.querySelector('button[type="submit"]').textContent = 'Zaloguj się';
             } else if (text === 'Zarejestruj się') {
-                alert('Funkcja rejestracji będzie dostępna wkrótce!');
+                loginModalTitle.textContent = 'Zarejestruj się';
+                switchToRegister.textContent = 'Masz już konto? Zaloguj się';
+                loginForm.querySelector('button[type="submit"]').textContent = 'Zarejestruj się';
             }
+            
+            loginModal.classList.remove('hidden');
+            accountDropdown.classList.add('hidden');
         });
+    });
+
+    // Zamknij modal
+    loginModalClose.addEventListener('click', () => {
+        loginModal.classList.add('hidden');
+    });
+
+    loginModal.addEventListener('click', (e) => {
+        if (e.target === loginModal) {
+            loginModal.classList.add('hidden');
+        }
+    });
+
+    // Przełączanie między logowaniem a rejestracją
+    switchToRegister.addEventListener('click', (e) => {
+        e.preventDefault();
+        if (loginModalTitle.textContent === 'Zaloguj się') {
+            loginModalTitle.textContent = 'Zarejestruj się';
+            switchToRegister.textContent = 'Masz już konto? Zaloguj się';
+            loginForm.querySelector('button[type="submit"]').textContent = 'Zarejestruj się';
+        } else {
+            loginModalTitle.textContent = 'Zaloguj się';
+            switchToRegister.textContent = 'Nie masz konta? Zarejestruj się';
+            loginForm.querySelector('button[type="submit"]').textContent = 'Zaloguj się';
+        }
+    });
+
+    // Obsługa formularza
+    loginForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        alert('Funkcja będzie dostępna wkrótce!');
+        loginModal.classList.add('hidden');
     });
 }
 
