@@ -15,12 +15,29 @@ const flightDatabase = {
                 }
             }
         ]
+    },
+    'CPK-NCE': {
+        available: true,
+        flights: [
+            {
+                number: 'VA201',
+                departure: '06:05',
+                arrival: '08:45',
+                duration: '2h 40min',
+                aircraft: 'Airbus A321neo',
+                prices: {
+                    economy: 250,
+                    business: 1000
+                }
+            }
+        ]
     }
 };
 
 const cityNames = {
     'CPK': 'CPK',
-    'GDN': 'Gdańsk'
+    'GDN': 'Gdańsk',
+    'NCE': 'Nicea'
 };
 
 const classNames = {
