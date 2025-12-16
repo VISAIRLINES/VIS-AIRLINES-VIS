@@ -45,6 +45,11 @@
     </header>
 
     <main class="container">
+        <!-- TESTOWY PRZYCISK - USUŃ PO NAPRAWIE -->
+        <button onclick="document.getElementById('airportModal').style.display='flex'; document.getElementById('airportModal').classList.remove('hidden');" style="padding: 10px 20px; background: red; color: white; border: none; margin-bottom: 20px; cursor: pointer;">
+            TEST: Otwórz modal lotnisk
+        </button>
+        
         <section class="search-section">
             <h2>Zarezerwuj swój lot</h2>
             
@@ -247,6 +252,17 @@
             <p style="text-align: center; margin-top: 15px; color: #888; font-size: 0.9rem;">
                 <a href="#" id="switchToRegister" style="color: #2c3e50; text-decoration: none; font-weight: 600;">Nie masz konta? Zarejestruj się</a>
             </p>
+        </div>
+    </div>
+
+    <!-- Modal wyboru lotniska -->
+    <div id="airportModal" class="modal hidden">
+        <div class="modal-content" style="max-width: 500px;">
+            <button class="modal-close" id="airportModalClose">&times;</button>
+            <h2 id="airportModalTitle">Wybierz lotnisko</h2>
+            <div id="airportList" style="margin-top: 20px; max-height: 400px; overflow-y: auto;">
+                <!-- Będzie wypełnione dynamicznie -->
+            </div>
         </div>
     </div>
 
