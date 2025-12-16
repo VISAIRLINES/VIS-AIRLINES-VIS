@@ -85,16 +85,18 @@ function organizeByCountry(dropdown, options) {
     // Wyczyść dropdown
     dropdown.innerHTML = '';
     
+    // Sortuj kraje alfabetycznie
+    const sortedCountries = Object.keys(countries).sort();
+    
     // Dodaj zgrupowane opcje
-    Object.keys(countries).forEach(country => {
-        // Dodaj label kraju tylko jeśli jest więcej niż jeden kraj
-        if (Object.keys(countries).length > 1) {
-            const countryLabel = document.createElement('div');
-            countryLabel.className = 'select-country-label';
-            countryLabel.textContent = country;
-            dropdown.appendChild(countryLabel);
-        }
+    sortedCountries.forEach(country => {
+        // Zawsze dodaj nagłówek kraju
+        const countryLabel = document.createElement('div');
+        countryLabel.className = 'select-country-label';
+        countryLabel.textContent = country;
+        dropdown.appendChild(countryLabel);
         
+        // Dodaj lotniska z tego kraju
         countries[country].forEach(option => {
             dropdown.appendChild(option);
         });
@@ -104,7 +106,6 @@ function organizeByCountry(dropdown, options) {
 // ========== MENU KONTA ==========
 function initAccountMenu() {
     const accountBtn = document.getElementById('accountBtn');
-    const accountDropdown = document.getElementById('accountDropdown');
     const loginModal = document.getElementById('loginModal');
     const loginModalClose = document.getElementById('loginModalClose');
     const loginModalTitle = document.getElementById('loginModalTitle');
@@ -113,36 +114,13 @@ function initAccountMenu() {
 
     if (!accountBtn) return;
 
+    // Kliknięcie w ikonę konta otwiera od razu modal
     accountBtn.addEventListener('click', (e) => {
         e.stopPropagation();
-        accountDropdown.classList.toggle('hidden');
-        document.getElementById('langDropdown').classList.add('hidden');
-    });
-
-    document.addEventListener('click', () => {
-        accountDropdown.classList.add('hidden');
-    });
-
-    // Otwórz modal logowania/rejestracji
-    const accountOptions = document.querySelectorAll('.account-option');
-    accountOptions.forEach(option => {
-        option.addEventListener('click', (e) => {
-            e.preventDefault();
-            const text = option.textContent;
-            
-            if (text === 'Zaloguj się') {
-                loginModalTitle.textContent = 'Zaloguj się';
-                switchToRegister.textContent = 'Nie masz konta? Zarejestruj się';
-                loginForm.querySelector('button[type="submit"]').textContent = 'Zaloguj się';
-            } else if (text === 'Zarejestruj się') {
-                loginModalTitle.textContent = 'Zarejestruj się';
-                switchToRegister.textContent = 'Masz już konto? Zaloguj się';
-                loginForm.querySelector('button[type="submit"]').textContent = 'Zarejestruj się';
-            }
-            
-            loginModal.classList.remove('hidden');
-            accountDropdown.classList.add('hidden');
-        });
+        loginModalTitle.textContent = 'Zaloguj się';
+        switchToRegister.textContent = 'Nie masz konta? Zarejestruj się';
+        loginForm.querySelector('button[type="submit"]').textContent = 'Zaloguj się';
+        loginModal.classList.remove('hidden');
     });
 
     // Zamknij modal
