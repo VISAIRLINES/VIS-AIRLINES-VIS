@@ -298,7 +298,78 @@ main {
     border-color: #2c3e50;
 }
 
-/* Custom Calendar */
+/* Custom Select Dropdown */
+.custom-select {
+    position: relative;
+    width: 100%;
+}
+
+.select-header {
+    padding: 12px 14px;
+    border: 1px solid #d0d0d0;
+    border-radius: 4px;
+    background: white;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: all 0.2s;
+}
+
+.select-header:hover {
+    border-color: #2c3e50;
+}
+
+.select-value {
+    color: #333;
+}
+
+.select-value.placeholder {
+    color: #999;
+}
+
+/* Airport Modal List */
+.airport-country-group {
+    margin-bottom: 25px;
+}
+
+.airport-country-label {
+    padding: 12px 0;
+    font-weight: 700;
+    color: #2c3e50;
+    font-size: 1rem;
+    text-transform: uppercase;
+    border-bottom: 2px solid #2c3e50;
+    margin-bottom: 12px;
+    letter-spacing: 0.5px;
+}
+
+.airport-option {
+    padding: 14px 18px;
+    cursor: pointer;
+    transition: all 0.2s;
+    color: #333;
+    border-radius: 6px;
+    margin: 6px 0;
+    font-size: 1rem;
+    border: 2px solid transparent;
+    background: #f8f9fa;
+}
+
+.airport-option:hover {
+    background: #2c3e50;
+    color: white;
+    border-color: #2c3e50;
+    transform: translateX(5px);
+}
+
+.airport-option.selected {
+    background: #2c3e50;
+    color: white;
+    border-color: #2c3e50;
+}
+
+/* Custom Date Input */
 .date-input-wrapper {
     position: relative;
 }
@@ -860,6 +931,12 @@ main {
     align-items: center;
     justify-content: center;
     z-index: 2000;
+    animation: fadeIn 0.2s;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
 }
 
 .modal.hidden {
@@ -872,9 +949,15 @@ main {
     padding: 30px;
     max-width: 500px;
     width: 90%;
-    position: relative;
     max-height: 80vh;
     overflow-y: auto;
+    position: relative;
+    animation: slideUp 0.3s;
+}
+
+@keyframes slideUp {
+    from { transform: translateY(50px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
 }
 
 .modal-close {
@@ -887,6 +970,11 @@ main {
     cursor: pointer;
     color: #999;
     line-height: 1;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .modal-close:hover {
