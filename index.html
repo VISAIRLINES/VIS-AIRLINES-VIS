@@ -240,6 +240,28 @@
         </div>
     </footer>
 
+    <!-- Modal logowania -->
+    <div id="loginModal" class="modal hidden">
+        <div class="modal-content" style="max-width: 400px;">
+            <button class="modal-close" id="loginModalClose">&times;</button>
+            <h2 id="loginModalTitle">Zaloguj się</h2>
+            <form id="loginForm" style="margin-top: 20px;">
+                <div style="margin-bottom: 15px;">
+                    <label style="display: block; margin-bottom: 5px; font-weight: 600; color: #555;">Email</label>
+                    <input type="email" placeholder="Wprowadź email" style="width: 100%; padding: 10px; border: 1px solid #d0d0d0; border-radius: 4px;">
+                </div>
+                <div style="margin-bottom: 20px;">
+                    <label style="display: block; margin-bottom: 5px; font-weight: 600; color: #555;">Hasło</label>
+                    <input type="password" placeholder="Wprowadź hasło" style="width: 100%; padding: 10px; border: 1px solid #d0d0d0; border-radius: 4px;">
+                </div>
+                <button type="submit" class="btn-search" style="width: 100%;">Zaloguj się</button>
+            </form>
+            <p style="text-align: center; margin-top: 15px; color: #888; font-size: 0.9rem;">
+                <a href="#" id="switchToRegister" style="color: #2c3e50; text-decoration: none; font-weight: 600;">Nie masz konta? Zarejestruj się</a>
+            </p>
+        </div>
+    </div>
+
     <script src="script.js"></script>
 </body>
 </html>
