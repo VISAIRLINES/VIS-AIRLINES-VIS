@@ -25,19 +25,28 @@ function initCustomSelects() {
     const airportModal = document.getElementById('airportModal');
     const airportModalClose = document.getElementById('airportModalClose');
 
-    if (!fromSelect || !toSelect || !airportModal) return;
+    console.log('Init selects - fromSelect:', fromSelect, 'toSelect:', toSelect, 'modal:', airportModal);
+
+    if (!fromSelect || !toSelect || !airportModal) {
+        console.error('BŁĄD: Brak wymaganych elementów!');
+        return;
+    }
 
     initSingleSelect(fromSelect, 'from');
     initSingleSelect(toSelect, 'to');
 
     // Zamknij modal
     airportModalClose.addEventListener('click', () => {
+        console.log('Zamykanie modala');
         airportModal.classList.add('hidden');
+        airportModal.style.display = 'none';
     });
 
     airportModal.addEventListener('click', (e) => {
         if (e.target === airportModal) {
+            console.log('Kliknięto tło - zamykanie');
             airportModal.classList.add('hidden');
+            airportModal.style.display = 'none';
         }
     });
 }
@@ -46,31 +55,39 @@ function initSingleSelect(selectElement, inputId) {
     const header = selectElement.querySelector('.select-header');
     
     if (!header) {
-        console.error('Brak header dla', inputId);
+        console.error('BŁĄD: Brak header dla', inputId);
         return;
     }
+
+    console.log('Dodaję listener dla', inputId);
 
     header.addEventListener('click', (e) => {
         e.stopPropagation();
         e.preventDefault();
         
+        console.log('KLIKNIĘTO LOTNISKO:', inputId);
+        
         const airportModal = document.getElementById('airportModal');
         const airportModalTitle = document.getElementById('airportModalTitle');
         const airportList = document.getElementById('airportList');
         
-        console.log('Kliknięto lotnisko, modal:', airportModal);
-        
         if (!airportModal || !airportModalTitle || !airportList) {
-            console.error('Nie znaleziono elementów modala');
+            console.error('BŁĄD: Nie znaleziono elementów modala');
+            alert('Błąd: Nie można otworzyć okna wyboru lotniska');
             return;
         }
         
         currentSelectType = inputId;
         airportModalTitle.textContent = inputId === 'from' ? 'Wybierz lotnisko wylotu' : 'Wybierz lotnisko przylotu';
-        renderAirportList(airportList, inputId);
-        airportModal.classList.remove('hidden');
         
-        console.log('Modal otwarty, lotnisk:', airports.length);
+        console.log('Renderuję listę lotnisk, liczba:', airports.length);
+        renderAirportList(airportList, inputId);
+        
+        console.log('Otwieram modal - usuwam klasę hidden');
+        airportModal.classList.remove('hidden');
+        airportModal.style.display = 'flex'; // Wymuszenie wyświetlenia
+        
+        console.log('Modal po otwarciu - classList:', airportModal.classList, 'style.display:', airportModal.style.display);
     });
 }
 
@@ -115,15 +132,21 @@ function renderAirportList(container, inputId) {
 }
 
 function selectAirport(value, name, inputId) {
+    console.log('Wybrano lotnisko:', name, value, inputId);
+    
     const selectElement = document.getElementById(inputId === 'from' ? 'fromSelect' : 'toSelect');
     const valueSpan = selectElement.querySelector('.select-value');
     const hiddenInput = document.getElementById(inputId);
+    const airportModal = document.getElementById('airportModal');
     
     valueSpan.textContent = name;
     valueSpan.classList.remove('placeholder');
     hiddenInput.value = value;
     
-    document.getElementById('airportModal').classList.add('hidden');
+    airportModal.classList.add('hidden');
+    airportModal.style.display = 'none';
+    
+    console.log('Ustawiono wartość:', name, 'dla', inputId);
 }
 
 // ========== MENU KONTA ==========
