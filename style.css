@@ -75,6 +75,7 @@ body {
 
 .language-selector {
     position: relative;
+    margin-right: 15px;
 }
 
 .lang-btn {
@@ -114,68 +115,10 @@ body {
     box-shadow: 0 4px 12px rgba(0,0,0,0.1);
     min-width: 140px;
     overflow: hidden;
+    z-index: 1001;
 }
 
-.lang-dropdown/* Additional Services */
-.additional-services {
-    margin-top: 40px;
-    background: white;
-    border-radius: 8px;
-    padding: 35px 40px;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-}
-
-.additional-services h3 {
-    color: #2c3e50;
-    font-size: 1.4rem;
-    font-weight: 600;
-    margin-bottom: 25px;
-}
-
-.services-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-    gap: 20px;
-}
-
-.service-card {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-    padding: 25px 15px;
-    background: #fafafa;
-    border: 1px solid #e0e0e0;
-    border-radius: 8px;
-    text-decoration: none;
-    color: #333;
-    transition: all 0.2s;
-}
-
-.service-card:hover {
-    background: white;
-    border-color: #2c3e50;
-    transform: translateY(-3px);
-    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-}
-
-.service-icon {
-    font-size: 2.5rem;
-    margin-bottom: 12px;
-}
-
-.service-name {
-    font-size: 0.9rem;
-    font-weight: 500;
-    color: #555;
-}
-
-.service-card:hover .service-name {
-    color: #2c3e50;
-    font-weight: 600;
-}
-
-.hidden {
+.lang-dropdown.hidden {
     display: none;
 }
 
@@ -190,6 +133,29 @@ body {
 
 .lang-option:hover {
     background: #f5f5f5;
+}
+
+/* Account Button */
+.account-btn {
+    width: 40px;
+    height: 40px;
+    background: #2c3e50;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s;
+    border: none;
+}
+
+.account-btn:hover {
+    background: #34495e;
+}
+
+.account-icon {
+    font-size: 1.3rem;
+    color: white;
 }
 
 /* Header */
@@ -326,47 +292,6 @@ main {
 
 .select-value.placeholder {
     color: #999;
-}
-
-/* Airport Modal List */
-.airport-country-group {
-    margin-bottom: 25px;
-}
-
-.airport-country-label {
-    padding: 12px 0;
-    font-weight: 700;
-    color: #2c3e50;
-    font-size: 1rem;
-    text-transform: uppercase;
-    border-bottom: 2px solid #2c3e50;
-    margin-bottom: 12px;
-    letter-spacing: 0.5px;
-}
-
-.airport-option {
-    padding: 14px 18px;
-    cursor: pointer;
-    transition: all 0.2s;
-    color: #333;
-    border-radius: 6px;
-    margin: 6px 0;
-    font-size: 1rem;
-    border: 2px solid transparent;
-    background: #f8f9fa;
-}
-
-.airport-option:hover {
-    background: #2c3e50;
-    color: white;
-    border-color: #2c3e50;
-    transform: translateX(5px);
-}
-
-.airport-option.selected {
-    background: #2c3e50;
-    color: white;
-    border-color: #2c3e50;
 }
 
 /* Custom Date Input */
@@ -661,6 +586,65 @@ main {
 
 .btn-done:hover {
     background: #34495e;
+}
+
+/* Additional Services */
+.additional-services {
+    margin-top: 40px;
+    background: white;
+    border-radius: 8px;
+    padding: 35px 40px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.additional-services h3 {
+    color: #2c3e50;
+    font-size: 1.4rem;
+    font-weight: 600;
+    margin-bottom: 25px;
+}
+
+.services-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 20px;
+}
+
+.service-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: 25px 15px;
+    background: #fafafa;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    text-decoration: none;
+    color: #333;
+    transition: all 0.2s;
+}
+
+.service-card:hover {
+    background: white;
+    border-color: #2c3e50;
+    transform: translateY(-3px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.service-icon {
+    font-size: 2.5rem;
+    margin-bottom: 12px;
+}
+
+.service-name {
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: #555;
+}
+
+.service-card:hover .service-name {
+    color: #2c3e50;
+    font-weight: 600;
 }
 
 /* Results Page */
@@ -1007,6 +991,47 @@ main {
     color: #333;
     font-size: 1.05rem;
     font-weight: 600;
+}
+
+/* Airport Modal List */
+.airport-country-group {
+    margin-bottom: 25px;
+}
+
+.airport-country-label {
+    padding: 12px 0;
+    font-weight: 700;
+    color: #2c3e50;
+    font-size: 1rem;
+    text-transform: uppercase;
+    border-bottom: 2px solid #2c3e50;
+    margin-bottom: 12px;
+    letter-spacing: 0.5px;
+}
+
+.airport-option {
+    padding: 14px 18px;
+    cursor: pointer;
+    transition: all 0.2s;
+    color: #333;
+    border-radius: 6px;
+    margin: 6px 0;
+    font-size: 1rem;
+    border: 2px solid transparent;
+    background: #f8f9fa;
+}
+
+.airport-option:hover {
+    background: #2c3e50;
+    color: white;
+    border-color: #2c3e50;
+    transform: translateX(5px);
+}
+
+.airport-option.selected {
+    background: #2c3e50;
+    color: white;
+    border-color: #2c3e50;
 }
 
 .hidden {
