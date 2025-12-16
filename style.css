@@ -593,6 +593,18 @@ main {
 }
 
 /* Results Page */
+.section-title {
+    color: #2c3e50;
+    font-size: 1.3rem;
+    font-weight: 600;
+    margin-bottom: 20px;
+    margin-top: 30px;
+}
+
+.section-title:first-child {
+    margin-top: 0;
+}
+
 .search-summary {
     background: white;
     padding: 20px;
@@ -624,6 +636,11 @@ main {
 
 .flight-card:hover {
     box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.flight-card.selected {
+    border: 2px solid #2c3e50;
+    box-shadow: 0 4px 16px rgba(44, 62, 80, 0.2);
 }
 
 .flight-header {
@@ -722,6 +739,70 @@ main {
 
 .btn-continue:hover {
     background: #34495e;
+}
+
+.btn-select {
+    padding: 10px 24px;
+    background: white;
+    color: #2c3e50;
+    border: 2px solid #2c3e50;
+    border-radius: 4px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.btn-select:hover {
+    background: #2c3e50;
+    color: white;
+}
+
+.btn-select.selected {
+    background: #2c3e50;
+    color: white;
+}
+
+.selected-summary {
+    background: #e8f5e9;
+    border: 2px solid #4caf50;
+    border-radius: 6px;
+    padding: 25px;
+    margin-top: 30px;
+}
+
+.selected-summary h3 {
+    color: #2c3e50;
+    margin-bottom: 20px;
+    font-size: 1.3rem;
+}
+
+.selected-flight-info {
+    background: white;
+    padding: 15px;
+    border-radius: 4px;
+    margin-bottom: 15px;
+}
+
+.selected-flight-info:last-of-type {
+    margin-bottom: 20px;
+}
+
+.selected-flight-info strong {
+    display: block;
+    color: #2c3e50;
+    margin-bottom: 8px;
+    font-size: 1.05rem;
+}
+
+.selected-flight-info p {
+    margin: 4px 0;
+    color: #555;
+    font-size: 0.9rem;
+}
+
+.btn-final-continue {
+    margin-top: 10px;
 }
 
 .unavailable-notice {
