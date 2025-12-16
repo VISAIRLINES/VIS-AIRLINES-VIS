@@ -157,26 +157,17 @@ function displayFlights(searchData) {
     const returnFlightsSection = document.getElementById('returnFlights');
     const route = `${searchData.from}-${searchData.to}`;
 
-    console.log('Szukam trasy:', route);
-    console.log('searchData:', searchData);
-
     const routeData = flightDatabase[route];
     const totalPassengers = Object.values(searchData.passengers).reduce((a, b) => a + b, 0);
 
-    console.log('RouteData:', routeData);
-
     if (routeData && routeData.available && routeData.flights.length > 0) {
-        console.log('Znaleziono bezpośrednie loty');
         routeData.flights.forEach(flight => {
             const flightCard = createFlightCard(flight, searchData, totalPassengers, 'outbound');
             resultsDiv.innerHTML += flightCard;
         });
         attachFlightButtonListeners();
     } else {
-        console.log('Szukam przesiadek...');
         const connectionFlights = findConnectionFlights(searchData.from, searchData.to);
-        
-        console.log('Znaleziono przesiadek:', connectionFlights.length);
         
         if (connectionFlights.length > 0) {
             resultsDiv.innerHTML += '<div style="background: #fff3cd; padding: 15px; border-radius: 6px; margin-bottom: 20px; border: 1px solid #ffc107;"><strong>Połączenia z przesiadką w CPK</strong><br>Wybierz lot do CPK, a następnie lot do miejsca docelowego.</div>';
@@ -187,7 +178,6 @@ function displayFlights(searchData) {
             });
             attachFlightButtonListeners();
         } else {
-            console.log('Brak lotów - pokazuję komunikat');
             noResultsDiv.classList.remove('hidden');
             return;
         }
