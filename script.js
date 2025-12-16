@@ -8,17 +8,6 @@ const airports = [
 let currentSelectType = null;
 
 document.addEventListener('DOMContentLoaded', () => {
-    console.log('=== START INICJALIZACJI ===');
-    
-    // Test czy modal istnieje
-    const testModal = document.getElementById('airportModal');
-    console.log('Modal lotnisk exists:', testModal ? 'TAK' : 'NIE');
-    
-    if (testModal) {
-        console.log('Modal classList:', testModal.classList);
-        console.log('Modal style.display:', testModal.style.display);
-    }
-    
     initCustomSelects();
     initCalendar();
     initReturnCalendar();
@@ -27,8 +16,6 @@ document.addEventListener('DOMContentLoaded', () => {
     initPassengerPanel();
     initTripType();
     initFormHandler();
-    
-    console.log('=== KONIEC INICJALIZACJI ===');
 });
 
 // ========== CUSTOM SELECT DROPDOWNS ==========
@@ -38,26 +25,18 @@ function initCustomSelects() {
     const airportModal = document.getElementById('airportModal');
     const airportModalClose = document.getElementById('airportModalClose');
 
-    console.log('Init selects - fromSelect:', fromSelect, 'toSelect:', toSelect, 'modal:', airportModal);
-
-    if (!fromSelect || !toSelect || !airportModal) {
-        console.error('BŁĄD: Brak wymaganych elementów!');
-        return;
-    }
+    if (!fromSelect || !toSelect || !airportModal) return;
 
     initSingleSelect(fromSelect, 'from');
     initSingleSelect(toSelect, 'to');
 
-    // Zamknij modal
     airportModalClose.addEventListener('click', () => {
-        console.log('Zamykanie modala');
         airportModal.classList.add('hidden');
         airportModal.style.display = 'none';
     });
 
     airportModal.addEventListener('click', (e) => {
         if (e.target === airportModal) {
-            console.log('Kliknięto tło - zamykanie');
             airportModal.classList.add('hidden');
             airportModal.style.display = 'none';
         }
@@ -67,44 +46,31 @@ function initCustomSelects() {
 function initSingleSelect(selectElement, inputId) {
     const header = selectElement.querySelector('.select-header');
     
-    if (!header) {
-        console.error('BŁĄD: Brak header dla', inputId);
-        return;
-    }
-
-    console.log('Dodaję listener dla', inputId);
+    if (!header) return;
 
     header.addEventListener('click', (e) => {
         e.stopPropagation();
         e.preventDefault();
         
-        console.log('KLIKNIĘTO LOTNISKO:', inputId);
-        
         const airportModal = document.getElementById('airportModal');
         const airportModalTitle = document.getElementById('airportModalTitle');
         const airportList = document.getElementById('airportList');
         
-        if (!airportModal || !airportModalTitle || !airportList) {
-            console.error('BŁĄD: Nie znaleziono elementów modala');
-            alert('Błąd: Nie można otworzyć okna wyboru lotniska');
-            return;
-        }
+        if (!airportModal || !airportModalTitle || !airportList) return;
         
         currentSelectType = inputId;
         airportModalTitle.textContent = inputId === 'from' ? 'Wybierz lotnisko wylotu' : 'Wybierz lotnisko przylotu';
         
-        console.log('Renderuję listę lotnisk, liczba:', airports.length);
         renderAirportList(airportList, inputId);
         
-        console.log('Otwieram modal - usuwam klasę hidden');
         airportModal.classList.remove('hidden');
-        airportModal.style.display = 'flex'; // Wymuszenie wyświetlenia
-        
-        console.log('Modal po otwarciu - classList:', airportModal.classList, 'style.display:', airportModal.style.display);
+        airportModal.style.display = 'flex';
     });
 }
 
 function renderAirportList(container, inputId) {
+    if (!container) return;
+    
     const countries = {};
     
     airports.forEach(airport => {
@@ -145,8 +111,6 @@ function renderAirportList(container, inputId) {
 }
 
 function selectAirport(value, name, inputId) {
-    console.log('Wybrano lotnisko:', name, value, inputId);
-    
     const selectElement = document.getElementById(inputId === 'from' ? 'fromSelect' : 'toSelect');
     const valueSpan = selectElement.querySelector('.select-value');
     const hiddenInput = document.getElementById(inputId);
@@ -158,8 +122,6 @@ function selectAirport(value, name, inputId) {
     
     airportModal.classList.add('hidden');
     airportModal.style.display = 'none';
-    
-    console.log('Ustawiono wartość:', name, 'dla', inputId);
 }
 
 // ========== MENU KONTA ==========
