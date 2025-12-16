@@ -2,10 +2,43 @@ document.addEventListener('DOMContentLoaded', () => {
     initCalendar();
     initReturnCalendar();
     initLanguageSelector();
+    initAccountMenu();
     initPassengerPanel();
     initTripType();
     initFormHandler();
 });
+
+// ========== MENU KONTA ==========
+function initAccountMenu() {
+    const accountBtn = document.getElementById('accountBtn');
+    const accountDropdown = document.getElementById('accountDropdown');
+
+    if (!accountBtn) return;
+
+    accountBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        accountDropdown.classList.toggle('hidden');
+        // Zamknij inne dropdowny
+        document.getElementById('langDropdown').classList.add('hidden');
+    });
+
+    document.addEventListener('click', () => {
+        accountDropdown.classList.add('hidden');
+    });
+
+    const accountOptions = document.querySelectorAll('.account-option');
+    accountOptions.forEach(option => {
+        option.addEventListener('click', (e) => {
+            e.preventDefault();
+            const text = option.textContent;
+            if (text === 'Zaloguj się') {
+                alert('Funkcja logowania będzie dostępna wkrótce!');
+            } else if (text === 'Zarejestruj się') {
+                alert('Funkcja rejestracji będzie dostępna wkrótce!');
+            }
+        });
+    });
+}
 
 // ========== WYBÓR RODZAJU PODRÓŻY ==========
 function initTripType() {
@@ -305,6 +338,11 @@ function initLanguageSelector() {
 
     document.addEventListener('click', () => {
         langDropdown.classList.add('hidden');
+        // Zamknij też menu konta
+        const accountDropdown = document.getElementById('accountDropdown');
+        if (accountDropdown && !accountDropdown.classList.contains('hidden')) {
+            accountDropdown.classList.add('hidden');
+        }
     });
 
     const langOptions = document.querySelectorAll('.lang-option');
