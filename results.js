@@ -1,612 +1,676 @@
-// Lista lotnisk
-const airports = [
-    { value: 'CPK', name: 'CPK', country: '// Lista lotnisk
-const airports = [
-    { value: 'CPK', name: 'CPK', country: 'Polska' },
-    { value: 'GDN', name: 'Gdańsk', country: 'Polska' },
-    { value: 'NCE', name: 'Nicea', country: 'Francja' },
-    { value: 'JFK', name: 'Nowy Jork', country: 'USA' }
-];
+// BAZA LOTÓW
+const flightDatabase = {
+    'GDN-CPK': {
+        available: true,
+        flights: [
+            {
+                number: 'VA101',
+                departure: '04:00',
+                arrival: '04:55',
+                duration: '55min',
+                aircraft: 'Airbus A220-100',
+                prices: {
+                    economy: 100,
+                    business: 400
+                },
+                connectionPrice: {
+                    economy: 50,
+                    business: 200
+                }
+            },
+            {
+                number: 'VA103',
+                departure: '23:45',
+                arrival: '00:40',
+                duration: '55min',
+                aircraft: 'Airbus A220-100',
+                prices: {
+                    economy: 100,
+                    business: 400
+                },
+                connectionPrice: {
+                    economy: 50,
+                    business: 200
+                }
+            }
+        ]
+    },
+    'CPK-GDN': {
+        available: true,
+        flights: [
+            {
+                number: 'VA102',
+                departure: '23:45',
+                arrival: '00:40',
+                duration: '55min',
+                aircraft: 'Airbus A220-100',
+                prices: {
+                    economy: 100,
+                    business: 400
+                }
+            }
+        ]
+    },
+    'CPK-NCE': {
+        available: true,
+        flights: [
+            {
+                number: 'VA201',
+                departure: '06:05',
+                arrival: '08:45',
+                duration: '2h 40min',
+                aircraft: 'Airbus A321neo',
+                prices: {
+                    economy: 250,
+                    business: 1000
+                }
+            }
+        ]
+    },
+    'NCE-CPK': {
+        available: true,
+        flights: [
+            {
+                number: 'VA202',
+                departure: '09:30',
+                arrival: '12:10',
+                duration: '2h 40min',
+                aircraft: 'Airbus A321neo',
+                prices: {
+                    economy: 250,
+                    business: 1000
+                },
+                connectionPrice: {
+                    economy: 200,
+                    business: 800
+                }
+            }
+        ]
+    },
+    'CPK-JFK': {
+        available: true,
+        flights: [
+            {
+                number: 'VA301',
+                departure: '16:00',
+                arrival: '01:20',
+                duration: '9h 20min',
+                aircraft: 'Boeing 777-8',
+                prices: null
+            }
+        ]
+    }
+};
 
-let currentSelectType = null;
+const cityNames = {
+    'CPK': 'CPK',
+    'GDN': 'Gdańsk',
+    'NCE': 'Nicea',
+    'JFK': 'Nowy Jork'
+};
+
+const classNames = {
+    economy: 'Ekonomiczna',
+    premium: 'Premium',
+    business: 'Biznes',
+    first: 'Pierwsza'
+};
+
+let searchData = null;
+let selectedOutboundFlight = null;
+let selectedReturnFlight = null;
 
 document.addEventListener('DOMContentLoaded', () => {
-    initCustomSelects();
-    initCalendar();
-    initReturnCalendar();
-    initLanguageSelector();
-    initAccountMenu();
-    initPassengerPanel();
-    initTripType();
-    initFormHandler();
+    searchData = JSON.parse(localStorage.getItem('searchData'));
+
+    if (!searchData) {
+        window.location.href = 'index.html';
+        return;
+    }
+
+    displaySearchSummary(searchData);
+    displayFlights(searchData);
+    initModal();
 });
 
-// ========== CUSTOM SELECT DROPDOWNS ==========
-function initCustomSelects() {
-    const fromSelect = document.getElementById('fromSelect');
-    const toSelect = document.getElementById('toSelect');
-    const airportModal = document.getElementById('airportModal');
-    const airportModalClose = document.getElementById('airportModalClose');
+function displaySearchSummary(data) {
+    const summaryDiv = document.getElementById('searchSummary');
+    const totalPassengers = Object.values(data.passengers).reduce((a, b) => a + b, 0);
+    
+    let tripTypeText = data.tripType === 'roundtrip' ? 'W obie strony' : 'W jedną stronę';
+    let returnDateText = data.returnDate ? `<p><strong>Data powrotu:</strong> ${formatDate(data.returnDate)}</p>` : '';
 
-    if (!fromSelect || !toSelect || !airportModal) return;
-
-    initSingleSelect(fromSelect, 'from');
-    initSingleSelect(toSelect, 'to');
-
-    airportModalClose.addEventListener('click', () => {
-        airportModal.classList.add('hidden');
-        airportModal.style.display = 'none';
-    });
-
-    airportModal.addEventListener('click', (e) => {
-        if (e.target === airportModal) {
-            airportModal.classList.add('hidden');
-            airportModal.style.display = 'none';
-        }
-    });
+    summaryDiv.innerHTML = `
+        <h3>Wyniki wyszukiwania</h3>
+        <p><strong>Trasa:</strong> ${cityNames[data.from]} → ${cityNames[data.to]}</p>
+        <p><strong>Rodzaj podróży:</strong> ${tripTypeText}</p>
+        <p><strong>Data wylotu:</strong> ${formatDate(data.date)}</p>
+        ${returnDateText}
+        <p><strong>Pasażerowie:</strong> ${totalPassengers} osób</p>
+        <p><strong>Klasa:</strong> ${classNames[data.class]}</p>
+    `;
 }
 
-function initSingleSelect(selectElement, inputId) {
-    const header = selectElement.querySelector('.select-header');
-    
-    if (!header) return;
+function displayFlights(searchData) {
+    const resultsDiv = document.getElementById('flightResults');
+    const noResultsDiv = document.getElementById('noResults');
+    const returnFlightsSection = document.getElementById('returnFlights');
+    const route = `${searchData.from}-${searchData.to}`;
 
-    header.addEventListener('click', (e) => {
-        e.stopPropagation();
-        e.preventDefault();
-        
-        const airportModal = document.getElementById('airportModal');
-        const airportModalTitle = document.getElementById('airportModalTitle');
-        const airportList = document.getElementById('airportList');
-        
-        if (!airportModal || !airportModalTitle || !airportList) return;
-        
-        currentSelectType = inputId;
-        airportModalTitle.textContent = inputId === 'from' ? 'Wybierz lotnisko wylotu' : 'Wybierz lotnisko przylotu';
-        
-        renderAirportList(airportList, inputId);
-        
-        airportModal.classList.remove('hidden');
-        airportModal.style.display = 'flex';
-    });
-}
+    console.log('Szukam trasy:', route);
+    console.log('searchData:', searchData);
 
-function renderAirportList(container, inputId) {
-    if (!container) return;
-    
-    const countries = {};
-    
-    airports.forEach(airport => {
-        if (!countries[airport.country]) {
-            countries[airport.country] = [];
-        }
-        countries[airport.country].push(airport);
-    });
-    
-    container.innerHTML = '';
-    
-    const sortedCountries = Object.keys(countries).sort();
-    
-    sortedCountries.forEach(country => {
-        const group = document.createElement('div');
-        group.className = 'airport-country-group';
+    const routeData = flightDatabase[route];
+    const totalPassengers = Object.values(searchData.passengers).reduce((a, b) => a + b, 0);
+
+    console.log('RouteData:', routeData);
+
+    if (routeData && routeData.available && routeData.flights.length > 0) {
+        console.log('Znaleziono bezpośrednie loty');
+        routeData.flights.forEach(flight => {
+            const flightCard = createFlightCard(flight, searchData, totalPassengers, 'outbound');
+            resultsDiv.innerHTML += flightCard;
+        });
+        attachFlightButtonListeners();
+    } else {
+        console.log('Szukam przesiadek...');
+        const connectionFlights = findConnectionFlights(searchData.from, searchData.to);
         
-        const label = document.createElement('div');
-        label.className = 'airport-country-label';
-        label.textContent = country;
-        group.appendChild(label);
+        console.log('Znaleziono przesiadek:', connectionFlights.length);
         
-        countries[country].forEach(airport => {
-            const option = document.createElement('div');
-            option.className = 'airport-option';
-            option.textContent = airport.name;
-            option.setAttribute('data-value', airport.value);
+        if (connectionFlights.length > 0) {
+            resultsDiv.innerHTML += '<div style="background: #fff3cd; padding: 15px; border-radius: 6px; margin-bottom: 20px; border: 1px solid #ffc107;"><strong>Połączenia z przesiadką w CPK</strong><br>Wybierz lot do CPK, a następnie lot do miejsca docelowego.</div>';
             
-            option.addEventListener('click', () => {
-                selectAirport(airport.value, airport.name, inputId);
+            connectionFlights.forEach(conn => {
+                const connCard = createConnectionCard(conn, searchData, totalPassengers);
+                resultsDiv.innerHTML += connCard;
+            });
+            attachFlightButtonListeners();
+        } else {
+            console.log('Brak lotów - pokazuję komunikat');
+            noResultsDiv.classList.remove('hidden');
+            return;
+        }
+    }
+
+    if (searchData.tripType === 'roundtrip' && searchData.returnDate) {
+        const returnRoute = `${searchData.to}-${searchData.from}`;
+        const returnRouteData = flightDatabase[returnRoute];
+
+        if (returnRouteData && returnRouteData.available && returnRouteData.flights.length > 0) {
+            const returnResultsDiv = document.getElementById('returnFlightResults');
+            
+            returnRouteData.flights.forEach(flight => {
+                const returnCard = createFlightCard(flight, {
+                    ...searchData,
+                    from: searchData.to,
+                    to: searchData.from,
+                    date: searchData.returnDate
+                }, totalPassengers, 'return');
+                returnResultsDiv.innerHTML += returnCard;
             });
             
-            group.appendChild(option);
-        });
-        
-        container.appendChild(group);
-    });
-}
-
-function selectAirport(value, name, inputId) {
-    const selectElement = document.getElementById(inputId === 'from' ? 'fromSelect' : 'toSelect');
-    const valueSpan = selectElement.querySelector('.select-value');
-    const hiddenInput = document.getElementById(inputId);
-    const airportModal = document.getElementById('airportModal');
-    
-    valueSpan.textContent = name;
-    valueSpan.classList.remove('placeholder');
-    hiddenInput.value = value;
-    
-    airportModal.classList.add('hidden');
-    airportModal.style.display = 'none';
-}
-
-// ========== MENU KONTA ==========
-function initAccountMenu() {
-    const accountBtn = document.getElementById('accountBtn');
-    const loginModal = document.getElementById('loginModal');
-    const loginModalClose = document.getElementById('loginModalClose');
-    const loginModalTitle = document.getElementById('loginModalTitle');
-    const switchToRegister = document.getElementById('switchToRegister');
-    const loginForm = document.getElementById('loginForm');
-
-    if (!accountBtn) return;
-
-    accountBtn.addEventListener('click', (e) => {
-        e.stopPropagation();
-        loginModalTitle.textContent = 'Zaloguj się';
-        switchToRegister.textContent = 'Nie masz konta? Zarejestruj się';
-        loginForm.querySelector('button[type="submit"]').textContent = 'Zaloguj się';
-        loginModal.classList.remove('hidden');
-    });
-
-    loginModalClose.addEventListener('click', () => {
-        loginModal.classList.add('hidden');
-    });
-
-    loginModal.addEventListener('click', (e) => {
-        if (e.target === loginModal) {
-            loginModal.classList.add('hidden');
-        }
-    });
-
-    switchToRegister.addEventListener('click', (e) => {
-        e.preventDefault();
-        if (loginModalTitle.textContent === 'Zaloguj się') {
-            loginModalTitle.textContent = 'Zarejestruj się';
-            switchToRegister.textContent = 'Masz już konto? Zaloguj się';
-            loginForm.querySelector('button[type="submit"]').textContent = 'Zarejestruj się';
+            attachFlightButtonListeners();
         } else {
-            loginModalTitle.textContent = 'Zaloguj się';
-            switchToRegister.textContent = 'Nie masz konta? Zarejestruj się';
-            loginForm.querySelector('button[type="submit"]').textContent = 'Zaloguj się';
+            const returnConnectionFlights = findConnectionFlights(searchData.to, searchData.from);
+            
+            if (returnConnectionFlights.length > 0) {
+                const returnResultsDiv = document.getElementById('returnFlightResults');
+                returnResultsDiv.innerHTML += '<div style="background: #fff3cd; padding: 15px; border-radius: 6px; margin-bottom: 20px; border: 1px solid #ffc107;"><strong>Połączenia powrotne z przesiadką w CPK</strong></div>';
+                
+                returnConnectionFlights.forEach(conn => {
+                    const connCard = createConnectionCard(conn, {
+                        ...searchData,
+                        from: searchData.to,
+                        to: searchData.from,
+                        date: searchData.returnDate
+                    }, totalPassengers, 'return');
+                    returnResultsDiv.innerHTML += connCard;
+                });
+                attachFlightButtonListeners();
+            } else {
+                returnFlightsSection.innerHTML = `
+                    <h3 class="section-title">Loty powrotne</h3>
+                    <div class="no-results" style="margin-top: 20px;">
+                        <h3>Brak dostępnych lotów powrotnych</h3>
+                        <p>Przepraszamy, nie znaleźliśmy lotów powrotnych na wybranej trasie.</p>
+                    </div>
+                `;
+            }
         }
-    });
-
-    loginForm.addEventListener('submit', (e) => {
-        e.preventDefault();
-        alert('Funkcja będzie dostępna wkrótce!');
-        loginModal.classList.add('hidden');
-    });
+    }
 }
 
-// ========== WYBÓR RODZAJU PODRÓŻY ==========
-function initTripType() {
-    const tripTypeInputs = document.querySelectorAll('input[name="tripType"]');
-    const returnDateGroup = document.getElementById('returnDateGroup');
-
-    tripTypeInputs.forEach(input => {
-        input.addEventListener('change', (e) => {
-            if (e.target.value === 'roundtrip') {
-                returnDateGroup.style.display = 'block';
-            } else {
-                returnDateGroup.style.display = 'none';
-            }
+function findConnectionFlights(from, to) {
+    const leg1Route = `${from}-CPK`;
+    const leg2Route = `CPK-${to}`;
+    
+    const leg1Data = flightDatabase[leg1Route];
+    const leg2Data = flightDatabase[leg2Route];
+    
+    if (!leg1Data || !leg2Data) return [];
+    
+    const connections = [];
+    
+    leg1Data.flights.forEach(flight1 => {
+        leg2Data.flights.forEach(flight2 => {
+            connections.push({
+                leg1: flight1,
+                leg2: flight2,
+                from: from,
+                to: to
+            });
         });
     });
+    
+    return connections;
 }
 
-// ========== KALENDARZ WYLOTU ==========
-let selectedDate = null;
-let currentMonth = new Date().getMonth();
-let currentYear = new Date().getFullYear();
-
-function initCalendar() {
-    const dateDisplay = document.getElementById('dateDisplay');
-    const calendarDropdown = document.getElementById('calendarDropdown');
-
-    dateDisplay.addEventListener('click', (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        calendarDropdown.classList.toggle('hidden');
-        
-        if (!calendarDropdown.classList.contains('hidden')) {
-            renderCalendar();
-        }
-    });
-
-    document.addEventListener('click', (e) => {
-        if (!e.target.closest('.form-group') || e.target.closest('#returnDateGroup')) {
-            calendarDropdown.classList.add('hidden');
-        }
-    });
-
-    const today = new Date();
-    selectDate(today.getFullYear(), today.getMonth(), today.getDate());
-}
-
-function renderCalendar() {
-    const calendarDropdown = document.getElementById('calendarDropdown');
-    const monthNames = ['Styczeń', 'Luty', 'Marzec', 'Kwiecień', 'Maj', 'Czerwiec', 
-                       'Lipiec', 'Sierpień', 'Wrzesień', 'Październik', 'Listopad', 'Grudzień'];
+function createConnectionCard(connection, searchData, totalPassengers, flightType = 'outbound') {
+    const selectedClass = searchData.class;
+    const leg1 = connection.leg1;
+    const leg2 = connection.leg2;
     
-    const firstDay = new Date(currentYear, currentMonth, 1);
-    const lastDay = new Date(currentYear, currentMonth + 1, 0);
+    const leg1Price = leg1.connectionPrice && leg1.connectionPrice[selectedClass] 
+        ? leg1.connectionPrice[selectedClass] 
+        : (leg1.prices ? leg1.prices[selectedClass] : null);
     
-    const firstDayIndex = firstDay.getDay() === 0 ? 6 : firstDay.getDay() - 1;
-    const lastDayDate = lastDay.getDate();
+    const leg2Price = leg2.prices ? leg2.prices[selectedClass] : null;
     
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-
-    let calendarHTML = `
-        <div class="calendar-header">
-            <h3>${monthNames[currentMonth]} ${currentYear}</h3>
-            <div class="calendar-nav">
-                <button type="button" class="cal-prev">&lt;</button>
-                <button type="button" class="cal-next">&gt;</button>
+    if (!leg1Price || !leg2Price) {
+        return `
+            <div class="flight-card">
+                <div class="flight-header">
+                    <div>
+                        <div class="flight-route">
+                            ${cityNames[connection.from]} → CPK → ${cityNames[connection.to]}
+                        </div>
+                        <div class="flight-number">Przesiadka w CPK</div>
+                    </div>
+                </div>
+                <div class="unavailable-notice">
+                    <strong>Niedostępne</strong>
+                    Klasa ${classNames[selectedClass]} nie jest dostępna na tym połączeniu.
+                </div>
+            </div>
+        `;
+    }
+    
+    const totalPrice = (leg1Price + leg2Price) * totalPassengers;
+    const connectionId = `${leg1.number}-${leg2.number}`;
+    
+    return `
+        <div class="flight-card connection-card" data-flight="${connectionId}" data-type="${flightType}">
+            <div class="flight-header">
+                <div>
+                    <div class="flight-route">
+                        ${cityNames[connection.from]} → CPK → ${cityNames[connection.to]}
+                    </div>
+                    <div class="flight-number">Loty ${leg1.number} + ${leg2.number} (Przesiadka w CPK)</div>
+                </div>
+            </div>
+            
+            <div style="background: #f8f9fa; padding: 15px; border-radius: 6px; margin-bottom: 15px;">
+                <strong style="color: #2c3e50; display: block; margin-bottom: 10px;">Odcinek 1: ${cityNames[connection.from]} → CPK</strong>
+                <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px;">
+                    <div>
+                        <span style="color: #888; font-size: 0.8rem;">Lot</span>
+                        <div style="font-weight: 600;">${leg1.number}</div>
+                    </div>
+                    <div>
+                        <span style="color: #888; font-size: 0.8rem;">Wylot → Przylot</span>
+                        <div style="font-weight: 600;">${leg1.departure} → ${leg1.arrival}</div>
+                    </div>
+                    <div>
+                        <span style="color: #888; font-size: 0.8rem;">Samolot</span>
+                        <div style="font-weight: 600;">${leg1.aircraft}</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div style="background: #f8f9fa; padding: 15px; border-radius: 6px; margin-bottom: 15px;">
+                <strong style="color: #2c3e50; display: block; margin-bottom: 10px;">Odcinek 2: CPK → ${cityNames[connection.to]}</strong>
+                <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px;">
+                    <div>
+                        <span style="color: #888; font-size: 0.8rem;">Lot</span>
+                        <div style="font-weight: 600;">${leg2.number}</div>
+                    </div>
+                    <div>
+                        <span style="color: #888; font-size: 0.8rem;">Wylot → Przylot</span>
+                        <div style="font-weight: 600;">${leg2.departure} → ${leg2.arrival}</div>
+                    </div>
+                    <div>
+                        <span style="color: #888; font-size: 0.8rem;">Samolot</span>
+                        <div style="font-weight: 600;">${leg2.aircraft}</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="flight-actions">
+                <div>
+                    <div style="font-size: 0.85rem; color: #888; margin-bottom: 4px;">
+                        Łączna cena dla ${totalPassengers} pasażera/ów
+                    </div>
+                    <div class="price">${totalPrice} zł</div>
+                    <div style="font-size: 0.8rem; color: #888; margin-top: 4px;">
+                        (${leg1Price} zł + ${leg2Price} zł) × ${totalPassengers}
+                    </div>
+                </div>
+                <div class="action-buttons">
+                    <button class="btn-select" data-flight="${connectionId}" data-type="${flightType}" data-price="${totalPrice}" data-leg1="${leg1.number}" data-leg2="${leg2.number}" data-connection="true">
+                        Wybierz
+                    </button>
+                </div>
             </div>
         </div>
-        <div class="calendar-weekdays">
-            <div class="calendar-weekday">Pn</div>
-            <div class="calendar-weekday">Wt</div>
-            <div class="calendar-weekday">Śr</div>
-            <div class="calendar-weekday">Cz</div>
-            <div class="calendar-weekday">Pt</div>
-            <div class="calendar-weekday">So</div>
-            <div class="calendar-weekday">Nd</div>
-        </div>
-        <div class="calendar-days">
     `;
+}
 
-    for (let i = firstDayIndex; i > 0; i--) {
-        calendarHTML += `<button type="button" class="calendar-day empty"></button>`;
+function createFlightCard(flight, searchData, totalPassengers, flightType) {
+    const selectedClass = searchData.class;
+    const hasPrices = flight.prices !== null && flight.prices !== undefined;
+    const price = hasPrices ? flight.prices[selectedClass] : null;
+    
+    let actionSection = '';
+    let noticeSection = '';
+
+    if (!hasPrices) {
+        noticeSection = `
+            <div class="sold-out-notice">
+                <strong>Wyprzedane</strong>
+                Wszystkie miejsca na tym locie zostały wyprzedane.
+            </div>
+        `;
+        actionSection = `
+            <div class="flight-actions">
+                <button class="btn-continue" style="opacity: 0.5; cursor: not-allowed; background: #dc3545;" disabled>
+                    Wyprzedane
+                </button>
+            </div>
+        `;
+    } else if (price) {
+        const totalPrice = price * totalPassengers;
+        actionSection = `
+            <div class="flight-actions">
+                <div>
+                    <div style="font-size: 0.85rem; color: #888; margin-bottom: 4px;">
+                        Łączna cena dla ${totalPassengers} pasażera/ów
+                    </div>
+                    <div class="price">${totalPrice} zł</div>
+                    <div style="font-size: 0.8rem; color: #888; margin-top: 4px;">
+                        ${price} zł za osobę
+                    </div>
+                </div>
+                <div class="action-buttons">
+                    <button class="btn-details" data-flight="${flight.number}" data-from="${searchData.from}" data-to="${searchData.to}">
+                        Szczegóły
+                    </button>
+                    <button class="btn-select" data-flight="${flight.number}" data-type="${flightType}" data-price="${totalPrice}">
+                        Wybierz
+                    </button>
+                </div>
+            </div>
+        `;
+    } else {
+        noticeSection = `
+            <div class="unavailable-notice">
+                <strong>Niedostępne</strong>
+                Klasa ${classNames[selectedClass]} nie jest dostępna na tym połączeniu.
+                Dostępne klasy: ${getAvailableClasses(flight)}
+            </div>
+        `;
+        actionSection = `
+            <div class="flight-actions">
+                <button class="btn-continue" style="opacity: 0.5; cursor: not-allowed;" disabled>
+                    Niedostępne
+                </button>
+            </div>
+        `;
     }
 
-    for (let day = 1; day <= lastDayDate; day++) {
-        const date = new Date(currentYear, currentMonth, day);
-        const isPast = date < today;
-        const isToday = date.getTime() === today.getTime();
-        const isSelected = selectedDate && date.getTime() === selectedDate.getTime();
-        
-        let classes = 'calendar-day';
-        if (isPast) classes += ' disabled';
-        if (isToday) classes += ' today';
-        if (isSelected) classes += ' selected';
+    return `
+        <div class="flight-card" data-flight="${flight.number}" data-type="${flightType}">
+            <div class="flight-header">
+                <div>
+                    <div class="flight-route">
+                        ${cityNames[searchData.from]} → ${cityNames[searchData.to]}
+                    </div>
+                    <div class="flight-number">Lot ${flight.number}</div>
+                </div>
+            </div>
+            
+            <div class="flight-details">
+                <div class="detail-item">
+                    <span class="detail-label">Wylot</span>
+                    <span class="detail-value">${flight.departure}</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">Przylot</span>
+                    <span class="detail-value">${flight.arrival}</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">Czas lotu</span>
+                    <span class="detail-value">${flight.duration}</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">Klasa</span>
+                    <span class="detail-value">${classNames[selectedClass]}</span>
+                </div>
+            </div>
 
-        calendarHTML += `<button type="button" class="${classes}" 
-            data-year="${currentYear}" data-month="${currentMonth}" data-day="${day}"
-            ${isPast ? 'disabled' : ''}>${day}</button>`;
-    }
+            ${noticeSection}
+            ${actionSection}
+        </div>
+    `;
+}
 
-    calendarHTML += '</div>';
-    calendarDropdown.innerHTML = calendarHTML;
-
-    const prevBtn = calendarDropdown.querySelector('.cal-prev');
-    const nextBtn = calendarDropdown.querySelector('.cal-next');
-    
-    prevBtn.addEventListener('click', (e) => {
-        e.stopPropagation();
-        changeMonth(-1);
+function attachFlightButtonListeners() {
+    document.querySelectorAll('.btn-details').forEach(btn => {
+        btn.replaceWith(btn.cloneNode(true));
     });
     
-    nextBtn.addEventListener('click', (e) => {
-        e.stopPropagation();
-        changeMonth(1);
+    document.querySelectorAll('.btn-details').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const flightNumber = this.getAttribute('data-flight');
+            const fromCode = this.getAttribute('data-from');
+            const toCode = this.getAttribute('data-to');
+            showFlightDetails(flightNumber, fromCode, toCode);
+        });
     });
 
-    const dayBtns = calendarDropdown.querySelectorAll('.calendar-day:not(.disabled):not(.empty)');
-    dayBtns.forEach(btn => {
-        btn.addEventListener('click', (e) => {
-            e.stopPropagation();
-            const year = parseInt(btn.getAttribute('data-year'));
-            const month = parseInt(btn.getAttribute('data-month'));
-            const day = parseInt(btn.getAttribute('data-day'));
-            selectDate(year, month, day);
+    document.querySelectorAll('.btn-select').forEach(btn => {
+        btn.replaceWith(btn.cloneNode(true));
+    });
+    
+    document.querySelectorAll('.btn-select').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const flightNumber = this.getAttribute('data-flight');
+            const flightType = this.getAttribute('data-type');
+            const price = this.getAttribute('data-price');
+            selectFlight(flightNumber, flightType, price);
         });
     });
 }
 
-function changeMonth(direction) {
-    currentMonth += direction;
-    if (currentMonth < 0) {
-        currentMonth = 11;
-        currentYear--;
-    } else if (currentMonth > 11) {
-        currentMonth = 0;
-        currentYear++;
-    }
-    renderCalendar();
-}
-
-function selectDate(year, month, day) {
-    selectedDate = new Date(year, month, day);
-    const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+function selectFlight(flightNumber, flightType, price) {
+    const route = flightType === 'outbound' 
+        ? `${searchData.from}-${searchData.to}` 
+        : `${searchData.to}-${searchData.from}`;
     
-    document.getElementById('date').value = dateStr;
-    document.getElementById('dateDisplay').value = formatDateDisplay(selectedDate);
-    document.getElementById('calendarDropdown').classList.add('hidden');
+    const routeData = flightDatabase[route];
+    if (!routeData) return;
+    
+    const flight = routeData.flights.find(f => f.number === flightNumber);
+    if (!flight) return;
+
+    document.querySelectorAll(`.flight-card[data-type="${flightType}"]`).forEach(card => {
+        card.classList.remove('selected');
+    });
+    document.querySelectorAll(`.btn-select[data-type="${flightType}"]`).forEach(btn => {
+        btn.classList.remove('selected');
+        btn.textContent = 'Wybierz';
+    });
+
+    const card = document.querySelector(`.flight-card[data-flight="${flightNumber}"][data-type="${flightType}"]`);
+    const btn = document.querySelector(`.btn-select[data-flight="${flightNumber}"][data-type="${flightType}"]`);
+    
+    if (card) card.classList.add('selected');
+    if (btn) {
+        btn.classList.add('selected');
+        btn.textContent = 'Wybrany';
+    }
+
+    if (flightType === 'outbound') {
+        selectedOutboundFlight = { flight, price };
+    } else {
+        selectedReturnFlight = { flight, price };
+    }
+
+    updateSelectedSummary();
+
+    if (searchData.tripType === 'roundtrip' && flightType === 'outbound') {
+        const returnFlightsSection = document.getElementById('returnFlights');
+        returnFlightsSection.classList.remove('hidden');
+        
+        setTimeout(() => {
+            returnFlightsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }, 100);
+    }
 }
 
-function formatDateDisplay(date) {
-    const options = { day: 'numeric', month: 'long', year: 'numeric' };
+function updateSelectedSummary() {
+    const summaryDiv = document.getElementById('selectedFlightsSummary');
+    const outboundDiv = document.getElementById('selectedOutbound');
+    const returnDiv = document.getElementById('selectedReturn');
+    const finalBtn = document.getElementById('finalContinueBtn');
+
+    if (!selectedOutboundFlight && !selectedReturnFlight) {
+        summaryDiv.classList.add('hidden');
+        return;
+    }
+
+    summaryDiv.classList.remove('hidden');
+
+    if (selectedOutboundFlight) {
+        const f = selectedOutboundFlight.flight;
+        outboundDiv.innerHTML = `
+            <div class="selected-flight-info">
+                <strong>Lot wylotowy: ${f.number}</strong>
+                <p>${cityNames[searchData.from]} → ${cityNames[searchData.to]}</p>
+                <p>Wylot: ${f.departure} | Przylot: ${f.arrival}</p>
+                <p>Cena: ${selectedOutboundFlight.price} zł</p>
+            </div>
+        `;
+    }
+
+    if (searchData.tripType === 'roundtrip') {
+        if (selectedReturnFlight) {
+            const f = selectedReturnFlight.flight;
+            returnDiv.innerHTML = `
+                <div class="selected-flight-info">
+                    <strong>Lot powrotny: ${f.number}</strong>
+                    <p>${cityNames[searchData.to]} → ${cityNames[searchData.from]}</p>
+                    <p>Wylot: ${f.departure} | Przylot: ${f.arrival}</p>
+                    <p>Cena: ${selectedReturnFlight.price} zł</p>
+                </div>
+            `;
+            finalBtn.classList.remove('hidden');
+        } else {
+            returnDiv.innerHTML = '<p style="color: #888;">Wybierz lot powrotny</p>';
+            finalBtn.classList.add('hidden');
+        }
+    } else {
+        returnDiv.innerHTML = '';
+        finalBtn.classList.remove('hidden');
+    }
+
+    finalBtn.onclick = () => {
+        const total = selectedOutboundFlight.price + (selectedReturnFlight ? selectedReturnFlight.price : 0);
+        alert(`Przejście do płatności\n\nŁączna kwota: ${total} zł\n\nW pełnej wersji nastąpi przekierowanie do systemu rezerwacji.`);
+    };
+}
+
+function getAvailableClasses(flight) {
+    if (!flight.prices) return 'Brak dostępnych klas';
+    
+    const available = [];
+    if (flight.prices.economy) available.push('Ekonomiczna');
+    if (flight.prices.premium) available.push('Premium');
+    if (flight.prices.business) available.push('Biznes');
+    if (flight.prices.first) available.push('Pierwsza');
+    return available.join(', ');
+}
+
+function formatDate(dateString) {
+    const options = { 
+        weekday: 'long', 
+        year: 'numeric', 
+        month: 'long', 
+        day: 'numeric' 
+    };
+    const date = new Date(dateString + 'T00:00:00');
     return date.toLocaleDateString('pl-PL', options);
 }
 
-// ========== KALENDARZ POWROTU ==========
-let selectedReturnDate = null;
-let returnCurrentMonth = new Date().getMonth();
-let returnCurrentYear = new Date().getFullYear();
+function initModal() {
+    const modal = document.getElementById('flightModal');
+    const modalClose = document.getElementById('modalClose');
 
-function initReturnCalendar() {
-    const returnDateDisplay = document.getElementById('returnDateDisplay');
-    const returnCalendarDropdown = document.getElementById('returnCalendarDropdown');
+    if (!modalClose) return;
 
-    if (!returnDateDisplay) return;
-
-    returnDateDisplay.addEventListener('click', (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        returnCalendarDropdown.classList.toggle('hidden');
-        
-        if (!returnCalendarDropdown.classList.contains('hidden')) {
-            renderReturnCalendar();
-        }
+    modalClose.addEventListener('click', () => {
+        modal.classList.add('hidden');
     });
 
-    document.addEventListener('click', (e) => {
-        if (!e.target.closest('#returnDateGroup')) {
-            returnCalendarDropdown.classList.add('hidden');
+    modal.addEventListener('click', (e) => {
+        if (e.target === modal) {
+            modal.classList.add('hidden');
         }
     });
 }
 
-function renderReturnCalendar() {
-    const returnCalendarDropdown = document.getElementById('returnCalendarDropdown');
-    const monthNames = ['Styczeń', 'Luty', 'Marzec', 'Kwiecień', 'Maj', 'Czerwiec', 
-                       'Lipiec', 'Sierpień', 'Wrzesień', 'Październik', 'Listopad', 'Grudzień'];
+function showFlightDetails(flightNumber, fromCode, toCode) {
+    const route = `${fromCode}-${toCode}`;
+    const routeData = flightDatabase[route];
     
-    const firstDay = new Date(returnCurrentYear, returnCurrentMonth, 1);
-    const lastDay = new Date(returnCurrentYear, returnCurrentMonth + 1, 0);
+    if (!routeData) return;
     
-    const firstDayIndex = firstDay.getDay() === 0 ? 6 : firstDay.getDay() - 1;
-    const lastDayDate = lastDay.getDate();
-    
-    const minDate = selectedDate ? new Date(selectedDate.getTime() + 86400000) : new Date();
-    minDate.setHours(0, 0, 0, 0);
+    const flight = routeData.flights.find(f => f.number === flightNumber);
+    if (!flight) return;
 
-    let calendarHTML = `
-        <div class="calendar-header">
-            <h3>${monthNames[returnCurrentMonth]} ${returnCurrentYear}</h3>
-            <div class="calendar-nav">
-                <button type="button" class="ret-cal-prev">&lt;</button>
-                <button type="button" class="ret-cal-next">&gt;</button>
-            </div>
+    const modal = document.getElementById('flightModal');
+    const modalBody = document.getElementById('modalBody');
+
+    modalBody.innerHTML = `
+        <div class="modal-detail">
+            <div class="modal-label">Numer lotu</div>
+            <div class="modal-value">${flight.number}</div>
         </div>
-        <div class="calendar-weekdays">
-            <div class="calendar-weekday">Pn</div>
-            <div class="calendar-weekday">Wt</div>
-            <div class="calendar-weekday">Śr</div>
-            <div class="calendar-weekday">Cz</div>
-            <div class="calendar-weekday">Pt</div>
-            <div class="calendar-weekday">So</div>
-            <div class="calendar-weekday">Nd</div>
+        <div class="modal-detail">
+            <div class="modal-label">Trasa</div>
+            <div class="modal-value">${cityNames[fromCode]} → ${cityNames[toCode]}</div>
         </div>
-        <div class="calendar-days">
+        <div class="modal-detail">
+            <div class="modal-label">Godzina wylotu</div>
+            <div class="modal-value">${flight.departure}</div>
+        </div>
+        <div class="modal-detail">
+            <div class="modal-label">Godzina przylotu</div>
+            <div class="modal-value">${flight.arrival}</div>
+        </div>
+        <div class="modal-detail">
+            <div class="modal-label">Czas lotu</div>
+            <div class="modal-value">${flight.duration}</div>
+        </div>
+        <div class="modal-detail">
+            <div class="modal-label">Model samolotu</div>
+            <div class="modal-value">${flight.aircraft}</div>
+        </div>
+        <div class="modal-detail">
+            <div class="modal-label">Dostępne klasy</div>
+            <div class="modal-value">${getAvailableClasses(flight)}</div>
+        </div>
     `;
 
-    for (let i = firstDayIndex; i > 0; i--) {
-        calendarHTML += `<button type="button" class="calendar-day empty"></button>`;
-    }
-
-    for (let day = 1; day <= lastDayDate; day++) {
-        const date = new Date(returnCurrentYear, returnCurrentMonth, day);
-        const isPast = date < minDate;
-        const isSelected = selectedReturnDate && date.getTime() === selectedReturnDate.getTime();
-        
-        let classes = 'calendar-day';
-        if (isPast) classes += ' disabled';
-        if (isSelected) classes += ' selected';
-
-        calendarHTML += `<button type="button" class="${classes}" 
-            data-year="${returnCurrentYear}" data-month="${returnCurrentMonth}" data-day="${day}"
-            ${isPast ? 'disabled' : ''}>${day}</button>`;
-    }
-
-    calendarHTML += '</div>';
-    returnCalendarDropdown.innerHTML = calendarHTML;
-
-    const prevBtn = returnCalendarDropdown.querySelector('.ret-cal-prev');
-    const nextBtn = returnCalendarDropdown.querySelector('.ret-cal-next');
-    
-    prevBtn.addEventListener('click', (e) => {
-        e.stopPropagation();
-        changeReturnMonth(-1);
-    });
-    
-    nextBtn.addEventListener('click', (e) => {
-        e.stopPropagation();
-        changeReturnMonth(1);
-    });
-
-    const dayBtns = returnCalendarDropdown.querySelectorAll('.calendar-day:not(.disabled):not(.empty)');
-    dayBtns.forEach(btn => {
-        btn.addEventListener('click', (e) => {
-            e.stopPropagation();
-            const year = parseInt(btn.getAttribute('data-year'));
-            const month = parseInt(btn.getAttribute('data-month'));
-            const day = parseInt(btn.getAttribute('data-day'));
-            selectReturnDate(year, month, day);
-        });
-    });
-}
-
-function changeReturnMonth(direction) {
-    returnCurrentMonth += direction;
-    if (returnCurrentMonth < 0) {
-        returnCurrentMonth = 11;
-        returnCurrentYear--;
-    } else if (returnCurrentMonth > 11) {
-        returnCurrentMonth = 0;
-        returnCurrentYear++;
-    }
-    renderReturnCalendar();
-}
-
-function selectReturnDate(year, month, day) {
-    selectedReturnDate = new Date(year, month, day);
-    const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-    
-    document.getElementById('returnDate').value = dateStr;
-    document.getElementById('returnDateDisplay').value = formatDateDisplay(selectedReturnDate);
-    document.getElementById('returnCalendarDropdown').classList.add('hidden');
-}
-
-// ========== SELEKTOR JĘZYKA ==========
-function initLanguageSelector() {
-    const langBtn = document.getElementById('langBtn');
-    const langDropdown = document.getElementById('langDropdown');
-
-    if (!langBtn) return;
-
-    langBtn.addEventListener('click', (e) => {
-        e.stopPropagation();
-        langDropdown.classList.toggle('hidden');
-    });
-
-    document.addEventListener('click', () => {
-        langDropdown.classList.add('hidden');
-    });
-
-    const langOptions = document.querySelectorAll('.lang-option');
-    langOptions.forEach(option => {
-        option.addEventListener('click', (e) => {
-            e.preventDefault();
-            alert('Funkcja tłumaczenia będzie dostępna wkrótce!');
-        });
-    });
-}
-
-// ========== PANEL PASAŻERÓW ==========
-let passengers = {
-    adult: 1,
-    teen: 0,
-    child: 0,
-    disabled: 0
-};
-
-function initPassengerPanel() {
-    const passengerBtn = document.getElementById('passengerBtn');
-    const passengerPanel = document.getElementById('passengerPanel');
-    const doneBtn = document.getElementById('doneBtn');
-
-    passengerBtn.addEventListener('click', () => {
-        passengerPanel.classList.toggle('hidden');
-    });
-
-    doneBtn.addEventListener('click', () => {
-        passengerPanel.classList.add('hidden');
-        updatePassengerSummary();
-    });
-
-    const counters = document.querySelectorAll('.btn-counter');
-    counters.forEach(btn => {
-        btn.addEventListener('click', () => {
-            const type = btn.getAttribute('data-type');
-            const action = btn.getAttribute('data-action');
-            updateCounter(type, action);
-        });
-    });
-
-    const classInputs = document.querySelectorAll('input[name="class"]');
-    classInputs.forEach(input => {
-        input.addEventListener('change', updatePassengerSummary);
-    });
-}
-
-function updateCounter(type, action) {
-    const countElement = document.getElementById(`${type}Count`);
-    let currentValue = passengers[type];
-
-    if (action === 'plus') {
-        if (getTotalPassengers() < 9) {
-            passengers[type]++;
-        }
-    } else if (action === 'minus') {
-        if (currentValue > 0) {
-            if (type === 'adult' && currentValue === 1) {
-                alert('Musi być przynajmniej 1 dorosły pasażer');
-                return;
-            }
-            passengers[type]--;
-        }
-    }
-
-    countElement.textContent = passengers[type];
-    updatePassengerSummary();
-}
-
-function getTotalPassengers() {
-    return passengers.adult + passengers.teen + passengers.child + passengers.disabled;
-}
-
-function updatePassengerSummary() {
-    const selectedClass = document.querySelector('input[name="class"]:checked').value;
-    const classNames = {
-        economy: 'Ekonomiczna',
-        premium: 'Premium',
-        business: 'Biznes',
-        first: 'Pierwsza'
-    };
-
-    const parts = [];
-    if (passengers.adult > 0) parts.push(`${passengers.adult} Dorosły(ch)`);
-    if (passengers.teen > 0) parts.push(`${passengers.teen} Nastolatek/Nastolatków`);
-    if (passengers.child > 0) parts.push(`${passengers.child} Dziecko/Dzieci`);
-    if (passengers.disabled > 0) parts.push(`${passengers.disabled} Osoba niepełnosprawna`);
-
-    const passengerText = parts.join(', ');
-    document.getElementById('passengerSummary').textContent = 
-        `${passengerText}, ${classNames[selectedClass]}`;
-}
-
-// ========== OBSŁUGA FORMULARZA ==========
-function initFormHandler() {
-    const searchForm = document.getElementById('searchForm');
-    searchForm.addEventListener('submit', handleSubmit);
-}
-
-function handleSubmit(e) {
-    e.preventDefault();
-
-    const from = document.getElementById('from').value;
-    const to = document.getElementById('to').value;
-    const date = document.getElementById('date').value;
-    const tripType = document.querySelector('input[name="tripType"]:checked').value;
-    const returnDate = tripType === 'roundtrip' ? document.getElementById('returnDate').value : null;
-    const travelClass = document.querySelector('input[name="class"]:checked').value;
-
-    if (!date) {
-        alert('Proszę wybrać datę wylotu');
-        return;
-    }
-
-    if (tripType === 'roundtrip' && !returnDate) {
-        alert('Proszę wybrać datę powrotu');
-        return;
-    }
-
-    if (from === to) {
-        alert('Miasto wylotu i przylotu muszą być różne!');
-        return;
-    }
-
-    const searchData = {
-        from,
-        to,
-        date,
-        tripType,
-        returnDate,
-        class: travelClass,
-        passengers: { ...passengers }
-    };
-
-    localStorage.setItem('searchData', JSON.stringify(searchData));
-    window.location.href = 'results.html';
+    modal.classList.remove('hidden');
 }
