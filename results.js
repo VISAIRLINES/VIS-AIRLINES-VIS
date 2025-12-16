@@ -86,13 +86,27 @@ const flightDatabase = {
                 }
             }
         ]
+    },
+    'CPK-JFK': {
+        available: true,
+        flights: [
+            {
+                number: 'VA301',
+                departure: '16:00',
+                arrival: '01:20',
+                duration: '9h 20min',
+                aircraft: 'Boeing 777-8',
+                prices: null  // Wyprzedane - uzupełnij ceny później
+            }
+        ]
     }
 };
 
 const cityNames = {
     'CPK': 'CPK',
     'GDN': 'Gdańsk',
-    'NCE': 'Nicea'
+    'NCE': 'Nicea',
+    'JFK': 'Nowy Jork'
 };
 
 const classNames = {
