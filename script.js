@@ -44,17 +44,33 @@ function initCustomSelects() {
 
 function initSingleSelect(selectElement, inputId) {
     const header = selectElement.querySelector('.select-header');
-    const airportModal = document.getElementById('airportModal');
-    const airportModalTitle = document.getElementById('airportModalTitle');
-    const airportList = document.getElementById('airportList');
+    
+    if (!header) {
+        console.error('Brak header dla', inputId);
+        return;
+    }
 
     header.addEventListener('click', (e) => {
         e.stopPropagation();
-        currentSelectType = inputId;
+        e.preventDefault();
         
+        const airportModal = document.getElementById('airportModal');
+        const airportModalTitle = document.getElementById('airportModalTitle');
+        const airportList = document.getElementById('airportList');
+        
+        console.log('Kliknięto lotnisko, modal:', airportModal);
+        
+        if (!airportModal || !airportModalTitle || !airportList) {
+            console.error('Nie znaleziono elementów modala');
+            return;
+        }
+        
+        currentSelectType = inputId;
         airportModalTitle.textContent = inputId === 'from' ? 'Wybierz lotnisko wylotu' : 'Wybierz lotnisko przylotu';
         renderAirportList(airportList, inputId);
         airportModal.classList.remove('hidden');
+        
+        console.log('Modal otwarty, lotnisk:', airports.length);
     });
 }
 
