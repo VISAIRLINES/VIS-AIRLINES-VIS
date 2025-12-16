@@ -10,97 +10,112 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // ========== CUSTOM SELECT DROPDOWNS ==========
+const airports = [
+    { value: 'CPK', name: 'CPK', country: 'Polska' },
+    { value: 'GDN', name: 'Gdańsk', country: 'Polska' },
+    { value: 'NCE', name: 'Nicea', country: 'Francja' }
+];
+
+let currentSelectType = null; // 'from' lub 'to'
+
 function initCustomSelects() {
     const fromSelect = document.getElementById('fromSelect');
     const toSelect = document.getElementById('toSelect');
+    const airportModal = document.getElementById('airportModal');
+    const airportModalClose = document.getElementById('airportModalClose');
 
     initSingleSelect(fromSelect, 'from');
     initSingleSelect(toSelect, 'to');
+
+    // Zamknij modal
+    airportModalClose.addEventListener('click', () => {
+        airportModal.classList.add('hidden');
+    });
+
+    airportModal.addEventListener('click', (e) => {
+        if (e.target === airportModal) {
+            airportModal.classList.add('hidden');
+        }
+    });
 }
 
 function initSingleSelect(selectElement, inputId) {
     const header = selectElement.querySelector('.select-header');
-    const dropdown = selectElement.querySelector('.select-dropdown');
-    const valueSpan = selectElement.querySelector('.select-value');
-    const hiddenInput = document.getElementById(inputId);
-    const options = selectElement.querySelectorAll('.select-option');
-
-    // Grupuj opcje według kraju
-    organizeByCountry(dropdown, options);
+    const airportModal = document.getElementById('airportModal');
+    const airportModalTitle = document.getElementById('airportModalTitle');
+    const airportList = document.getElementById('airportList');
 
     header.addEventListener('click', (e) => {
         e.stopPropagation();
+        currentSelectType = inputId;
         
-        // Zamknij wszystkie inne dropdowny
-        document.querySelectorAll('.select-dropdown').forEach(d => {
-            if (d !== dropdown) d.classList.add('hidden');
-        });
-        document.querySelectorAll('.calendar-dropdown').forEach(c => c.classList.add('hidden'));
+        // Ustaw tytuł modala
+        airportModalTitle.textContent = inputId === 'from' ? 'Wybierz lotnisko wylotu' : 'Wybierz lotnisko przylotu';
         
-        dropdown.classList.toggle('hidden');
-    });
-
-    // Dodaj event listenery do opcji po reorganizacji
-    dropdown.querySelectorAll('.select-option').forEach(option => {
-        option.addEventListener('click', (e) => {
-            e.stopPropagation();
-            const value = option.getAttribute('data-value');
-            const text = option.textContent.trim();
-            
-            // Usuń poprzednie zaznaczenie
-            dropdown.querySelectorAll('.select-option').forEach(opt => {
-                opt.classList.remove('selected');
-            });
-            
-            // Zaznacz wybraną opcję
-            option.classList.add('selected');
-            
-            // Ustaw wartość
-            valueSpan.textContent = text;
-            valueSpan.classList.remove('placeholder');
-            hiddenInput.value = value;
-            
-            dropdown.classList.add('hidden');
-        });
-    });
-
-    // Zamknij przy kliknięciu poza
-    document.addEventListener('click', () => {
-        dropdown.classList.add('hidden');
+        // Wypełnij listę lotnisk
+        renderAirportList(airportList, inputId);
+        
+        // Otwórz modal
+        airportModal.classList.remove('hidden');
     });
 }
 
-function organizeByCountry(dropdown, options) {
+function renderAirportList(container, inputId) {
     const countries = {};
     
-    // Grupuj opcje według kraju
-    options.forEach(option => {
-        const country = option.getAttribute('data-country');
-        if (!countries[country]) {
-            countries[country] = [];
+    // Grupuj lotniska według kraju
+    airports.forEach(airport => {
+        if (!countries[airport.country]) {
+            countries[airport.country] = [];
         }
-        countries[country].push(option.cloneNode(true));
+        countries[airport.country].push(airport);
     });
     
-    // Wyczyść dropdown
-    dropdown.innerHTML = '';
+    // Wyczyść kontener
+    container.innerHTML = '';
     
     // Sortuj kraje alfabetycznie
     const sortedCountries = Object.keys(countries).sort();
     
-    // Dodaj zgrupowane opcje
+    // Renderuj grupy krajów
     sortedCountries.forEach(country => {
-        // Zawsze dodaj nagłówek kraju
-        const countryLabel = document.createElement('div');
-        countryLabel.className = 'select-country-label';
-        countryLabel.textContent = country;
-        dropdown.appendChild(countryLabel);
+        const group = document.createElement('div');
+        group.className = 'airport-country-group';
         
-        // Dodaj lotniska z tego kraju
-        countries[country].forEach(option => {
-            dropdown.appendChild(option);
+        const label = document.createElement('div');
+        label.className = 'airport-country-label';
+        label.textContent = country;
+        group.appendChild(label);
+        
+        countries[country].forEach(airport => {
+            const option = document.createElement('div');
+            option.className = 'airport-option';
+            option.textContent = airport.name;
+            option.setAttribute('data-value', airport.value);
+            
+            option.addEventListener('click', () => {
+                selectAirport(airport.value, airport.name, inputId);
+            });
+            
+            group.appendChild(option);
         });
+        
+        container.appendChild(group);
     });
+}
+
+function selectAirport(value, name, inputId) {
+    const selectElement = document.getElementById(inputId === 'from' ? 'fromSelect' : 'toSelect');
+    const valueSpan = selectElement.querySelector('.select-value');
+    const hiddenInput = document.getElementById(inputId);
+    
+    // Ustaw wartość
+    valueSpan.textContent = name;
+    valueSpan.classList.remove('placeholder');
+    hiddenInput.value = value;
+    
+    // Zamknij modal
+    document.getElementById('airportModal').classList.add('hidden');
 }
 
 // ========== MENU KONTA ==========
