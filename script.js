@@ -17,7 +17,6 @@ document.addEventListener('DOMContentLoaded', () => {
     initPassengerPanel();
     initTripType();
     initFormHandler();
-    initInfoHelpPanel();
 });
 
 // ========== CUSTOM SELECT DROPDOWNS ==========
@@ -563,37 +562,6 @@ function updatePassengerSummary() {
     const passengerText = parts.join(', ');
     document.getElementById('passengerSummary').textContent = 
         `${passengerText}, ${classNames[selectedClass]}`;
-}
-
-// ========== PANEL INFORMACJE I POMOC ==========
-function initInfoHelpPanel() {
-    const infoHelpBtn = document.getElementById('infoHelpBtn');
-    const infoHelpPanel = document.getElementById('infoHelpPanel');
-    const infoHelpOverlay = document.getElementById('infoHelpOverlay');
-    const infoHelpClose = document.getElementById('infoHelpClose');
-
-    if (!infoHelpBtn) return;
-
-    infoHelpBtn.addEventListener('click', (e) => {
-        e.preventDefault();
-        infoHelpPanel.classList.add('active');
-        infoHelpOverlay.classList.add('active');
-        document.body.style.overflow = 'hidden';
-    });
-
-    infoHelpClose.addEventListener('click', () => {
-        closeInfoHelpPanel();
-    });
-
-    infoHelpOverlay.addEventListener('click', () => {
-        closeInfoHelpPanel();
-    });
-
-    function closeInfoHelpPanel() {
-        infoHelpPanel.classList.remove('active');
-        infoHelpOverlay.classList.remove('active');
-        document.body.style.overflow = 'auto';
-    }
 }
 
 // ========== OBSŁUGA FORMULARZA ==========
