@@ -960,124 +960,138 @@ main {
     transform: translateX(5px);
 }
 
-.info-help-panel {
-    position: fixed;
-    top: 0;
-    right: -450px;
-    width: 450px;
-    height: 100vh;
+.help-page {
     background: white;
-    box-shadow: -4px 0 20px rgba(0,0,0,0.15);
-    z-index: 3000;
-    transition: right 0.3s ease;
-    overflow-y: auto;
+    border-radius: 8px;
+    padding: 40px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
 }
 
-.info-help-panel.active {
-    right: 0;
+.help-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 40px;
+    margin-bottom: 60px;
 }
 
-.info-help-header {
+.help-category h2 {
+    color: #2c3e50;
+    font-size: 1.3rem;
+    font-weight: 600;
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom: 3px solid #2c3e50;
+}
+
+.help-links {
     display: flex;
-    justify-content: space-between;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.help-link {
+    display: flex;
     align-items: center;
-    padding: 25px 30px;
-    border-bottom: 1px solid #e0e0e0;
+    gap: 15px;
+    padding: 15px;
     background: #f8f9fa;
-}
-
-.info-help-header h2 {
-    color: #2c3e50;
-    font-size: 1.4rem;
-    font-weight: 600;
-    margin: 0;
-}
-
-.info-help-close {
-    background: none;
-    border: none;
-    font-size: 2rem;
-    color: #666;
-    cursor: pointer;
-    width: 40px;
-    height: 40px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 50%;
-    transition: all 0.2s;
-}
-
-.info-help-close:hover {
-    background: #e0e0e0;
-    color: #333;
-}
-
-.info-help-content {
-    padding: 30px;
-}
-
-.info-help-section {
-    margin-bottom: 35px;
-}
-
-.info-help-section:last-child {
-    margin-bottom: 0;
-}
-
-.info-help-section h3 {
-    color: #2c3e50;
-    font-size: 1.1rem;
-    font-weight: 600;
-    margin-bottom: 15px;
-    padding-bottom: 10px;
-    border-bottom: 2px solid #2c3e50;
-}
-
-.info-help-links {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-}
-
-.info-help-links li {
-    margin-bottom: 10px;
-}
-
-.info-help-links a {
-    color: #555;
+    border: 2px solid #e9ecef;
+    border-radius: 8px;
     text-decoration: none;
-    font-size: 0.95rem;
-    display: block;
-    padding: 8px 0;
-    transition: all 0.2s;
-    border-left: 3px solid transparent;
-    padding-left: 10px;
-}
-
-.info-help-links a:hover {
-    color: #2c3e50;
-    border-left-color: #2c3e50;
-    padding-left: 15px;
-    font-weight: 600;
-}
-
-.info-help-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0,0,0,0.5);
-    z-index: 2999;
-    opacity: 0;
-    visibility: hidden;
+    color: #333;
     transition: all 0.3s ease;
 }
 
-.info-help-overlay.active {
-    opacity: 1;
-    visibility: visible;
+.help-link:hover {
+    background: white;
+    border-color: #2c3e50;
+    transform: translateX(5px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.help-icon {
+    font-size: 2rem;
+    flex-shrink: 0;
+}
+
+.help-link div {
+    flex: 1;
+}
+
+.help-link strong {
+    display: block;
+    color: #2c3e50;
+    font-size: 1rem;
+    margin-bottom: 4px;
+}
+
+.help-link p {
+    color: #666;
+    font-size: 0.85rem;
+    margin: 0;
+}
+
+.help-arrow {
+    font-size: 1.5rem;
+    color: #adb5bd;
+    flex-shrink: 0;
+    transition: all 0.3s ease;
+}
+
+.help-link:hover .help-arrow {
+    color: #2c3e50;
+    transform: translateX(5px);
+}
+
+.help-contact-section {
+    background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+    color: white;
+    padding: 50px;
+    border-radius: 12px;
+    text-align: center;
+}
+
+.help-contact-section h2 {
+    font-size: 1.8rem;
+    margin-bottom: 10px;
+}
+
+.help-contact-section > p {
+    font-size: 1.1rem;
+    opacity: 0.9;
+    margin-bottom: 40px;
+}
+
+.contact-methods {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 30px;
+}
+
+.contact-method {
+    background: rgba(255,255,255,0.1);
+    padding: 30px;
+    border-radius: 8px;
+    backdrop-filter: blur(10px);
+}
+
+.contact-icon {
+    font-size: 3rem;
+    margin-bottom: 15px;
+}
+
+.contact-method h3 {
+    font-size: 1.2rem;
+    margin-bottom: 10px;
+}
+
+.contact-method p {
+    margin: 5px 0;
+    opacity: 0.9;
+}
+
+.contact-method strong {
+    font-size: 1.1rem;
 }
 
 .section-title {
@@ -1137,7 +1151,7 @@ main {
     margin-bottom: 20px;
     flex-wrap: wrap;
     gap: 15px;
-}
+    }
 
 .flight-route {
     font-size: 1.3rem;
@@ -1609,7 +1623,7 @@ main {
     header h1 {
         font-size: 1.8rem;
     }
-    .search-section, .additional-services, .shortcuts-section, .flights-showcase {
+    .search-section, .additional-services, .shortcuts-section, .flights-showcase, .help-page {
         padding: 25px 20px;
     }
     .services-grid {
@@ -1655,9 +1669,9 @@ main {
     .payment-methods, .social-icons, .app-badges {
         justify-content: center;
     }
-    .info-help-panel {
-        width: 100%;
-        right: -100%;
+    .help-grid {
+        grid-template-columns: 1fr;
+        gap: 30px;
     }
 }
 
