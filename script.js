@@ -36,13 +36,11 @@ initSingleSelect(toSelect, 'to');
 
 airportModalClose.addEventListener('click', () => {
     airportModal.classList.add('hidden');
-    airportModal.style.display = 'none';
 });
 
 airportModal.addEventListener('click', (e) => {
     if (e.target === airportModal) {
         airportModal.classList.add('hidden');
-        airportModal.style.display = 'none';
     }
 });
 ```
@@ -71,7 +69,6 @@ header.addEventListener('click', (e) => {
     renderAirportList(airportList, inputId);
     
     airportModal.classList.remove('hidden');
-    airportModal.style.display = 'flex';
 });
 ```
 
@@ -134,7 +131,6 @@ valueSpan.classList.remove('placeholder');
 hiddenInput.value = value;
 
 airportModal.classList.add('hidden');
-airportModal.style.display = 'none';
 ```
 
 }
