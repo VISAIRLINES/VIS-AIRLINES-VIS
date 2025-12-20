@@ -608,3 +608,46 @@ function handleSubmit(e) {
     localStorage.setItem('searchData', JSON.stringify(searchData));
     window.location.href = 'results.html';
 }
+// ========== HAMBURGER MENU ==========
+function initHamburgerMenu() {
+    const hamburgerBtn = document.getElementById('hamburgerBtn');
+    const mobileMenu = document.getElementById('mobileMenu');
+    const mobileMenuOverlay = document.getElementById('mobileMenuOverlay');
+    const mobileMenuClose = document.getElementById('mobileMenuClose');
+
+    if (!hamburgerBtn) return;
+
+    hamburgerBtn.addEventListener('click', () => {
+        hamburgerBtn.classList.toggle('active');
+        mobileMenu.classList.toggle('active');
+        mobileMenuOverlay.classList.toggle('active');
+        document.body.style.overflow = mobileMenu.classList.contains('active') ? 'hidden' : '';
+    });
+
+    mobileMenuClose.addEventListener('click', () => {
+        hamburgerBtn.classList.remove('active');
+        mobileMenu.classList.remove('active');
+        mobileMenuOverlay.classList.remove('active');
+        document.body.style.overflow = '';
+    });
+
+    mobileMenuOverlay.addEventListener('click', () => {
+        hamburgerBtn.classList.remove('active');
+        mobileMenu.classList.remove('active');
+        mobileMenuOverlay.classList.remove('active');
+        document.body.style.overflow = '';
+    });
+}
+
+// Dodaj na końcu DOMContentLoaded
+document.addEventListener('DOMContentLoaded', () => {
+    initCustomSelects();
+    initCalendar();
+    initReturnCalendar();
+    initLanguageSelector();
+    initAccountMenu();
+    initPassengerPanel();
+    initTripType();
+    initFormHandler();
+    initHamburgerMenu(); // DODAJ TĘ LINIĘ
+});
