@@ -3,7 +3,8 @@ const airports = [
     { value: 'CPK', name: 'CPK', country: 'Polska' },
     { value: 'GDN', name: 'Gdańsk', country: 'Polska' },
     { value: 'NCE', name: 'Nicea', country: 'Francja' },
-    { value: 'JFK', name: 'Nowy Jork', country: 'USA' }
+    { value: 'JFK', name: 'Nowy Jork', country: 'USA' },
+    { value: 'KIV', name: 'Kiszyniów', country: 'Mołdawia' }
 ];
 
 let currentSelectType = null;
