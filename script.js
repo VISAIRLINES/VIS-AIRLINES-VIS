@@ -9,7 +9,7 @@ const airports = [
 
 let currentSelectType = null;
 
-document.addEventListener(‘DOMContentLoaded’, () => {
+document.addEventListener(‘DOMContentLoaded’, function() {
 initCustomSelects();
 initCalendar();
 initReturnCalendar();
@@ -29,20 +29,18 @@ const airportModal = document.getElementById(‘airportModal’);
 const airportModalClose = document.getElementById(‘airportModalClose’);
 
 ```
-if (!fromSelect || !toSelect || !airportModal) return;
+if (!fromSelect || !toSelect || !airportModal || !airportModalClose) return;
 
 initSingleSelect(fromSelect, 'from');
 initSingleSelect(toSelect, 'to');
 
-airportModalClose.addEventListener('click', () => {
+airportModalClose.addEventListener('click', function() {
     airportModal.classList.add('hidden');
-    airportModal.style.display = 'none';
 });
 
-airportModal.addEventListener('click', (e) => {
+airportModal.addEventListener('click', function(e) {
     if (e.target === airportModal) {
         airportModal.classList.add('hidden');
-        airportModal.style.display = 'none';
     }
 });
 ```
@@ -55,7 +53,7 @@ const header = selectElement.querySelector(’.select-header’);
 ```
 if (!header) return;
 
-header.addEventListener('click', (e) => {
+header.addEventListener('click', function(e) {
     e.stopPropagation();
     e.preventDefault();
     
@@ -71,7 +69,6 @@ header.addEventListener('click', (e) => {
     renderAirportList(airportList, inputId);
     
     airportModal.classList.remove('hidden');
-    airportModal.style.display = 'flex';
 });
 ```
 
@@ -83,7 +80,7 @@ if (!container) return;
 ```
 const countries = {};
 
-airports.forEach(airport => {
+airports.forEach(function(airport) {
     if (!countries[airport.country]) {
         countries[airport.country] = [];
     }
@@ -94,7 +91,7 @@ container.innerHTML = '';
 
 const sortedCountries = Object.keys(countries).sort();
 
-sortedCountries.forEach(country => {
+sortedCountries.forEach(function(country) {
     const group = document.createElement('div');
     group.className = 'airport-country-group';
     
@@ -103,13 +100,13 @@ sortedCountries.forEach(country => {
     label.textContent = country;
     group.appendChild(label);
     
-    countries[country].forEach(airport => {
+    countries[country].forEach(function(airport) {
         const option = document.createElement('div');
         option.className = 'airport-option';
         option.textContent = airport.name;
         option.setAttribute('data-value', airport.value);
         
-        option.addEventListener('click', () => {
+        option.addEventListener('click', function() {
             selectAirport(airport.value, airport.name, inputId);
         });
         
@@ -134,7 +131,6 @@ valueSpan.classList.remove('placeholder');
 hiddenInput.value = value;
 
 airportModal.classList.add('hidden');
-airportModal.style.display = 'none';
 ```
 
 }
@@ -149,44 +145,53 @@ const switchToRegister = document.getElementById(‘switchToRegister’);
 const loginForm = document.getElementById(‘loginForm’);
 
 ```
-if (!accountBtn) return;
+if (!accountBtn || !loginModal) return;
 
-accountBtn.addEventListener('click', (e) => {
+accountBtn.addEventListener('click', function(e) {
     e.stopPropagation();
-    loginModalTitle.textContent = 'Zaloguj się';
-    switchToRegister.textContent = 'Nie masz konta? Zarejestruj się';
-    loginForm.querySelector('button[type="submit"]').textContent = 'Zaloguj się';
+    if (loginModalTitle) loginModalTitle.textContent = 'Zaloguj się';
+    if (switchToRegister) switchToRegister.textContent = 'Nie masz konta? Zarejestruj się';
+    const submitBtn = loginForm.querySelector('button[type="submit"]');
+    if (submitBtn) submitBtn.textContent = 'Zaloguj się';
     loginModal.classList.remove('hidden');
 });
 
-loginModalClose.addEventListener('click', () => {
-    loginModal.classList.add('hidden');
-});
+if (loginModalClose) {
+    loginModalClose.addEventListener('click', function() {
+        loginModal.classList.add('hidden');
+    });
+}
 
-loginModal.addEventListener('click', (e) => {
+loginModal.addEventListener('click', function(e) {
     if (e.target === loginModal) {
         loginModal.classList.add('hidden');
     }
 });
 
-switchToRegister.addEventListener('click', (e) => {
-    e.preventDefault();
-    if (loginModalTitle.textContent === 'Zaloguj się') {
-        loginModalTitle.textContent = 'Zarejestruj się';
-        switchToRegister.textContent = 'Masz już konto? Zaloguj się';
-        loginForm.querySelector('button[type="submit"]').textContent = 'Zarejestruj się';
-    } else {
-        loginModalTitle.textContent = 'Zaloguj się';
-        switchToRegister.textContent = 'Nie masz konta? Zarejestruj się';
-        loginForm.querySelector('button[type="submit"]').textContent = 'Zaloguj się';
-    }
-});
+if (switchToRegister) {
+    switchToRegister.addEventListener('click', function(e) {
+        e.preventDefault();
+        if (loginModalTitle.textContent === 'Zaloguj się') {
+            loginModalTitle.textContent = 'Zarejestruj się';
+            switchToRegister.textContent = 'Masz już konto? Zaloguj się';
+            const submitBtn = loginForm.querySelector('button[type="submit"]');
+            if (submitBtn) submitBtn.textContent = 'Zarejestruj się';
+        } else {
+            loginModalTitle.textContent = 'Zaloguj się';
+            switchToRegister.textContent = 'Nie masz konta? Zarejestruj się';
+            const submitBtn = loginForm.querySelector('button[type="submit"]');
+            if (submitBtn) submitBtn.textContent = 'Zaloguj się';
+        }
+    });
+}
 
-loginForm.addEventListener('submit', (e) => {
-    e.preventDefault();
-    alert('Funkcja będzie dostępna wkrótce!');
-    loginModal.classList.add('hidden');
-});
+if (loginForm) {
+    loginForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        alert('Funkcja będzie dostępna wkrótce!');
+        loginModal.classList.add('hidden');
+    });
+}
 ```
 
 }
@@ -197,8 +202,10 @@ const tripTypeInputs = document.querySelectorAll(‘input[name=“tripType”]�
 const returnDateGroup = document.getElementById(‘returnDateGroup’);
 
 ```
-tripTypeInputs.forEach(input => {
-    input.addEventListener('change', (e) => {
+if (!returnDateGroup) return;
+
+tripTypeInputs.forEach(function(input) {
+    input.addEventListener('change', function(e) {
         if (e.target.value === 'roundtrip') {
             returnDateGroup.style.display = 'block';
         } else {
@@ -220,7 +227,9 @@ const dateDisplay = document.getElementById(‘dateDisplay’);
 const calendarDropdown = document.getElementById(‘calendarDropdown’);
 
 ```
-dateDisplay.addEventListener('click', (e) => {
+if (!dateDisplay || !calendarDropdown) return;
+
+dateDisplay.addEventListener('click', function(e) {
     e.preventDefault();
     e.stopPropagation();
     calendarDropdown.classList.toggle('hidden');
@@ -230,7 +239,7 @@ dateDisplay.addEventListener('click', (e) => {
     }
 });
 
-document.addEventListener('click', (e) => {
+document.addEventListener('click', function(e) {
     if (!e.target.closest('.form-group') || e.target.closest('#returnDateGroup')) {
         calendarDropdown.classList.add('hidden');
     }
@@ -244,10 +253,12 @@ selectDate(today.getFullYear(), today.getMonth(), today.getDate());
 
 function renderCalendar() {
 const calendarDropdown = document.getElementById(‘calendarDropdown’);
-const monthNames = [‘Styczeń’, ‘Luty’, ‘Marzec’, ‘Kwiecień’, ‘Maj’, ‘Czerwiec’,
-‘Lipiec’, ‘Sierpień’, ‘Wrzesień’, ‘Październik’, ‘Listopad’, ‘Grudzień’];
+if (!calendarDropdown) return;
 
 ```
+const monthNames = ['Styczeń', 'Luty', 'Marzec', 'Kwiecień', 'Maj', 'Czerwiec', 
+                   'Lipiec', 'Sierpień', 'Wrzesień', 'Październik', 'Listopad', 'Grudzień'];
+
 const firstDay = new Date(currentYear, currentMonth, 1);
 const lastDay = new Date(currentYear, currentMonth + 1, 0);
 
@@ -257,28 +268,10 @@ const lastDayDate = lastDay.getDate();
 const today = new Date();
 today.setHours(0, 0, 0, 0);
 
-let calendarHTML = `
-    <div class="calendar-header">
-        <h3>${monthNames[currentMonth]} ${currentYear}</h3>
-        <div class="calendar-nav">
-            <button type="button" class="cal-prev">&lt;</button>
-            <button type="button" class="cal-next">&gt;</button>
-        </div>
-    </div>
-    <div class="calendar-weekdays">
-        <div class="calendar-weekday">Pn</div>
-        <div class="calendar-weekday">Wt</div>
-        <div class="calendar-weekday">Śr</div>
-        <div class="calendar-weekday">Cz</div>
-        <div class="calendar-weekday">Pt</div>
-        <div class="calendar-weekday">So</div>
-        <div class="calendar-weekday">Nd</div>
-    </div>
-    <div class="calendar-days">
-`;
+let calendarHTML = '<div class="calendar-header"><h3>' + monthNames[currentMonth] + ' ' + currentYear + '</h3><div class="calendar-nav"><button type="button" class="cal-prev">&lt;</button><button type="button" class="cal-next">&gt;</button></div></div><div class="calendar-weekdays"><div class="calendar-weekday">Pn</div><div class="calendar-weekday">Wt</div><div class="calendar-weekday">Śr</div><div class="calendar-weekday">Cz</div><div class="calendar-weekday">Pt</div><div class="calendar-weekday">So</div><div class="calendar-weekday">Nd</div></div><div class="calendar-days">';
 
 for (let i = firstDayIndex; i > 0; i--) {
-    calendarHTML += `<button type="button" class="calendar-day empty"></button>`;
+    calendarHTML += '<button type="button" class="calendar-day empty"></button>';
 }
 
 for (let day = 1; day <= lastDayDate; day++) {
@@ -292,9 +285,7 @@ for (let day = 1; day <= lastDayDate; day++) {
     if (isToday) classes += ' today';
     if (isSelected) classes += ' selected';
 
-    calendarHTML += `<button type="button" class="${classes}" 
-        data-year="${currentYear}" data-month="${currentMonth}" data-day="${day}"
-        ${isPast ? 'disabled' : ''}>${day}</button>`;
+    calendarHTML += '<button type="button" class="' + classes + '" data-year="' + currentYear + '" data-month="' + currentMonth + '" data-day="' + day + '"' + (isPast ? ' disabled' : '') + '>' + day + '</button>';
 }
 
 calendarHTML += '</div>';
@@ -303,19 +294,23 @@ calendarDropdown.innerHTML = calendarHTML;
 const prevBtn = calendarDropdown.querySelector('.cal-prev');
 const nextBtn = calendarDropdown.querySelector('.cal-next');
 
-prevBtn.addEventListener('click', (e) => {
-    e.stopPropagation();
-    changeMonth(-1);
-});
+if (prevBtn) {
+    prevBtn.addEventListener('click', function(e) {
+        e.stopPropagation();
+        changeMonth(-1);
+    });
+}
 
-nextBtn.addEventListener('click', (e) => {
-    e.stopPropagation();
-    changeMonth(1);
-});
+if (nextBtn) {
+    nextBtn.addEventListener('click', function(e) {
+        e.stopPropagation();
+        changeMonth(1);
+    });
+}
 
 const dayBtns = calendarDropdown.querySelectorAll('.calendar-day:not(.disabled):not(.empty)');
-dayBtns.forEach(btn => {
-    btn.addEventListener('click', (e) => {
+dayBtns.forEach(function(btn) {
+    btn.addEventListener('click', function(e) {
         e.stopPropagation();
         const year = parseInt(btn.getAttribute('data-year'));
         const month = parseInt(btn.getAttribute('data-month'));
@@ -341,12 +336,16 @@ renderCalendar();
 
 function selectDate(year, month, day) {
 selectedDate = new Date(year, month, day);
-const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+const dateStr = year + ‘-’ + String(month + 1).padStart(2, ‘0’) + ‘-’ + String(day).padStart(2, ‘0’);
 
 ```
-document.getElementById('date').value = dateStr;
-document.getElementById('dateDisplay').value = formatDateDisplay(selectedDate);
-document.getElementById('calendarDropdown').classList.add('hidden');
+const dateInput = document.getElementById('date');
+const dateDisplay = document.getElementById('dateDisplay');
+const calendarDropdown = document.getElementById('calendarDropdown');
+
+if (dateInput) dateInput.value = dateStr;
+if (dateDisplay) dateDisplay.value = formatDateDisplay(selectedDate);
+if (calendarDropdown) calendarDropdown.classList.add('hidden');
 ```
 
 }
@@ -366,9 +365,9 @@ const returnDateDisplay = document.getElementById(‘returnDateDisplay’);
 const returnCalendarDropdown = document.getElementById(‘returnCalendarDropdown’);
 
 ```
-if (!returnDateDisplay) return;
+if (!returnDateDisplay || !returnCalendarDropdown) return;
 
-returnDateDisplay.addEventListener('click', (e) => {
+returnDateDisplay.addEventListener('click', function(e) {
     e.preventDefault();
     e.stopPropagation();
     returnCalendarDropdown.classList.toggle('hidden');
@@ -378,7 +377,7 @@ returnDateDisplay.addEventListener('click', (e) => {
     }
 });
 
-document.addEventListener('click', (e) => {
+document.addEventListener('click', function(e) {
     if (!e.target.closest('#returnDateGroup')) {
         returnCalendarDropdown.classList.add('hidden');
     }
@@ -389,10 +388,12 @@ document.addEventListener('click', (e) => {
 
 function renderReturnCalendar() {
 const returnCalendarDropdown = document.getElementById(‘returnCalendarDropdown’);
-const monthNames = [‘Styczeń’, ‘Luty’, ‘Marzec’, ‘Kwiecień’, ‘Maj’, ‘Czerwiec’,
-‘Lipiec’, ‘Sierpień’, ‘Wrzesień’, ‘Październik’, ‘Listopad’, ‘Grudzień’];
+if (!returnCalendarDropdown) return;
 
 ```
+const monthNames = ['Styczeń', 'Luty', 'Marzec', 'Kwiecień', 'Maj', 'Czerwiec', 
+                   'Lipiec', 'Sierpień', 'Wrzesień', 'Październik', 'Listopad', 'Grudzień'];
+
 const firstDay = new Date(returnCurrentYear, returnCurrentMonth, 1);
 const lastDay = new Date(returnCurrentYear, returnCurrentMonth + 1, 0);
 
@@ -402,28 +403,10 @@ const lastDayDate = lastDay.getDate();
 const minDate = selectedDate ? new Date(selectedDate.getTime() + 86400000) : new Date();
 minDate.setHours(0, 0, 0, 0);
 
-let calendarHTML = `
-    <div class="calendar-header">
-        <h3>${monthNames[returnCurrentMonth]} ${returnCurrentYear}</h3>
-        <div class="calendar-nav">
-            <button type="button" class="ret-cal-prev">&lt;</button>
-            <button type="button" class="ret-cal-next">&gt;</button>
-        </div>
-    </div>
-    <div class="calendar-weekdays">
-        <div class="calendar-weekday">Pn</div>
-        <div class="calendar-weekday">Wt</div>
-        <div class="calendar-weekday">Śr</div>
-        <div class="calendar-weekday">Cz</div>
-        <div class="calendar-weekday">Pt</div>
-        <div class="calendar-weekday">So</div>
-        <div class="calendar-weekday">Nd</div>
-    </div>
-    <div class="calendar-days">
-`;
+let calendarHTML = '<div class="calendar-header"><h3>' + monthNames[returnCurrentMonth] + ' ' + returnCurrentYear + '</h3><div class="calendar-nav"><button type="button" class="ret-cal-prev">&lt;</button><button type="button" class="ret-cal-next">&gt;</button></div></div><div class="calendar-weekdays"><div class="calendar-weekday">Pn</div><div class="calendar-weekday">Wt</div><div class="calendar-weekday">Śr</div><div class="calendar-weekday">Cz</div><div class="calendar-weekday">Pt</div><div class="calendar-weekday">So</div><div class="calendar-weekday">Nd</div></div><div class="calendar-days">';
 
 for (let i = firstDayIndex; i > 0; i--) {
-    calendarHTML += `<button type="button" class="calendar-day empty"></button>`;
+    calendarHTML += '<button type="button" class="calendar-day empty"></button>';
 }
 
 for (let day = 1; day <= lastDayDate; day++) {
@@ -435,9 +418,7 @@ for (let day = 1; day <= lastDayDate; day++) {
     if (isPast) classes += ' disabled';
     if (isSelected) classes += ' selected';
 
-    calendarHTML += `<button type="button" class="${classes}" 
-        data-year="${returnCurrentYear}" data-month="${returnCurrentMonth}" data-day="${day}"
-        ${isPast ? 'disabled' : ''}>${day}</button>`;
+    calendarHTML += '<button type="button" class="' + classes + '" data-year="' + returnCurrentYear + '" data-month="' + returnCurrentMonth + '" data-day="' + day + '"' + (isPast ? ' disabled' : '') + '>' + day + '</button>';
 }
 
 calendarHTML += '</div>';
@@ -446,19 +427,23 @@ returnCalendarDropdown.innerHTML = calendarHTML;
 const prevBtn = returnCalendarDropdown.querySelector('.ret-cal-prev');
 const nextBtn = returnCalendarDropdown.querySelector('.ret-cal-next');
 
-prevBtn.addEventListener('click', (e) => {
-    e.stopPropagation();
-    changeReturnMonth(-1);
-});
+if (prevBtn) {
+    prevBtn.addEventListener('click', function(e) {
+        e.stopPropagation();
+        changeReturnMonth(-1);
+    });
+}
 
-nextBtn.addEventListener('click', (e) => {
-    e.stopPropagation();
-    changeReturnMonth(1);
-});
+if (nextBtn) {
+    nextBtn.addEventListener('click', function(e) {
+        e.stopPropagation();
+        changeReturnMonth(1);
+    });
+}
 
 const dayBtns = returnCalendarDropdown.querySelectorAll('.calendar-day:not(.disabled):not(.empty)');
-dayBtns.forEach(btn => {
-    btn.addEventListener('click', (e) => {
+dayBtns.forEach(function(btn) {
+    btn.addEventListener('click', function(e) {
         e.stopPropagation();
         const year = parseInt(btn.getAttribute('data-year'));
         const month = parseInt(btn.getAttribute('data-month'));
@@ -484,12 +469,16 @@ renderReturnCalendar();
 
 function selectReturnDate(year, month, day) {
 selectedReturnDate = new Date(year, month, day);
-const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+const dateStr = year + ‘-’ + String(month + 1).padStart(2, ‘0’) + ‘-’ + String(day).padStart(2, ‘0’);
 
 ```
-document.getElementById('returnDate').value = dateStr;
-document.getElementById('returnDateDisplay').value = formatDateDisplay(selectedReturnDate);
-document.getElementById('returnCalendarDropdown').classList.add('hidden');
+const returnDateInput = document.getElementById('returnDate');
+const returnDateDisplay = document.getElementById('returnDateDisplay');
+const returnCalendarDropdown = document.getElementById('returnCalendarDropdown');
+
+if (returnDateInput) returnDateInput.value = dateStr;
+if (returnDateDisplay) returnDateDisplay.value = formatDateDisplay(selectedReturnDate);
+if (returnCalendarDropdown) returnCalendarDropdown.classList.add('hidden');
 ```
 
 }
@@ -500,20 +489,20 @@ const langBtn = document.getElementById(‘langBtn’);
 const langDropdown = document.getElementById(‘langDropdown’);
 
 ```
-if (!langBtn) return;
+if (!langBtn || !langDropdown) return;
 
-langBtn.addEventListener('click', (e) => {
+langBtn.addEventListener('click', function(e) {
     e.stopPropagation();
     langDropdown.classList.toggle('hidden');
 });
 
-document.addEventListener('click', () => {
-    langDropdown.classList.add('hidden');
+document.addEventListener('click', function() {
+    if (langDropdown) langDropdown.classList.add('hidden');
 });
 
 const langOptions = document.querySelectorAll('.lang-option');
-langOptions.forEach(option => {
-    option.addEventListener('click', (e) => {
+langOptions.forEach(function(option) {
+    option.addEventListener('click', function(e) {
         e.preventDefault();
         alert('Funkcja tłumaczenia będzie dostępna wkrótce!');
     });
@@ -536,18 +525,20 @@ const passengerPanel = document.getElementById(‘passengerPanel’);
 const doneBtn = document.getElementById(‘doneBtn’);
 
 ```
-passengerBtn.addEventListener('click', () => {
+if (!passengerBtn || !passengerPanel || !doneBtn) return;
+
+passengerBtn.addEventListener('click', function() {
     passengerPanel.classList.toggle('hidden');
 });
 
-doneBtn.addEventListener('click', () => {
+doneBtn.addEventListener('click', function() {
     passengerPanel.classList.add('hidden');
     updatePassengerSummary();
 });
 
 const counters = document.querySelectorAll('.btn-counter');
-counters.forEach(btn => {
-    btn.addEventListener('click', () => {
+counters.forEach(function(btn) {
+    btn.addEventListener('click', function() {
         const type = btn.getAttribute('data-type');
         const action = btn.getAttribute('data-action');
         updateCounter(type, action);
@@ -555,7 +546,7 @@ counters.forEach(btn => {
 });
 
 const classInputs = document.querySelectorAll('input[name="class"]');
-classInputs.forEach(input => {
+classInputs.forEach(function(input) {
     input.addEventListener('change', updatePassengerSummary);
 });
 ```
@@ -563,10 +554,12 @@ classInputs.forEach(input => {
 }
 
 function updateCounter(type, action) {
-const countElement = document.getElementById(`${type}Count`);
-let currentValue = passengers[type];
+const countElement = document.getElementById(type + ‘Count’);
+if (!countElement) return;
 
 ```
+let currentValue = passengers[type];
+
 if (action === 'plus') {
     if (getTotalPassengers() < 9) {
         passengers[type]++;
@@ -592,24 +585,29 @@ return passengers.adult + passengers.teen + passengers.child + passengers.disabl
 }
 
 function updatePassengerSummary() {
-const selectedClass = document.querySelector(‘input[name=“class”]:checked’).value;
-const classNames = {
-economy: ‘Ekonomiczna’,
-premium: ‘Premium’,
-business: ‘Biznes’,
-first: ‘Pierwsza’
-};
+const selectedClassInput = document.querySelector(‘input[name=“class”]:checked’);
+if (!selectedClassInput) return;
 
 ```
+const selectedClass = selectedClassInput.value;
+const classNames = {
+    economy: 'Ekonomiczna',
+    premium: 'Premium',
+    business: 'Biznes',
+    first: 'Pierwsza'
+};
+
 const parts = [];
-if (passengers.adult > 0) parts.push(`${passengers.adult} Dorosły(ch)`);
-if (passengers.teen > 0) parts.push(`${passengers.teen} Nastolatek/Nastolatków`);
-if (passengers.child > 0) parts.push(`${passengers.child} Dziecko/Dzieci`);
-if (passengers.disabled > 0) parts.push(`${passengers.disabled} Osoba niepełnosprawna`);
+if (passengers.adult > 0) parts.push(passengers.adult + ' Dorosły(ch)');
+if (passengers.teen > 0) parts.push(passengers.teen + ' Nastolatek/Nastolatków');
+if (passengers.child > 0) parts.push(passengers.child + ' Dziecko/Dzieci');
+if (passengers.disabled > 0) parts.push(passengers.disabled + ' Osoba niepełnosprawna');
 
 const passengerText = parts.join(', ');
-document.getElementById('passengerSummary').textContent = 
-    `${passengerText}, ${classNames[selectedClass]}`;
+const summaryElement = document.getElementById('passengerSummary');
+if (summaryElement) {
+    summaryElement.textContent = passengerText + ', ' + classNames[selectedClass];
+}
 ```
 
 }
@@ -617,19 +615,33 @@ document.getElementById('passengerSummary').textContent =
 // ========== OBSŁUGA FORMULARZA ==========
 function initFormHandler() {
 const searchForm = document.getElementById(‘searchForm’);
-searchForm.addEventListener(‘submit’, handleSubmit);
+if (!searchForm) return;
+
+```
+searchForm.addEventListener('submit', handleSubmit);
+```
+
 }
 
 function handleSubmit(e) {
 e.preventDefault();
 
 ```
-const from = document.getElementById('from').value;
-const to = document.getElementById('to').value;
-const date = document.getElementById('date').value;
-const tripType = document.querySelector('input[name="tripType"]:checked').value;
-const returnDate = tripType === 'roundtrip' ? document.getElementById('returnDate').value : null;
-const travelClass = document.querySelector('input[name="class"]:checked').value;
+const fromInput = document.getElementById('from');
+const toInput = document.getElementById('to');
+const dateInput = document.getElementById('date');
+const tripTypeInput = document.querySelector('input[name="tripType"]:checked');
+const travelClassInput = document.querySelector('input[name="class"]:checked');
+
+if (!fromInput || !toInput || !dateInput || !tripTypeInput || !travelClassInput) return;
+
+const from = fromInput.value;
+const to = toInput.value;
+const date = dateInput.value;
+const tripType = tripTypeInput.value;
+const returnDateInput = document.getElementById('returnDate');
+const returnDate = tripType === 'roundtrip' && returnDateInput ? returnDateInput.value : null;
+const travelClass = travelClassInput.value;
 
 if (!date) {
     alert('Proszę wybrać datę wylotu');
@@ -647,13 +659,18 @@ if (from === to) {
 }
 
 const searchData = {
-    from,
-    to,
-    date,
-    tripType,
-    returnDate,
+    from: from,
+    to: to,
+    date: date,
+    tripType: tripType,
+    returnDate: returnDate,
     class: travelClass,
-    passengers: { ...passengers }
+    passengers: {
+        adult: passengers.adult,
+        teen: passengers.teen,
+        child: passengers.child,
+        disabled: passengers.disabled
+    }
 };
 
 localStorage.setItem('searchData', JSON.stringify(searchData));
@@ -670,23 +687,23 @@ const mobileMenuOverlay = document.getElementById(‘mobileMenuOverlay’);
 const mobileMenuClose = document.getElementById(‘mobileMenuClose’);
 
 ```
-if (!hamburgerBtn) return;
+if (!hamburgerBtn || !mobileMenu || !mobileMenuOverlay || !mobileMenuClose) return;
 
-hamburgerBtn.addEventListener('click', () => {
+hamburgerBtn.addEventListener('click', function() {
     hamburgerBtn.classList.toggle('active');
     mobileMenu.classList.toggle('active');
     mobileMenuOverlay.classList.toggle('active');
     document.body.style.overflow = mobileMenu.classList.contains('active') ? 'hidden' : '';
 });
 
-mobileMenuClose.addEventListener('click', () => {
+mobileMenuClose.addEventListener('click', function() {
     hamburgerBtn.classList.remove('active');
     mobileMenu.classList.remove('active');
     mobileMenuOverlay.classList.remove('active');
     document.body.style.overflow = '';
 });
 
-mobileMenuOverlay.addEventListener('click', () => {
+mobileMenuOverlay.addEventListener('click', function() {
     hamburgerBtn.classList.remove('active');
     mobileMenu.classList.remove('active');
     mobileMenuOverlay.classList.remove('active');
