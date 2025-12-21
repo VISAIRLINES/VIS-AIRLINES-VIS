@@ -10,6 +10,7 @@ const airports = [
 let currentSelectType = null;
 
 document.addEventListener(‘DOMContentLoaded’, function() {
+console.log(‘DOM loaded - initializing…’);
 initCustomSelects();
 initCalendar();
 initReturnCalendar();
@@ -29,12 +30,16 @@ const airportModal = document.getElementById(‘airportModal’);
 const airportModalClose = document.getElementById(‘airportModalClose’);
 
 ```
-if (!fromSelect || !toSelect || !airportModal || !airportModalClose) return;
+if (!fromSelect || !toSelect || !airportModal || !airportModalClose) {
+    console.error('Select elements not found');
+    return;
+}
 
 initSingleSelect(fromSelect, 'from');
 initSingleSelect(toSelect, 'to');
 
-airportModalClose.addEventListener('click', function() {
+airportModalClose.addEventListener('click', function(e) {
+    e.stopPropagation();
     airportModal.classList.add('hidden');
 });
 
@@ -57,6 +62,8 @@ header.addEventListener('click', function(e) {
     e.stopPropagation();
     e.preventDefault();
     
+    console.log('Select clicked:', inputId);
+    
     const airportModal = document.getElementById('airportModal');
     const airportModalTitle = document.getElementById('airportModalTitle');
     const airportList = document.getElementById('airportList');
@@ -68,6 +75,8 @@ header.addEventListener('click', function(e) {
     
     renderAirportList(airportList, inputId);
     
+    // Upewnij się, że modal jest widoczny
+    airportModal.style.display = 'flex';
     airportModal.classList.remove('hidden');
 });
 ```
@@ -106,7 +115,8 @@ sortedCountries.forEach(function(country) {
         option.textContent = airport.name;
         option.setAttribute('data-value', airport.value);
         
-        option.addEventListener('click', function() {
+        option.addEventListener('click', function(e) {
+            e.stopPropagation();
             selectAirport(airport.value, airport.name, inputId);
         });
         
@@ -130,6 +140,7 @@ valueSpan.textContent = name;
 valueSpan.classList.remove('placeholder');
 hiddenInput.value = value;
 
+airportModal.style.display = 'none';
 airportModal.classList.add('hidden');
 ```
 
@@ -145,25 +156,34 @@ const switchToRegister = document.getElementById(‘switchToRegister’);
 const loginForm = document.getElementById(‘loginForm’);
 
 ```
-if (!accountBtn || !loginModal) return;
+if (!accountBtn || !loginModal) {
+    console.error('Account elements not found');
+    return;
+}
 
 accountBtn.addEventListener('click', function(e) {
     e.stopPropagation();
+    console.log('Account button clicked');
     if (loginModalTitle) loginModalTitle.textContent = 'Zaloguj się';
     if (switchToRegister) switchToRegister.textContent = 'Nie masz konta? Zarejestruj się';
     const submitBtn = loginForm.querySelector('button[type="submit"]');
     if (submitBtn) submitBtn.textContent = 'Zaloguj się';
+    
+    loginModal.style.display = 'flex';
     loginModal.classList.remove('hidden');
 });
 
 if (loginModalClose) {
-    loginModalClose.addEventListener('click', function() {
+    loginModalClose.addEventListener('click', function(e) {
+        e.stopPropagation();
+        loginModal.style.display = 'none';
         loginModal.classList.add('hidden');
     });
 }
 
 loginModal.addEventListener('click', function(e) {
     if (e.target === loginModal) {
+        loginModal.style.display = 'none';
         loginModal.classList.add('hidden');
     }
 });
@@ -189,6 +209,7 @@ if (loginForm) {
     loginForm.addEventListener('submit', function(e) {
         e.preventDefault();
         alert('Funkcja będzie dostępna wkrótce!');
+        loginModal.style.display = 'none';
         loginModal.classList.add('hidden');
     });
 }
@@ -227,27 +248,40 @@ const dateDisplay = document.getElementById(‘dateDisplay’);
 const calendarDropdown = document.getElementById(‘calendarDropdown’);
 
 ```
-if (!dateDisplay || !calendarDropdown) return;
+if (!dateDisplay || !calendarDropdown) {
+    console.error('Calendar elements not found');
+    return;
+}
 
 dateDisplay.addEventListener('click', function(e) {
     e.preventDefault();
     e.stopPropagation();
     
+    console.log('Date display clicked');
+    
     // Zamknij kalendarz powrotu jeśli jest otwarty
     const returnCalendarDropdown = document.getElementById('returnCalendarDropdown');
     if (returnCalendarDropdown) {
+        returnCalendarDropdown.style.display = 'none';
         returnCalendarDropdown.classList.add('hidden');
     }
     
-    calendarDropdown.classList.toggle('hidden');
+    // Toggle kalendarz wylotu
+    const isHidden = calendarDropdown.classList.contains('hidden');
     
-    if (!calendarDropdown.classList.contains('hidden')) {
+    if (isHidden) {
+        calendarDropdown.style.display = 'block';
+        calendarDropdown.classList.remove('hidden');
         renderCalendar();
+    } else {
+        calendarDropdown.style.display = 'none';
+        calendarDropdown.classList.add('hidden');
     }
 });
 
 document.addEventListener('click', function(e) {
     if (!e.target.closest('.date-input-wrapper') && !e.target.closest('#calendarDropdown')) {
+        calendarDropdown.style.display = 'none';
         calendarDropdown.classList.add('hidden');
     }
 });
@@ -352,7 +386,10 @@ const calendarDropdown = document.getElementById('calendarDropdown');
 
 if (dateInput) dateInput.value = dateStr;
 if (dateDisplay) dateDisplay.value = formatDateDisplay(selectedDate);
-if (calendarDropdown) calendarDropdown.classList.add('hidden');
+if (calendarDropdown) {
+    calendarDropdown.style.display = 'none';
+    calendarDropdown.classList.add('hidden');
+}
 ```
 
 }
@@ -378,21 +415,31 @@ returnDateDisplay.addEventListener('click', function(e) {
     e.preventDefault();
     e.stopPropagation();
     
+    console.log('Return date display clicked');
+    
     // Zamknij kalendarz wylotu jeśli jest otwarty
     const calendarDropdown = document.getElementById('calendarDropdown');
     if (calendarDropdown) {
+        calendarDropdown.style.display = 'none';
         calendarDropdown.classList.add('hidden');
     }
     
-    returnCalendarDropdown.classList.toggle('hidden');
+    // Toggle kalendarz powrotu
+    const isHidden = returnCalendarDropdown.classList.contains('hidden');
     
-    if (!returnCalendarDropdown.classList.contains('hidden')) {
+    if (isHidden) {
+        returnCalendarDropdown.style.display = 'block';
+        returnCalendarDropdown.classList.remove('hidden');
         renderReturnCalendar();
+    } else {
+        returnCalendarDropdown.style.display = 'none';
+        returnCalendarDropdown.classList.add('hidden');
     }
 });
 
 document.addEventListener('click', function(e) {
     if (!e.target.closest('#returnDateGroup') && !e.target.closest('#returnCalendarDropdown')) {
+        returnCalendarDropdown.style.display = 'none';
         returnCalendarDropdown.classList.add('hidden');
     }
 });
@@ -492,7 +539,10 @@ const returnCalendarDropdown = document.getElementById('returnCalendarDropdown')
 
 if (returnDateInput) returnDateInput.value = dateStr;
 if (returnDateDisplay) returnDateDisplay.value = formatDateDisplay(selectedReturnDate);
-if (returnCalendarDropdown) returnCalendarDropdown.classList.add('hidden');
+if (returnCalendarDropdown) {
+    returnCalendarDropdown.style.display = 'none';
+    returnCalendarDropdown.classList.add('hidden');
+}
 ```
 
 }
@@ -503,16 +553,30 @@ const langBtn = document.getElementById(‘langBtn’);
 const langDropdown = document.getElementById(‘langDropdown’);
 
 ```
-if (!langBtn || !langDropdown) return;
+if (!langBtn || !langDropdown) {
+    console.error('Language selector elements not found');
+    return;
+}
 
 langBtn.addEventListener('click', function(e) {
     e.stopPropagation();
-    langDropdown.classList.toggle('hidden');
+    console.log('Language button clicked');
+    
+    const isHidden = langDropdown.classList.contains('hidden');
+    
+    if (isHidden) {
+        langDropdown.style.display = 'block';
+        langDropdown.classList.remove('hidden');
+    } else {
+        langDropdown.style.display = 'none';
+        langDropdown.classList.add('hidden');
+    }
 });
 
 document.addEventListener('click', function(e) {
     if (!e.target.closest('.language-selector')) {
-        if (langDropdown) langDropdown.classList.add('hidden');
+        langDropdown.style.display = 'none';
+        langDropdown.classList.add('hidden');
     }
 });
 
@@ -521,6 +585,7 @@ langOptions.forEach(function(option) {
     option.addEventListener('click', function(e) {
         e.preventDefault();
         alert('Funkcja tłumaczenia będzie dostępna wkrótce!');
+        langDropdown.style.display = 'none';
         langDropdown.classList.add('hidden');
     });
 });
@@ -542,14 +607,28 @@ const passengerPanel = document.getElementById(‘passengerPanel’);
 const doneBtn = document.getElementById(‘doneBtn’);
 
 ```
-if (!passengerBtn || !passengerPanel || !doneBtn) return;
+if (!passengerBtn || !passengerPanel || !doneBtn) {
+    console.error('Passenger panel elements not found');
+    return;
+}
 
 passengerBtn.addEventListener('click', function(e) {
     e.stopPropagation();
-    passengerPanel.classList.toggle('hidden');
+    console.log('Passenger button clicked');
+    
+    const isHidden = passengerPanel.classList.contains('hidden');
+    
+    if (isHidden) {
+        passengerPanel.style.display = 'block';
+        passengerPanel.classList.remove('hidden');
+    } else {
+        passengerPanel.style.display = 'none';
+        passengerPanel.classList.add('hidden');
+    }
 });
 
 doneBtn.addEventListener('click', function() {
+    passengerPanel.style.display = 'none';
     passengerPanel.classList.add('hidden');
     updatePassengerSummary();
 });
@@ -557,6 +636,7 @@ doneBtn.addEventListener('click', function() {
 // Zamknij panel po kliknięciu poza nim
 document.addEventListener('click', function(e) {
     if (!e.target.closest('.passenger-button') && !e.target.closest('#passengerPanel')) {
+        passengerPanel.style.display = 'none';
         passengerPanel.classList.add('hidden');
     }
 });
