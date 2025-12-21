@@ -232,6 +232,13 @@ if (!dateDisplay || !calendarDropdown) return;
 dateDisplay.addEventListener('click', function(e) {
     e.preventDefault();
     e.stopPropagation();
+    
+    // Zamknij kalendarz powrotu jeśli jest otwarty
+    const returnCalendarDropdown = document.getElementById('returnCalendarDropdown');
+    if (returnCalendarDropdown) {
+        returnCalendarDropdown.classList.add('hidden');
+    }
+    
     calendarDropdown.classList.toggle('hidden');
     
     if (!calendarDropdown.classList.contains('hidden')) {
@@ -240,7 +247,7 @@ dateDisplay.addEventListener('click', function(e) {
 });
 
 document.addEventListener('click', function(e) {
-    if (!e.target.closest('.form-group') || e.target.closest('#returnDateGroup')) {
+    if (!e.target.closest('.date-input-wrapper') && !e.target.closest('#calendarDropdown')) {
         calendarDropdown.classList.add('hidden');
     }
 });
@@ -370,6 +377,13 @@ if (!returnDateDisplay || !returnCalendarDropdown) return;
 returnDateDisplay.addEventListener('click', function(e) {
     e.preventDefault();
     e.stopPropagation();
+    
+    // Zamknij kalendarz wylotu jeśli jest otwarty
+    const calendarDropdown = document.getElementById('calendarDropdown');
+    if (calendarDropdown) {
+        calendarDropdown.classList.add('hidden');
+    }
+    
     returnCalendarDropdown.classList.toggle('hidden');
     
     if (!returnCalendarDropdown.classList.contains('hidden')) {
@@ -378,7 +392,7 @@ returnDateDisplay.addEventListener('click', function(e) {
 });
 
 document.addEventListener('click', function(e) {
-    if (!e.target.closest('#returnDateGroup')) {
+    if (!e.target.closest('#returnDateGroup') && !e.target.closest('#returnCalendarDropdown')) {
         returnCalendarDropdown.classList.add('hidden');
     }
 });
@@ -496,8 +510,10 @@ langBtn.addEventListener('click', function(e) {
     langDropdown.classList.toggle('hidden');
 });
 
-document.addEventListener('click', function() {
-    if (langDropdown) langDropdown.classList.add('hidden');
+document.addEventListener('click', function(e) {
+    if (!e.target.closest('.language-selector')) {
+        if (langDropdown) langDropdown.classList.add('hidden');
+    }
 });
 
 const langOptions = document.querySelectorAll('.lang-option');
@@ -505,6 +521,7 @@ langOptions.forEach(function(option) {
     option.addEventListener('click', function(e) {
         e.preventDefault();
         alert('Funkcja tłumaczenia będzie dostępna wkrótce!');
+        langDropdown.classList.add('hidden');
     });
 });
 ```
@@ -527,7 +544,8 @@ const doneBtn = document.getElementById(‘doneBtn’);
 ```
 if (!passengerBtn || !passengerPanel || !doneBtn) return;
 
-passengerBtn.addEventListener('click', function() {
+passengerBtn.addEventListener('click', function(e) {
+    e.stopPropagation();
     passengerPanel.classList.toggle('hidden');
 });
 
@@ -536,9 +554,17 @@ doneBtn.addEventListener('click', function() {
     updatePassengerSummary();
 });
 
+// Zamknij panel po kliknięciu poza nim
+document.addEventListener('click', function(e) {
+    if (!e.target.closest('.passenger-button') && !e.target.closest('#passengerPanel')) {
+        passengerPanel.classList.add('hidden');
+    }
+});
+
 const counters = document.querySelectorAll('.btn-counter');
 counters.forEach(function(btn) {
-    btn.addEventListener('click', function() {
+    btn.addEventListener('click', function(e) {
+        e.stopPropagation();
         const type = btn.getAttribute('data-type');
         const action = btn.getAttribute('data-action');
         updateCounter(type, action);
@@ -643,6 +669,16 @@ const returnDateInput = document.getElementById('returnDate');
 const returnDate = tripType === 'roundtrip' && returnDateInput ? returnDateInput.value : null;
 const travelClass = travelClassInput.value;
 
+if (!from) {
+    alert('Proszę wybrać lotnisko wylotu');
+    return;
+}
+
+if (!to) {
+    alert('Proszę wybrać lotnisko przylotu');
+    return;
+}
+
 if (!date) {
     alert('Proszę wybrać datę wylotu');
     return;
@@ -689,7 +725,8 @@ const mobileMenuClose = document.getElementById(‘mobileMenuClose’);
 ```
 if (!hamburgerBtn || !mobileMenu || !mobileMenuOverlay || !mobileMenuClose) return;
 
-hamburgerBtn.addEventListener('click', function() {
+hamburgerBtn.addEventListener('click', function(e) {
+    e.stopPropagation();
     hamburgerBtn.classList.toggle('active');
     mobileMenu.classList.toggle('active');
     mobileMenuOverlay.classList.toggle('active');
