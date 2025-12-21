@@ -12,58 +12,33 @@
     <nav class="top-nav">
         <div class="nav-container">
             <div class="logo">VIS AIRLINES</div>
-
-        <!-- Hamburger menu dla mobile -->
-        <button class="hamburger-btn" id="hamburgerBtn">
-            <span></span>
-            <span></span>
-            <span></span>
-        </button>
-        
-        <div class="nav-links">
-            <a href="index.html" class="nav-link active">Zarezerwuj</a>
-            <a href="#" class="nav-link">Odpraw się</a>
-            <a href="#" class="nav-link">Zarządzaj podróżą</a>
-            <a href="#" class="nav-link">Zaplanuj podróż</a>
-            <a href="help.html" class="nav-link">Informacje i pomoc</a>
-        </div>
-        <div class="language-selector">
-            <button class="lang-btn" id="langBtn">
-                <span class="flag">PL</span>
-                <span class="arrow-down">▼</span>
-            </button>
-            <div class="lang-dropdown hidden" id="langDropdown">
-                <a href="#" class="lang-option" data-lang="pl">Polski</a>
-                <a href="#" class="lang-option" data-lang="en">English</a>
-                <a href="#" class="lang-option" data-lang="de">Deutsch</a>
-                <a href="#" class="lang-option" data-lang="fr">Français</a>
-                <a href="#" class="lang-option" data-lang="es">Español</a>
+            <div class="nav-links">
+                <a href="#" class="nav-link active">Zarezerwuj</a>
+                <a href="#" class="nav-link">Odpraw się</a>
+                <a href="#" class="nav-link">Zarządzaj podróżą</a>
+                <a href="#" class="nav-link">Zaplanuj podróż</a>
+                <a href="#" class="nav-link">Informacje i pomoc</a>
             </div>
+            <div class="language-selector">
+                <button class="lang-btn" id="langBtn">
+                    <span class="flag">PL</span>
+                    <span class="arrow-down">▼</span>
+                </button>
+                <div class="lang-dropdown hidden" id="langDropdown">
+                    <a href="#" class="lang-option" data-lang="pl">Polski</a>
+                    <a href="#" class="lang-option" data-lang="en">English</a>
+                    <a href="#" class="lang-option" data-lang="de">Deutsch</a>
+                    <a href="#" class="lang-option" data-lang="fr">Français</a>
+                    <a href="#" class="lang-option" data-lang="es">Español</a>
+                </div>
+            </div>
+            <button class="account-btn" id="accountBtn">
+                <span class="account-icon">👤</span>
+            </button>
         </div>
-        <button class="account-btn" id="accountBtn">
-            <span class="account-icon">👤</span>
-        </button>
-    </div>
-</nav>
+    </nav>
 
-<!-- Mobile menu overlay -->
-<div class="mobile-menu-overlay" id="mobileMenuOverlay"></div>
-
-<!-- Mobile menu drawer -->
-<div class="mobile-menu" id="mobileMenu">
-    <div class="mobile-menu-header">
-        <div class="logo">VIS AIRLINES</div>
-        <button class="mobile-menu-close" id="mobileMenuClose">&times;</button>
-    </div>
-    <div class="mobile-menu-links">
-        <a href="index.html" class="mobile-nav-link active">Zarezerwuj</a>
-        <a href="#" class="mobile-nav-link">Odpraw się</a>
-        <a href="#" class="mobile-nav-link">Zarządzaj podróżą</a>
-        <a href="#" class="mobile-nav-link">Zaplanuj podróż</a>
-        <a href="help.html" class="mobile-nav-link">Informacje i pomoc</a>
-    </div>
-</div>
-
+```
 <header>
     <div class="container">
         <h1>VIS AIRLINES</h1>
@@ -511,88 +486,144 @@
 
         <!-- Nagrody/Certyfikaty -->
         <div class="footer-awards">
-            <p style="color: #aaa;
- font-size: 0.9rem; margin-bottom: 15px;">Nasze wyróżnienia</p>
-                <div style="display: flex; gap: 20px; align-items: center;">
-                    <div style="width: 60px; height: 60px; background: #ffd700; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 0.7rem; text-align: center; color: #1a1a1a;">Skytrax<br>5★</div>
-                    <div style="width: 60px; height: 60px; background: #ffd700; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 0.7rem; text-align: center; color: #1a1a1a;">World's<br>Best</div>
-                </div>
-            </div>
-
-            <!-- Metody płatności -->
-            <div class="footer-payments">
-                <h5 style="color: #fff; margin-bottom: 15px; font-size: 1rem;">Metody płatności</h5>
-                <div class="payment-methods">
-                    <div class="payment-icon">VISA</div>
-                    <div class="payment-icon">Mastercard</div>
-                    <div class="payment-icon">PayPal</div>
-                    <div class="payment-icon">Klarna</div>
-                    <div class="payment-icon">PayU</div>
-                    <div class="payment-icon">Blik</div>
-                </div>
-            </div>
-
-            <!-- Sojusz -->
-            <div class="footer-alliance">
-                <p style="color: #aaa; font-size: 0.9rem; margin-bottom: 12px;">Jesteśmy częścią</p>
-                <div style="display: flex; align-items: center; gap: 15px;">
-                    <div style="background: white; padding: 12px 24px; border-radius: 6px; display: flex; align-items: center; gap: 10px;">
-                        <span style="font-size: 1.8rem; color: #e30613;">✈</span>
-                        <span style="font-weight: 700; color: #1a1a1a; font-size: 1.1rem;">oneworld</span>
-                        <span style="color: #888; font-size: 0.8rem; margin-left: 5px;">ALLIANCE MEMBER</span>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Dolna belka z linkami -->
-            <div class="footer-bottom">
-                <div class="footer-bottom-links">
-                    <a href="#">Kontakt</a>
-                    <a href="#">Regulacje lotnicze</a>
-                    <a href="#">Regulaminy</a>
-                    <a href="#">Ochrona Danych Osobowych</a>
-                    <a href="#">Cyberbezpieczeństwo</a>
-                    <a href="#">Mapa serwisu</a>
-                    <a href="#">BIP - Biuletyn Informacji Publicznej</a>
-                </div>
-                <p class="footer-copyright">&copy; VIS.com 2024. Wszelkie prawa zastrzeżone.</p>
+            <p style="color: #aaa; font-size: 0.9rem; margin-bottom: 15px;">Nasze wyróżnienia</p>
+            <div style="display: flex; gap: 20px; align-items: center;">
+                <div style="width: 60px; height: 60px; background: #ffd700; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 0.7rem; text-align: center; color: #1a1a1a;">Skytrax<br>5★</div>
+                <div style="width: 60px; height: 60px; background: #ffd700; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 0.7rem; text-align: center; color: #1a1a1a;">World's<br>Best</div>
             </div>
         </div>
-    </footer>
 
-    <!-- Modal logowania -->
-    <div id="loginModal" class="modal hidden">
-        <div class="modal-content" style="max-width: 400px;">
-            <button class="modal-close" id="loginModalClose">&times;</button>
-            <h2 id="loginModalTitle">Zaloguj się</h2>
-            <form id="loginForm" style="margin-top: 20px;">
-                <div style="margin-bottom: 15px;">
-                    <label style="display: block; margin-bottom: 5px; font-weight: 600; color: #555;">Email</label>
-                    <input type="email" placeholder="Wprowadź email" style="width: 100%; padding: 10px; border: 1px solid #d0d0d0; border-radius: 4px;">
+        <!-- Metody płatności -->
+        <div class="footer-payments">
+            <h5 style="color: #fff; margin-bottom: 15px; font-size: 1rem;">Metody płatności</h5>
+            <div class="payment-methods">
+                <div class="payment-icon">VISA</div>
+                <div class="payment-icon">Mastercard</div>
+                <div class="payment-icon">PayPal</div>
+                <div class="payment-icon">Klarna</div>
+                <div class="payment-icon">PayU</div>
+                <div class="payment-icon">Blik</div>
+            </div>
+        </div>
+
+        <!-- Sojusz -->
+        <div class="footer-alliance">
+            <p style="color: #aaa; font-size: 0.9rem; margin-bottom: 12px;">Jesteśmy częścią</p>
+            <div style="display: flex; align-items: center; gap: 15px;">
+                <div style="background: white; padding: 12px 24px; border-radius: 6px; display: flex; align-items: center; gap: 10px;">
+                    <span style="font-size: 1.8rem; color: #e30613;">✈</span>
+                    <span style="font-weight: 700; color: #1a1a1a; font-size: 1.1rem;">oneworld</span>
+                    <span style="color: #888; font-size: 0.8rem; margin-left: 5px;">ALLIANCE MEMBER</span>
                 </div>
-                <div style="margin-bottom: 20px;">
-                    <label style="display: block; margin-bottom: 5px; font-weight: 600; color: #555;">Hasło</label>
-                    <input type="password" placeholder="Wprowadź hasło" style="width: 100%; padding: 10px; border: 1px solid #d0d0d0; border-radius: 4px;">
-                </div>
-                <button type="submit" class="btn-search" style="width: 100%;">Zaloguj się</button>
-            </form>
-            <p style="text-align: center; margin-top: 15px; color: #888; font-size: 0.9rem;">
-                <a href="#" id="switchToRegister" style="color: #2c3e50; text-decoration: none; font-weight: 600;">Nie masz konta? Zarejestruj się</a>
-            </p>
+            </div>
+        </div>
+
+        <!-- Dolna belka z linkami -->
+        <div class="footer-bottom">
+            <div class="footer-bottom-links">
+                <a href="#">Kontakt</a>
+                <a href="#">Regulacje lotnicze</a>
+                <a href="#">Regulaminy</a>
+                <a href="#">Ochrona Danych Osobowych</a>
+                <a href="#">Cyberbezpieczeństwo</a>
+                <a href="#">Mapa serwisu</a>
+                <a href="#">BIP - Biuletyn Informacji Publicznej</a>
+            </div>
+            <p class="footer-copyright">&copy; VIS.com 2024. Wszelkie prawa zastrzeżone.</p>
         </div>
     </div>
+</footer>
 
-    <!-- Modal wyboru lotniska -->
-    <div id="airportModal" class="modal hidden">
-        <div class="modal-content" style="max-width: 500px;">
-            <button class="modal-close" id="airportModalClose">&times;</button>
-            <h2 id="airportModalTitle">Wybierz lotnisko</h2>
-            <div id="airportList" style="margin-top: 20px;">
-                <!-- Będzie wypełnione dynamicznie -->
+<!-- Modal logowania -->
+<div id="loginModal" class="modal hidden">
+    <div class="modal-content" style="max-width: 400px;">
+        <button class="modal-close" id="loginModalClose">&times;</button>
+        <h2 id="loginModalTitle">Zaloguj się</h2>
+        <form id="loginForm" style="margin-top: 20px;">
+            <div style="margin-bottom: 15px;">
+                <label style="display: block; margin-bottom: 5px; font-weight: 600; color: #555;">Email</label>
+                <input type="email" placeholder="Wprowadź email" style="width: 100%; padding: 10px; border: 1px solid #d0d0d0; border-radius: 4px;">
             </div>
+            <div style="margin-bottom: 20px;">
+                <label style="display: block; margin-bottom: 5px; font-weight: 600; color: #555;">Hasło</label>
+                <input type="password" placeholder="Wprowadź hasło" style="width: 100%; padding: 10px; border: 1px solid #d0d0d0; border-radius: 4px;">
+            </div>
+            <button type="submit" class="btn-search" style="width: 100%;">Zaloguj się</button>
+        </form>
+        <p style="text-align: center; margin-top: 15px; color: #888; font-size: 0.9rem;">
+            <a href="#" id="switchToRegister" style="color: #2c3e50; text-decoration: none; font-weight: 600;">Nie masz konta? Zarejestruj się</a>
+        </p>
+    </div>
+</div>
+
+<!-- Modal wyboru lotniska -->
+<div id="airportModal" class="modal hidden">
+    <div class="modal-content" style="max-width: 500px;">
+        <button class="modal-close" id="airportModalClose">&times;</button>
+        <h2 id="airportModalTitle">Wybierz lotnisko</h2>
+        <div id="airportList" style="margin-top: 20px;">
+            <!-- Będzie wypełnione dynamicznie -->
         </div>
     </div>
+</div>
 
-    <script src="script.js"></script>
+<!-- Panel Informacje i pomoc -->
+<div id="infoHelpPanel" class="info-help-panel">
+    <div class="info-help-header">
+        <h2>Informacje i pomoc</h2>
+        <button class="info-help-close" id="infoHelpClose">&times;</button>
+    </div>
+    <div class="info-help-content">
+        <div class="info-help-section">
+            <h3>Specjalne wymagania</h3>
+            <ul class="info-help-links">
+                <li><a href="#">Dokumenty podróżne</a></li>
+                <li><a href="#">Podróż z dziećmi</a></li>
+                <li><a href="#">Podróżowanie ze zwierzętami</a></li>
+                <li><a href="#">Asysta i wsparcie</a></li>
+            </ul>
+        </div>
+
+        <div class="info-help-section">
+            <h3>Na pokładzie</h3>
+            <ul class="info-help-links">
+                <li><a href="#">Posiłki i napoje</a></li>
+                <li><a href="#">Klasy podróży</a></li>
+                <li><a href="#">Wybór miejsca</a></li>
+                <li><a href="#">Rozrywka na pokładzie</a></li>
+                <li><a href="#">Zobacz wszystko</a></li>
+            </ul>
+        </div>
+
+        <div class="info-help-section">
+            <h3>Na lotnisku</h3>
+            <ul class="info-help-links">
+                <li><a href="#">Odprawa</a></li>
+                <li><a href="#">Status lotu</a></li>
+                <li><a href="#">Lotnisko w Warszawie</a></li>
+                <li><a href="#">Fast Track</a></li>
+                <li><a href="#">Saloniki biznesowe</a></li>
+            </ul>
+        </div>
+
+        <div class="info-help-section">
+            <h3>Obsługa pasażera</h3>
+            <ul class="info-help-links">
+                <li><a href="#">Faktura</a></li>
+                <li><a href="#">Zmiana i zwrot biletu</a></li>
+                <li><a href="#">Programy lojalnościowe</a></li>
+                <li><a href="#">Kontakt</a></li>
+                <li><a href="#">Zobacz wszystko</a></li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<!-- Overlay dla panelu -->
+<div id="infoHelpOverlay" class="info-help-overlay"></div>
+
+<script src="script.js"></script>
+```
+
 </body>
 </html>
