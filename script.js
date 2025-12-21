@@ -3,14 +3,12 @@ const airports = [
 { value: ‘CPK’, name: ‘CPK’, country: ‘Polska’ },
 { value: ‘GDN’, name: ‘Gdańsk’, country: ‘Polska’ },
 { value: ‘NCE’, name: ‘Nicea’, country: ‘Francja’ },
-{ value: ‘JFK’, name: ‘Nowy Jork’, country: ‘USA’ },
-{ value: ‘KIV’, name: ‘Kiszyniów’, country: ‘Mołdawia’ }
+{ value: ‘JFK’, name: ‘Nowy Jork’, country: ‘USA’ }
 ];
 
 let currentSelectType = null;
 
-document.addEventListener(‘DOMContentLoaded’, function() {
-console.log(‘DOM loaded - initializing…’);
+document.addEventListener(‘DOMContentLoaded’, () => {
 initCustomSelects();
 initCalendar();
 initReturnCalendar();
@@ -19,7 +17,7 @@ initAccountMenu();
 initPassengerPanel();
 initTripType();
 initFormHandler();
-initHamburgerMenu();
+initInfoHelpPanel();
 });
 
 // ========== CUSTOM SELECT DROPDOWNS ==========
@@ -30,22 +28,20 @@ const airportModal = document.getElementById(‘airportModal’);
 const airportModalClose = document.getElementById(‘airportModalClose’);
 
 ```
-if (!fromSelect || !toSelect || !airportModal || !airportModalClose) {
-    console.error('Select elements not found');
-    return;
-}
+if (!fromSelect || !toSelect || !airportModal) return;
 
 initSingleSelect(fromSelect, 'from');
 initSingleSelect(toSelect, 'to');
 
-airportModalClose.addEventListener('click', function(e) {
-    e.stopPropagation();
+airportModalClose.addEventListener('click', () => {
     airportModal.classList.add('hidden');
+    airportModal.style.display = 'none';
 });
 
-airportModal.addEventListener('click', function(e) {
+airportModal.addEventListener('click', (e) => {
     if (e.target === airportModal) {
         airportModal.classList.add('hidden');
+        airportModal.style.display = 'none';
     }
 });
 ```
@@ -58,11 +54,9 @@ const header = selectElement.querySelector(’.select-header’);
 ```
 if (!header) return;
 
-header.addEventListener('click', function(e) {
+header.addEventListener('click', (e) => {
     e.stopPropagation();
     e.preventDefault();
-    
-    console.log('Select clicked:', inputId);
     
     const airportModal = document.getElementById('airportModal');
     const airportModalTitle = document.getElementById('airportModalTitle');
@@ -75,9 +69,8 @@ header.addEventListener('click', function(e) {
     
     renderAirportList(airportList, inputId);
     
-    // Upewnij się, że modal jest widoczny
-    airportModal.style.display = 'flex';
     airportModal.classList.remove('hidden');
+    airportModal.style.display = 'flex';
 });
 ```
 
@@ -89,7 +82,7 @@ if (!container) return;
 ```
 const countries = {};
 
-airports.forEach(function(airport) {
+airports.forEach(airport => {
     if (!countries[airport.country]) {
         countries[airport.country] = [];
     }
@@ -100,7 +93,7 @@ container.innerHTML = '';
 
 const sortedCountries = Object.keys(countries).sort();
 
-sortedCountries.forEach(function(country) {
+sortedCountries.forEach(country => {
     const group = document.createElement('div');
     group.className = 'airport-country-group';
     
@@ -109,14 +102,13 @@ sortedCountries.forEach(function(country) {
     label.textContent = country;
     group.appendChild(label);
     
-    countries[country].forEach(function(airport) {
+    countries[country].forEach(airport => {
         const option = document.createElement('div');
         option.className = 'airport-option';
         option.textContent = airport.name;
         option.setAttribute('data-value', airport.value);
         
-        option.addEventListener('click', function(e) {
-            e.stopPropagation();
+        option.addEventListener('click', () => {
             selectAirport(airport.value, airport.name, inputId);
         });
         
@@ -140,8 +132,8 @@ valueSpan.textContent = name;
 valueSpan.classList.remove('placeholder');
 hiddenInput.value = value;
 
-airportModal.style.display = 'none';
 airportModal.classList.add('hidden');
+airportModal.style.display = 'none';
 ```
 
 }
@@ -156,63 +148,44 @@ const switchToRegister = document.getElementById(‘switchToRegister’);
 const loginForm = document.getElementById(‘loginForm’);
 
 ```
-if (!accountBtn || !loginModal) {
-    console.error('Account elements not found');
-    return;
-}
+if (!accountBtn) return;
 
-accountBtn.addEventListener('click', function(e) {
+accountBtn.addEventListener('click', (e) => {
     e.stopPropagation();
-    console.log('Account button clicked');
-    if (loginModalTitle) loginModalTitle.textContent = 'Zaloguj się';
-    if (switchToRegister) switchToRegister.textContent = 'Nie masz konta? Zarejestruj się';
-    const submitBtn = loginForm.querySelector('button[type="submit"]');
-    if (submitBtn) submitBtn.textContent = 'Zaloguj się';
-    
-    loginModal.style.display = 'flex';
+    loginModalTitle.textContent = 'Zaloguj się';
+    switchToRegister.textContent = 'Nie masz konta? Zarejestruj się';
+    loginForm.querySelector('button[type="submit"]').textContent = 'Zaloguj się';
     loginModal.classList.remove('hidden');
 });
 
-if (loginModalClose) {
-    loginModalClose.addEventListener('click', function(e) {
-        e.stopPropagation();
-        loginModal.style.display = 'none';
-        loginModal.classList.add('hidden');
-    });
-}
+loginModalClose.addEventListener('click', () => {
+    loginModal.classList.add('hidden');
+});
 
-loginModal.addEventListener('click', function(e) {
+loginModal.addEventListener('click', (e) => {
     if (e.target === loginModal) {
-        loginModal.style.display = 'none';
         loginModal.classList.add('hidden');
     }
 });
 
-if (switchToRegister) {
-    switchToRegister.addEventListener('click', function(e) {
-        e.preventDefault();
-        if (loginModalTitle.textContent === 'Zaloguj się') {
-            loginModalTitle.textContent = 'Zarejestruj się';
-            switchToRegister.textContent = 'Masz już konto? Zaloguj się';
-            const submitBtn = loginForm.querySelector('button[type="submit"]');
-            if (submitBtn) submitBtn.textContent = 'Zarejestruj się';
-        } else {
-            loginModalTitle.textContent = 'Zaloguj się';
-            switchToRegister.textContent = 'Nie masz konta? Zarejestruj się';
-            const submitBtn = loginForm.querySelector('button[type="submit"]');
-            if (submitBtn) submitBtn.textContent = 'Zaloguj się';
-        }
-    });
-}
+switchToRegister.addEventListener('click', (e) => {
+    e.preventDefault();
+    if (loginModalTitle.textContent === 'Zaloguj się') {
+        loginModalTitle.textContent = 'Zarejestruj się';
+        switchToRegister.textContent = 'Masz już konto? Zaloguj się';
+        loginForm.querySelector('button[type="submit"]').textContent = 'Zarejestruj się';
+    } else {
+        loginModalTitle.textContent = 'Zaloguj się';
+        switchToRegister.textContent = 'Nie masz konta? Zarejestruj się';
+        loginForm.querySelector('button[type="submit"]').textContent = 'Zaloguj się';
+    }
+});
 
-if (loginForm) {
-    loginForm.addEventListener('submit', function(e) {
-        e.preventDefault();
-        alert('Funkcja będzie dostępna wkrótce!');
-        loginModal.style.display = 'none';
-        loginModal.classList.add('hidden');
-    });
-}
+loginForm.addEventListener('submit', (e) => {
+    e.preventDefault();
+    alert('Funkcja będzie dostępna wkrótce!');
+    loginModal.classList.add('hidden');
+});
 ```
 
 }
@@ -223,10 +196,8 @@ const tripTypeInputs = document.querySelectorAll(‘input[name=“tripType”]�
 const returnDateGroup = document.getElementById(‘returnDateGroup’);
 
 ```
-if (!returnDateGroup) return;
-
-tripTypeInputs.forEach(function(input) {
-    input.addEventListener('change', function(e) {
+tripTypeInputs.forEach(input => {
+    input.addEventListener('change', (e) => {
         if (e.target.value === 'roundtrip') {
             returnDateGroup.style.display = 'block';
         } else {
@@ -248,40 +219,18 @@ const dateDisplay = document.getElementById(‘dateDisplay’);
 const calendarDropdown = document.getElementById(‘calendarDropdown’);
 
 ```
-if (!dateDisplay || !calendarDropdown) {
-    console.error('Calendar elements not found');
-    return;
-}
-
-dateDisplay.addEventListener('click', function(e) {
+dateDisplay.addEventListener('click', (e) => {
     e.preventDefault();
     e.stopPropagation();
+    calendarDropdown.classList.toggle('hidden');
     
-    console.log('Date display clicked');
-    
-    // Zamknij kalendarz powrotu jeśli jest otwarty
-    const returnCalendarDropdown = document.getElementById('returnCalendarDropdown');
-    if (returnCalendarDropdown) {
-        returnCalendarDropdown.style.display = 'none';
-        returnCalendarDropdown.classList.add('hidden');
-    }
-    
-    // Toggle kalendarz wylotu
-    const isHidden = calendarDropdown.classList.contains('hidden');
-    
-    if (isHidden) {
-        calendarDropdown.style.display = 'block';
-        calendarDropdown.classList.remove('hidden');
+    if (!calendarDropdown.classList.contains('hidden')) {
         renderCalendar();
-    } else {
-        calendarDropdown.style.display = 'none';
-        calendarDropdown.classList.add('hidden');
     }
 });
 
-document.addEventListener('click', function(e) {
-    if (!e.target.closest('.date-input-wrapper') && !e.target.closest('#calendarDropdown')) {
-        calendarDropdown.style.display = 'none';
+document.addEventListener('click', (e) => {
+    if (!e.target.closest('.form-group') || e.target.closest('#returnDateGroup')) {
         calendarDropdown.classList.add('hidden');
     }
 });
@@ -294,12 +243,10 @@ selectDate(today.getFullYear(), today.getMonth(), today.getDate());
 
 function renderCalendar() {
 const calendarDropdown = document.getElementById(‘calendarDropdown’);
-if (!calendarDropdown) return;
+const monthNames = [‘Styczeń’, ‘Luty’, ‘Marzec’, ‘Kwiecień’, ‘Maj’, ‘Czerwiec’,
+‘Lipiec’, ‘Sierpień’, ‘Wrzesień’, ‘Październik’, ‘Listopad’, ‘Grudzień’];
 
 ```
-const monthNames = ['Styczeń', 'Luty', 'Marzec', 'Kwiecień', 'Maj', 'Czerwiec', 
-                   'Lipiec', 'Sierpień', 'Wrzesień', 'Październik', 'Listopad', 'Grudzień'];
-
 const firstDay = new Date(currentYear, currentMonth, 1);
 const lastDay = new Date(currentYear, currentMonth + 1, 0);
 
@@ -309,10 +256,28 @@ const lastDayDate = lastDay.getDate();
 const today = new Date();
 today.setHours(0, 0, 0, 0);
 
-let calendarHTML = '<div class="calendar-header"><h3>' + monthNames[currentMonth] + ' ' + currentYear + '</h3><div class="calendar-nav"><button type="button" class="cal-prev">&lt;</button><button type="button" class="cal-next">&gt;</button></div></div><div class="calendar-weekdays"><div class="calendar-weekday">Pn</div><div class="calendar-weekday">Wt</div><div class="calendar-weekday">Śr</div><div class="calendar-weekday">Cz</div><div class="calendar-weekday">Pt</div><div class="calendar-weekday">So</div><div class="calendar-weekday">Nd</div></div><div class="calendar-days">';
+let calendarHTML = `
+    <div class="calendar-header">
+        <h3>${monthNames[currentMonth]} ${currentYear}</h3>
+        <div class="calendar-nav">
+            <button type="button" class="cal-prev">&lt;</button>
+            <button type="button" class="cal-next">&gt;</button>
+        </div>
+    </div>
+    <div class="calendar-weekdays">
+        <div class="calendar-weekday">Pn</div>
+        <div class="calendar-weekday">Wt</div>
+        <div class="calendar-weekday">Śr</div>
+        <div class="calendar-weekday">Cz</div>
+        <div class="calendar-weekday">Pt</div>
+        <div class="calendar-weekday">So</div>
+        <div class="calendar-weekday">Nd</div>
+    </div>
+    <div class="calendar-days">
+`;
 
 for (let i = firstDayIndex; i > 0; i--) {
-    calendarHTML += '<button type="button" class="calendar-day empty"></button>';
+    calendarHTML += `<button type="button" class="calendar-day empty"></button>`;
 }
 
 for (let day = 1; day <= lastDayDate; day++) {
@@ -326,7 +291,9 @@ for (let day = 1; day <= lastDayDate; day++) {
     if (isToday) classes += ' today';
     if (isSelected) classes += ' selected';
 
-    calendarHTML += '<button type="button" class="' + classes + '" data-year="' + currentYear + '" data-month="' + currentMonth + '" data-day="' + day + '"' + (isPast ? ' disabled' : '') + '>' + day + '</button>';
+    calendarHTML += `<button type="button" class="${classes}" 
+        data-year="${currentYear}" data-month="${currentMonth}" data-day="${day}"
+        ${isPast ? 'disabled' : ''}>${day}</button>`;
 }
 
 calendarHTML += '</div>';
@@ -335,23 +302,19 @@ calendarDropdown.innerHTML = calendarHTML;
 const prevBtn = calendarDropdown.querySelector('.cal-prev');
 const nextBtn = calendarDropdown.querySelector('.cal-next');
 
-if (prevBtn) {
-    prevBtn.addEventListener('click', function(e) {
-        e.stopPropagation();
-        changeMonth(-1);
-    });
-}
+prevBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    changeMonth(-1);
+});
 
-if (nextBtn) {
-    nextBtn.addEventListener('click', function(e) {
-        e.stopPropagation();
-        changeMonth(1);
-    });
-}
+nextBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    changeMonth(1);
+});
 
 const dayBtns = calendarDropdown.querySelectorAll('.calendar-day:not(.disabled):not(.empty)');
-dayBtns.forEach(function(btn) {
-    btn.addEventListener('click', function(e) {
+dayBtns.forEach(btn => {
+    btn.addEventListener('click', (e) => {
         e.stopPropagation();
         const year = parseInt(btn.getAttribute('data-year'));
         const month = parseInt(btn.getAttribute('data-month'));
@@ -377,19 +340,12 @@ renderCalendar();
 
 function selectDate(year, month, day) {
 selectedDate = new Date(year, month, day);
-const dateStr = year + ‘-’ + String(month + 1).padStart(2, ‘0’) + ‘-’ + String(day).padStart(2, ‘0’);
+const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
 
 ```
-const dateInput = document.getElementById('date');
-const dateDisplay = document.getElementById('dateDisplay');
-const calendarDropdown = document.getElementById('calendarDropdown');
-
-if (dateInput) dateInput.value = dateStr;
-if (dateDisplay) dateDisplay.value = formatDateDisplay(selectedDate);
-if (calendarDropdown) {
-    calendarDropdown.style.display = 'none';
-    calendarDropdown.classList.add('hidden');
-}
+document.getElementById('date').value = dateStr;
+document.getElementById('dateDisplay').value = formatDateDisplay(selectedDate);
+document.getElementById('calendarDropdown').classList.add('hidden');
 ```
 
 }
@@ -409,37 +365,20 @@ const returnDateDisplay = document.getElementById(‘returnDateDisplay’);
 const returnCalendarDropdown = document.getElementById(‘returnCalendarDropdown’);
 
 ```
-if (!returnDateDisplay || !returnCalendarDropdown) return;
+if (!returnDateDisplay) return;
 
-returnDateDisplay.addEventListener('click', function(e) {
+returnDateDisplay.addEventListener('click', (e) => {
     e.preventDefault();
     e.stopPropagation();
+    returnCalendarDropdown.classList.toggle('hidden');
     
-    console.log('Return date display clicked');
-    
-    // Zamknij kalendarz wylotu jeśli jest otwarty
-    const calendarDropdown = document.getElementById('calendarDropdown');
-    if (calendarDropdown) {
-        calendarDropdown.style.display = 'none';
-        calendarDropdown.classList.add('hidden');
-    }
-    
-    // Toggle kalendarz powrotu
-    const isHidden = returnCalendarDropdown.classList.contains('hidden');
-    
-    if (isHidden) {
-        returnCalendarDropdown.style.display = 'block';
-        returnCalendarDropdown.classList.remove('hidden');
+    if (!returnCalendarDropdown.classList.contains('hidden')) {
         renderReturnCalendar();
-    } else {
-        returnCalendarDropdown.style.display = 'none';
-        returnCalendarDropdown.classList.add('hidden');
     }
 });
 
-document.addEventListener('click', function(e) {
-    if (!e.target.closest('#returnDateGroup') && !e.target.closest('#returnCalendarDropdown')) {
-        returnCalendarDropdown.style.display = 'none';
+document.addEventListener('click', (e) => {
+    if (!e.target.closest('#returnDateGroup')) {
         returnCalendarDropdown.classList.add('hidden');
     }
 });
@@ -449,12 +388,10 @@ document.addEventListener('click', function(e) {
 
 function renderReturnCalendar() {
 const returnCalendarDropdown = document.getElementById(‘returnCalendarDropdown’);
-if (!returnCalendarDropdown) return;
+const monthNames = [‘Styczeń’, ‘Luty’, ‘Marzec’, ‘Kwiecień’, ‘Maj’, ‘Czerwiec’,
+‘Lipiec’, ‘Sierpień’, ‘Wrzesień’, ‘Październik’, ‘Listopad’, ‘Grudzień’];
 
 ```
-const monthNames = ['Styczeń', 'Luty', 'Marzec', 'Kwiecień', 'Maj', 'Czerwiec', 
-                   'Lipiec', 'Sierpień', 'Wrzesień', 'Październik', 'Listopad', 'Grudzień'];
-
 const firstDay = new Date(returnCurrentYear, returnCurrentMonth, 1);
 const lastDay = new Date(returnCurrentYear, returnCurrentMonth + 1, 0);
 
@@ -464,10 +401,28 @@ const lastDayDate = lastDay.getDate();
 const minDate = selectedDate ? new Date(selectedDate.getTime() + 86400000) : new Date();
 minDate.setHours(0, 0, 0, 0);
 
-let calendarHTML = '<div class="calendar-header"><h3>' + monthNames[returnCurrentMonth] + ' ' + returnCurrentYear + '</h3><div class="calendar-nav"><button type="button" class="ret-cal-prev">&lt;</button><button type="button" class="ret-cal-next">&gt;</button></div></div><div class="calendar-weekdays"><div class="calendar-weekday">Pn</div><div class="calendar-weekday">Wt</div><div class="calendar-weekday">Śr</div><div class="calendar-weekday">Cz</div><div class="calendar-weekday">Pt</div><div class="calendar-weekday">So</div><div class="calendar-weekday">Nd</div></div><div class="calendar-days">';
+let calendarHTML = `
+    <div class="calendar-header">
+        <h3>${monthNames[returnCurrentMonth]} ${returnCurrentYear}</h3>
+        <div class="calendar-nav">
+            <button type="button" class="ret-cal-prev">&lt;</button>
+            <button type="button" class="ret-cal-next">&gt;</button>
+        </div>
+    </div>
+    <div class="calendar-weekdays">
+        <div class="calendar-weekday">Pn</div>
+        <div class="calendar-weekday">Wt</div>
+        <div class="calendar-weekday">Śr</div>
+        <div class="calendar-weekday">Cz</div>
+        <div class="calendar-weekday">Pt</div>
+        <div class="calendar-weekday">So</div>
+        <div class="calendar-weekday">Nd</div>
+    </div>
+    <div class="calendar-days">
+`;
 
 for (let i = firstDayIndex; i > 0; i--) {
-    calendarHTML += '<button type="button" class="calendar-day empty"></button>';
+    calendarHTML += `<button type="button" class="calendar-day empty"></button>`;
 }
 
 for (let day = 1; day <= lastDayDate; day++) {
@@ -479,7 +434,9 @@ for (let day = 1; day <= lastDayDate; day++) {
     if (isPast) classes += ' disabled';
     if (isSelected) classes += ' selected';
 
-    calendarHTML += '<button type="button" class="' + classes + '" data-year="' + returnCurrentYear + '" data-month="' + returnCurrentMonth + '" data-day="' + day + '"' + (isPast ? ' disabled' : '') + '>' + day + '</button>';
+    calendarHTML += `<button type="button" class="${classes}" 
+        data-year="${returnCurrentYear}" data-month="${returnCurrentMonth}" data-day="${day}"
+        ${isPast ? 'disabled' : ''}>${day}</button>`;
 }
 
 calendarHTML += '</div>';
@@ -488,23 +445,19 @@ returnCalendarDropdown.innerHTML = calendarHTML;
 const prevBtn = returnCalendarDropdown.querySelector('.ret-cal-prev');
 const nextBtn = returnCalendarDropdown.querySelector('.ret-cal-next');
 
-if (prevBtn) {
-    prevBtn.addEventListener('click', function(e) {
-        e.stopPropagation();
-        changeReturnMonth(-1);
-    });
-}
+prevBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    changeReturnMonth(-1);
+});
 
-if (nextBtn) {
-    nextBtn.addEventListener('click', function(e) {
-        e.stopPropagation();
-        changeReturnMonth(1);
-    });
-}
+nextBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    changeReturnMonth(1);
+});
 
 const dayBtns = returnCalendarDropdown.querySelectorAll('.calendar-day:not(.disabled):not(.empty)');
-dayBtns.forEach(function(btn) {
-    btn.addEventListener('click', function(e) {
+dayBtns.forEach(btn => {
+    btn.addEventListener('click', (e) => {
         e.stopPropagation();
         const year = parseInt(btn.getAttribute('data-year'));
         const month = parseInt(btn.getAttribute('data-month'));
@@ -530,19 +483,12 @@ renderReturnCalendar();
 
 function selectReturnDate(year, month, day) {
 selectedReturnDate = new Date(year, month, day);
-const dateStr = year + ‘-’ + String(month + 1).padStart(2, ‘0’) + ‘-’ + String(day).padStart(2, ‘0’);
+const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
 
 ```
-const returnDateInput = document.getElementById('returnDate');
-const returnDateDisplay = document.getElementById('returnDateDisplay');
-const returnCalendarDropdown = document.getElementById('returnCalendarDropdown');
-
-if (returnDateInput) returnDateInput.value = dateStr;
-if (returnDateDisplay) returnDateDisplay.value = formatDateDisplay(selectedReturnDate);
-if (returnCalendarDropdown) {
-    returnCalendarDropdown.style.display = 'none';
-    returnCalendarDropdown.classList.add('hidden');
-}
+document.getElementById('returnDate').value = dateStr;
+document.getElementById('returnDateDisplay').value = formatDateDisplay(selectedReturnDate);
+document.getElementById('returnCalendarDropdown').classList.add('hidden');
 ```
 
 }
@@ -553,40 +499,22 @@ const langBtn = document.getElementById(‘langBtn’);
 const langDropdown = document.getElementById(‘langDropdown’);
 
 ```
-if (!langBtn || !langDropdown) {
-    console.error('Language selector elements not found');
-    return;
-}
+if (!langBtn) return;
 
-langBtn.addEventListener('click', function(e) {
+langBtn.addEventListener('click', (e) => {
     e.stopPropagation();
-    console.log('Language button clicked');
-    
-    const isHidden = langDropdown.classList.contains('hidden');
-    
-    if (isHidden) {
-        langDropdown.style.display = 'block';
-        langDropdown.classList.remove('hidden');
-    } else {
-        langDropdown.style.display = 'none';
-        langDropdown.classList.add('hidden');
-    }
+    langDropdown.classList.toggle('hidden');
 });
 
-document.addEventListener('click', function(e) {
-    if (!e.target.closest('.language-selector')) {
-        langDropdown.style.display = 'none';
-        langDropdown.classList.add('hidden');
-    }
+document.addEventListener('click', () => {
+    langDropdown.classList.add('hidden');
 });
 
 const langOptions = document.querySelectorAll('.lang-option');
-langOptions.forEach(function(option) {
-    option.addEventListener('click', function(e) {
+langOptions.forEach(option => {
+    option.addEventListener('click', (e) => {
         e.preventDefault();
         alert('Funkcja tłumaczenia będzie dostępna wkrótce!');
-        langDropdown.style.display = 'none';
-        langDropdown.classList.add('hidden');
     });
 });
 ```
@@ -607,44 +535,18 @@ const passengerPanel = document.getElementById(‘passengerPanel’);
 const doneBtn = document.getElementById(‘doneBtn’);
 
 ```
-if (!passengerBtn || !passengerPanel || !doneBtn) {
-    console.error('Passenger panel elements not found');
-    return;
-}
-
-passengerBtn.addEventListener('click', function(e) {
-    e.stopPropagation();
-    console.log('Passenger button clicked');
-    
-    const isHidden = passengerPanel.classList.contains('hidden');
-    
-    if (isHidden) {
-        passengerPanel.style.display = 'block';
-        passengerPanel.classList.remove('hidden');
-    } else {
-        passengerPanel.style.display = 'none';
-        passengerPanel.classList.add('hidden');
-    }
+passengerBtn.addEventListener('click', () => {
+    passengerPanel.classList.toggle('hidden');
 });
 
-doneBtn.addEventListener('click', function() {
-    passengerPanel.style.display = 'none';
+doneBtn.addEventListener('click', () => {
     passengerPanel.classList.add('hidden');
     updatePassengerSummary();
 });
 
-// Zamknij panel po kliknięciu poza nim
-document.addEventListener('click', function(e) {
-    if (!e.target.closest('.passenger-button') && !e.target.closest('#passengerPanel')) {
-        passengerPanel.style.display = 'none';
-        passengerPanel.classList.add('hidden');
-    }
-});
-
 const counters = document.querySelectorAll('.btn-counter');
-counters.forEach(function(btn) {
-    btn.addEventListener('click', function(e) {
-        e.stopPropagation();
+counters.forEach(btn => {
+    btn.addEventListener('click', () => {
         const type = btn.getAttribute('data-type');
         const action = btn.getAttribute('data-action');
         updateCounter(type, action);
@@ -652,7 +554,7 @@ counters.forEach(function(btn) {
 });
 
 const classInputs = document.querySelectorAll('input[name="class"]');
-classInputs.forEach(function(input) {
+classInputs.forEach(input => {
     input.addEventListener('change', updatePassengerSummary);
 });
 ```
@@ -660,12 +562,10 @@ classInputs.forEach(function(input) {
 }
 
 function updateCounter(type, action) {
-const countElement = document.getElementById(type + ‘Count’);
-if (!countElement) return;
-
-```
+const countElement = document.getElementById(`${type}Count`);
 let currentValue = passengers[type];
 
+```
 if (action === 'plus') {
     if (getTotalPassengers() < 9) {
         passengers[type]++;
@@ -691,28 +591,57 @@ return passengers.adult + passengers.teen + passengers.child + passengers.disabl
 }
 
 function updatePassengerSummary() {
-const selectedClassInput = document.querySelector(‘input[name=“class”]:checked’);
-if (!selectedClassInput) return;
-
-```
-const selectedClass = selectedClassInput.value;
+const selectedClass = document.querySelector(‘input[name=“class”]:checked’).value;
 const classNames = {
-    economy: 'Ekonomiczna',
-    premium: 'Premium',
-    business: 'Biznes',
-    first: 'Pierwsza'
+economy: ‘Ekonomiczna’,
+premium: ‘Premium’,
+business: ‘Biznes’,
+first: ‘Pierwsza’
 };
 
+```
 const parts = [];
-if (passengers.adult > 0) parts.push(passengers.adult + ' Dorosły(ch)');
-if (passengers.teen > 0) parts.push(passengers.teen + ' Nastolatek/Nastolatków');
-if (passengers.child > 0) parts.push(passengers.child + ' Dziecko/Dzieci');
-if (passengers.disabled > 0) parts.push(passengers.disabled + ' Osoba niepełnosprawna');
+if (passengers.adult > 0) parts.push(`${passengers.adult} Dorosły(ch)`);
+if (passengers.teen > 0) parts.push(`${passengers.teen} Nastolatek/Nastolatków`);
+if (passengers.child > 0) parts.push(`${passengers.child} Dziecko/Dzieci`);
+if (passengers.disabled > 0) parts.push(`${passengers.disabled} Osoba niepełnosprawna`);
 
 const passengerText = parts.join(', ');
-const summaryElement = document.getElementById('passengerSummary');
-if (summaryElement) {
-    summaryElement.textContent = passengerText + ', ' + classNames[selectedClass];
+document.getElementById('passengerSummary').textContent = 
+    `${passengerText}, ${classNames[selectedClass]}`;
+```
+
+}
+
+// ========== PANEL INFORMACJE I POMOC ==========
+function initInfoHelpPanel() {
+const infoHelpBtn = document.getElementById(‘infoHelpBtn’);
+const infoHelpPanel = document.getElementById(‘infoHelpPanel’);
+const infoHelpOverlay = document.getElementById(‘infoHelpOverlay’);
+const infoHelpClose = document.getElementById(‘infoHelpClose’);
+
+```
+if (!infoHelpBtn) return;
+
+infoHelpBtn.addEventListener('click', (e) => {
+    e.preventDefault();
+    infoHelpPanel.classList.add('active');
+    infoHelpOverlay.classList.add('active');
+    document.body.style.overflow = 'hidden';
+});
+
+infoHelpClose.addEventListener('click', () => {
+    closeInfoHelpPanel();
+});
+
+infoHelpOverlay.addEventListener('click', () => {
+    closeInfoHelpPanel();
+});
+
+function closeInfoHelpPanel() {
+    infoHelpPanel.classList.remove('active');
+    infoHelpOverlay.classList.remove('active');
+    document.body.style.overflow = 'auto';
 }
 ```
 
@@ -721,43 +650,19 @@ if (summaryElement) {
 // ========== OBSŁUGA FORMULARZA ==========
 function initFormHandler() {
 const searchForm = document.getElementById(‘searchForm’);
-if (!searchForm) return;
-
-```
-searchForm.addEventListener('submit', handleSubmit);
-```
-
+searchForm.addEventListener(‘submit’, handleSubmit);
 }
 
 function handleSubmit(e) {
 e.preventDefault();
 
 ```
-const fromInput = document.getElementById('from');
-const toInput = document.getElementById('to');
-const dateInput = document.getElementById('date');
-const tripTypeInput = document.querySelector('input[name="tripType"]:checked');
-const travelClassInput = document.querySelector('input[name="class"]:checked');
-
-if (!fromInput || !toInput || !dateInput || !tripTypeInput || !travelClassInput) return;
-
-const from = fromInput.value;
-const to = toInput.value;
-const date = dateInput.value;
-const tripType = tripTypeInput.value;
-const returnDateInput = document.getElementById('returnDate');
-const returnDate = tripType === 'roundtrip' && returnDateInput ? returnDateInput.value : null;
-const travelClass = travelClassInput.value;
-
-if (!from) {
-    alert('Proszę wybrać lotnisko wylotu');
-    return;
-}
-
-if (!to) {
-    alert('Proszę wybrać lotnisko przylotu');
-    return;
-}
+const from = document.getElementById('from').value;
+const to = document.getElementById('to').value;
+const date = document.getElementById('date').value;
+const tripType = document.querySelector('input[name="tripType"]:checked').value;
+const returnDate = tripType === 'roundtrip' ? document.getElementById('returnDate').value : null;
+const travelClass = document.querySelector('input[name="class"]:checked').value;
 
 if (!date) {
     alert('Proszę wybrać datę wylotu');
@@ -775,57 +680,17 @@ if (from === to) {
 }
 
 const searchData = {
-    from: from,
-    to: to,
-    date: date,
-    tripType: tripType,
-    returnDate: returnDate,
+    from,
+    to,
+    date,
+    tripType,
+    returnDate,
     class: travelClass,
-    passengers: {
-        adult: passengers.adult,
-        teen: passengers.teen,
-        child: passengers.child,
-        disabled: passengers.disabled
-    }
+    passengers: { ...passengers }
 };
 
 localStorage.setItem('searchData', JSON.stringify(searchData));
 window.location.href = 'results.html';
-```
-
-}
-
-// ========== HAMBURGER MENU ==========
-function initHamburgerMenu() {
-const hamburgerBtn = document.getElementById(‘hamburgerBtn’);
-const mobileMenu = document.getElementById(‘mobileMenu’);
-const mobileMenuOverlay = document.getElementById(‘mobileMenuOverlay’);
-const mobileMenuClose = document.getElementById(‘mobileMenuClose’);
-
-```
-if (!hamburgerBtn || !mobileMenu || !mobileMenuOverlay || !mobileMenuClose) return;
-
-hamburgerBtn.addEventListener('click', function(e) {
-    e.stopPropagation();
-    hamburgerBtn.classList.toggle('active');
-    mobileMenu.classList.toggle('active');
-    mobileMenuOverlay.classList.toggle('active');
-    document.body.style.overflow = mobileMenu.classList.contains('active') ? 'hidden' : '';
-});
-
-mobileMenuClose.addEventListener('click', function() {
-    hamburgerBtn.classList.remove('active');
-    mobileMenu.classList.remove('active');
-    mobileMenuOverlay.classList.remove('active');
-    document.body.style.overflow = '';
-});
-
-mobileMenuOverlay.addEventListener('click', function() {
-    hamburgerBtn.classList.remove('active');
-    mobileMenu.classList.remove('active');
-    mobileMenuOverlay.classList.remove('active');
-    document.body.style.overflow = '';
-});
 ```
 
 }
