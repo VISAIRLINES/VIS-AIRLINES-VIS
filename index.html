@@ -4,626 +4,252 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vis Airlines - Rezerwacja Lotów</title>
+    <title>VIS Airlines - Rezerwacja lotów</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <!-- Górny pasek nawigacyjny -->
-    <nav class="top-nav">
-        <div class="nav-container">
-            <div class="logo">VIS AIRLINES</div>
-            <div class="nav-links">
-                <a href="#" class="nav-link active">Zarezerwuj</a>
-                <a href="#" class="nav-link">Odpraw się</a>
-                <a href="#" class="nav-link">Zarządzaj podróżą</a>
-                <a href="#" class="nav-link">Zaplanuj podróż</a>
-                <a href="#" class="nav-link">Informacje i pomoc</a>
-            </div>
-            <div class="language-selector">
-                <button class="lang-btn" id="langBtn">
-                    <span class="flag">PL</span>
-                    <span class="arrow-down">▼</span>
-                </button>
-                <div class="lang-dropdown hidden" id="langDropdown">
-                    <a href="#" class="lang-option" data-lang="pl">Polski</a>
-                    <a href="#" class="lang-option" data-lang="en">English</a>
-                    <a href="#" class="lang-option" data-lang="de">Deutsch</a>
-                    <a href="#" class="lang-option" data-lang="fr">Français</a>
-                    <a href="#" class="lang-option" data-lang="es">Español</a>
+    <!-- NAGŁÓWEK -->
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <h1 class="logo">VIS AIRLINES</h1>
+                <div class="header-right">
+                    <select class="language-select">
+                        <option value="pl">PL</option>
+                        <option value="en">EN</option>
+                    </select>
+                    <button class="user-btn" id="userBtn">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                            <circle cx="12" cy="7" r="4"></circle>
+                        </svg>
+                    </button>
                 </div>
             </div>
-            <button class="account-btn" id="accountBtn">
-                <span class="account-icon">👤</span>
-            </button>
         </div>
-    </nav>
+    </header>
 
-```
-<header>
+
+<!-- HERO SECTION Z WYSZUKIWARKĄ -->
+<section class="hero">
     <div class="container">
-        <h1>VIS AIRLINES</h1>
-        <p class="tagline">Twoja podróż zaczyna się tutaj</p>
-    </div>
-</header>
+        <div class="search-box">
+            <h2 class="search-title">Zarezerwuj swój lot</h2>
+            
+            <!-- RADIO BUTTONS: W JEDNĄ STRONĘ / W OBE STRONY -->
+            <div class="trip-type">
+                <label class="radio-label">
+                    <input type="radio" name="tripType" value="oneWay" checked>
+                    <span>W jedną stronę</span>
+                </label>
+                <label class="radio-label">
+                    <input type="radio" name="tripType" value="roundTrip">
+                    <span>W obie strony</span>
+                </label>
+            </div>
 
-<main class="container">
-    <section class="search-section">
-        <h2>Zarezerwuj swój lot</h2>
-        
-        <!-- Wybór rodzaju podróży -->
-        <div class="trip-type">
-            <label class="trip-option">
-                <input type="radio" name="tripType" value="oneway" checked>
-                <span>W jedną stronę</span>
-            </label>
-            <label class="trip-option">
-                <input type="radio" name="tripType" value="roundtrip">
-                <span>W obie strony</span>
-            </label>
+            <!-- FORMULARZ WYSZUKIWANIA -->
+            <div class="search-form">
+                <!-- SKĄD -->
+                <div class="form-field">
+                    <label>Skąd</label>
+                    <button class="field-btn" id="fromBtn">
+                        <span id="fromText">Wybierz lotnisko</span>
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="6 9 12 15 18 9"></polyline>
+                        </svg>
+                    </button>
+                </div>
+
+                <!-- DOKĄD -->
+                <div class="form-field">
+                    <label>Dokąd</label>
+                    <button class="field-btn" id="toBtn">
+                        <span id="toText">Wybierz lotnisko</span>
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="6 9 12 15 18 9"></polyline>
+                        </svg>
+                    </button>
+                </div>
+
+                <!-- DATA WYLOTU -->
+                <div class="form-field">
+                    <label>Data wylotu</label>
+                    <button class="field-btn" id="dateBtn">
+                        <span id="dateText">Wybierz datę</span>
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                            <line x1="16" y1="2" x2="16" y2="6"></line>
+                            <line x1="8" y1="2" x2="8" y2="6"></line>
+                            <line x1="3" y1="10" x2="21" y2="10"></line>
+                        </svg>
+                    </button>
+                </div>
+
+                <!-- PASAŻEROWIE I KLASA -->
+                <div class="form-field">
+                    <label>Pasażerowie i klasa</label>
+                    <button class="field-btn" id="passengerBtn">
+                        <span id="passengerText">1 Dorosły, Ekonomiczna</span>
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="6 9 12 15 18 9"></polyline>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+
+            <!-- PRZYCISK SZUKAJ -->
+            <button class="search-btn">Szukaj lotów</button>
         </div>
+    </div>
+</section>
 
-        <form id="searchForm" class="search-form">
-            <div class="form-group">
-                <label for="from">Skąd</label>
-                <div class="custom-select" id="fromSelect">
-                    <div class="select-header">
-                        <span class="select-value placeholder">Wybierz lotnisko</span>
-                        <span class="arrow-down">▼</span>
-                    </div>
+<!-- MODAL: LOGOWANIE/REJESTRACJA -->
+<div class="modal" id="authModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3 id="authTitle">Zaloguj się</h3>
+            <button class="close-btn" data-modal="authModal">&times;</button>
+        </div>
+        <div class="modal-body">
+            <form id="authForm">
+                <div class="form-group" id="nameGroup" style="display: none;">
+                    <input type="text" placeholder="Imię i nazwisko" class="input-field">
                 </div>
-                <input type="hidden" id="from" name="from" required>
-            </div>
-
-            <div class="form-group">
-                <label for="to">Dokąd</label>
-                <div class="custom-select" id="toSelect">
-                    <div class="select-header">
-                        <span class="select-value placeholder">Wybierz lotnisko</span>
-                        <span class="arrow-down">▼</span>
-                    </div>
+                <div class="form-group">
+                    <input type="email" placeholder="Email" class="input-field" required>
                 </div>
-                <input type="hidden" id="to" name="to" required>
-            </div>
-
-            <div class="form-group">
-                <label for="date">Data wylotu</label>
-                <div class="date-input-wrapper">
-                    <input type="text" id="dateDisplay" readonly placeholder="Wybierz datę" required>
+                <div class="form-group">
+                    <input type="password" placeholder="Hasło" class="input-field" required>
                 </div>
-                <input type="hidden" id="date">
-                <div id="calendarDropdown" class="calendar-dropdown hidden"></div>
-            </div>
-
-            <div class="form-group" id="returnDateGroup" style="display: none;">
-                <label for="returnDate">Data powrotu</label>
-                <div class="date-input-wrapper">
-                    <input type="text" id="returnDateDisplay" readonly placeholder="Wybierz datę">
+                <div class="form-group" id="confirmGroup" style="display: none;">
+                    <input type="password" placeholder="Powtórz hasło" class="input-field">
                 </div>
-                <input type="hidden" id="returnDate">
-                <div id="returnCalendarDropdown" class="calendar-dropdown hidden"></div>
-            </div>
+                <button type="submit" class="btn-primary" id="authSubmitBtn">Zaloguj się</button>
+                <div class="auth-switch">
+                    <button type="button" id="switchAuthMode">Nie masz konta? Zarejestruj się</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
 
-            <div class="form-group">
-                <label>Pasażerowie i klasa</label>
-                <button type="button" class="passenger-button" id="passengerBtn">
-                    <span id="passengerSummary">1 Dorosły, Ekonomiczna</span>
-                    <span class="arrow-down">▼</span>
-                </button>
-            </div>
+<!-- MODAL: WYBÓR LOTNISKA SKĄD -->
+<div class="modal" id="fromModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>Wybierz lotnisko wylotu</h3>
+            <button class="close-btn" data-modal="fromModal">&times;</button>
+        </div>
+        <div class="modal-body">
+            <input type="text" placeholder="Szukaj lotniska..." class="search-input" id="searchFrom">
+            <div class="airport-list" id="fromAirportList"></div>
+        </div>
+    </div>
+</div>
 
-            <button type="submit" class="btn-search">Szukaj lotów</button>
-        </form>
+<!-- MODAL: WYBÓR LOTNISKA DOKĄD -->
+<div class="modal" id="toModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>Wybierz lotnisko przylotu</h3>
+            <button class="close-btn" data-modal="toModal">&times;</button>
+        </div>
+        <div class="modal-body">
+            <input type="text" placeholder="Szukaj lotniska..." class="search-input" id="searchTo">
+            <div class="airport-list" id="toAirportList"></div>
+        </div>
+    </div>
+</div>
 
-        <!-- Panel wyboru pasażerów -->
-        <div id="passengerPanel" class="passenger-panel hidden">
+<!-- MODAL: KALENDARZ -->
+<div class="modal" id="dateModal">
+    <div class="modal-content modal-large">
+        <div class="modal-header">
+            <h3>Wybierz datę wylotu</h3>
+            <button class="close-btn" data-modal="dateModal">&times;</button>
+        </div>
+        <div class="modal-body">
+            <div id="calendar"></div>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL: PASAŻEROWIE I KLASA -->
+<div class="modal" id="passengerModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>Pasażerowie i klasa</h3>
+            <button class="close-btn" data-modal="passengerModal">&times;</button>
+        </div>
+        <div class="modal-body">
+            <!-- LICZBA PASAŻERÓW -->
             <div class="passenger-section">
-                <h3>Liczba pasażerów</h3>
+                <h4>Liczba pasażerów</h4>
                 
                 <div class="passenger-row">
                     <div class="passenger-info">
-                        <strong>Dorośli</strong>
-                        <span>14+ lat</span>
+                        <div class="passenger-label">Dorośli</div>
+                        <div class="passenger-sublabel">12+ lat</div>
                     </div>
                     <div class="counter">
-                        <button type="button" class="btn-counter" data-type="adult" data-action="minus">−</button>
-                        <span id="adultCount">1</span>
-                        <button type="button" class="btn-counter" data-type="adult" data-action="plus">+</button>
+                        <button class="counter-btn" data-action="decrease" data-type="adults">−</button>
+                        <span class="counter-value" id="adultsCount">1</span>
+                        <button class="counter-btn" data-action="increase" data-type="adults">+</button>
                     </div>
                 </div>
 
                 <div class="passenger-row">
                     <div class="passenger-info">
-                        <strong>Nastolatki</strong>
-                        <span>3-13 lat</span>
+                        <div class="passenger-label">Dzieci</div>
+                        <div class="passenger-sublabel">2-11 lat</div>
                     </div>
                     <div class="counter">
-                        <button type="button" class="btn-counter" data-type="teen" data-action="minus">−</button>
-                        <span id="teenCount">0</span>
-                        <button type="button" class="btn-counter" data-type="teen" data-action="plus">+</button>
+                        <button class="counter-btn" data-action="decrease" data-type="children">−</button>
+                        <span class="counter-value" id="childrenCount">0</span>
+                        <button class="counter-btn" data-action="increase" data-type="children">+</button>
                     </div>
                 </div>
 
                 <div class="passenger-row">
                     <div class="passenger-info">
-                        <strong>Dzieci</strong>
-                        <span>Do 2 lat</span>
+                        <div class="passenger-label">Niemowlęta</div>
+                        <div class="passenger-sublabel">0-2 lata</div>
                     </div>
                     <div class="counter">
-                        <button type="button" class="btn-counter" data-type="child" data-action="minus">−</button>
-                        <span id="childCount">0</span>
-                        <button type="button" class="btn-counter" data-type="child" data-action="plus">+</button>
-                    </div>
-                </div>
-
-                <div class="passenger-row">
-                    <div class="passenger-info">
-                        <strong>Osoby niepełnosprawne</strong>
-                        <span>Wymagana pomoc</span>
-                    </div>
-                    <div class="counter">
-                        <button type="button" class="btn-counter" data-type="disabled" data-action="minus">−</button>
-                        <span id="disabledCount">0</span>
-                        <button type="button" class="btn-counter" data-type="disabled" data-action="plus">+</button>
+                        <button class="counter-btn" data-action="decrease" data-type="infants">−</button>
+                        <span class="counter-value" id="infantsCount">0</span>
+                        <button class="counter-btn" data-action="increase" data-type="infants">+</button>
                     </div>
                 </div>
             </div>
 
+            <!-- KLASA LOTU -->
             <div class="class-section">
-                <h3>Klasa podróży</h3>
-                <label class="class-option">
-                    <input type="radio" name="class" value="economy" checked>
-                    <span>Ekonomiczna</span>
-                </label>
-                <label class="class-option">
-                    <input type="radio" name="class" value="premium">
-                    <span>Premium</span>
-                </label>
-                <label class="class-option">
-                    <input type="radio" name="class" value="business">
-                    <span>Biznes</span>
-                </label>
-                <label class="class-option">
-                    <input type="radio" name="class" value="first">
-                    <span>Pierwsza</span>
-                </label>
-            </div>
-
-            <button type="button" class="btn-done" id="doneBtn">Gotowe</button>
-        </div>
-    </section>
-
-    <!-- Dodatkowe usługi -->
-    <section class="additional-services">
-        <h3>Zaplanuj swoją podróż</h3>
-        <div class="services-grid">
-            <a href="#" class="service-card">
-                <div class="service-icon">🏨</div>
-                <div class="service-name">Hotel</div>
-            </a>
-            <a href="#" class="service-card">
-                <div class="service-icon">🚗</div>
-                <div class="service-name">Samochód</div>
-            </a>
-            <a href="#" class="service-card">
-                <div class="service-icon">🅿️</div>
-                <div class="service-name">Parking</div>
-            </a>
-            <a href="#" class="service-card">
-                <div class="service-icon">📄</div>
-                <div class="service-name">Dokumenty Podróży</div>
-            </a>
-            <a href="#" class="service-card">
-                <div class="service-icon">📱</div>
-                <div class="service-name">Karta eSIM</div>
-            </a>
-            <a href="#" class="service-card">
-                <div class="service-icon">🚐</div>
-                <div class="service-name">Transfer lotnisko/hotel</div>
-            </a>
-        </div>
-    </section>
-
-    <!-- Sekcja Odkryj nasze loty -->
-    <section class="flights-showcase">
-        <div class="flights-showcase-header">
-            <h3>Odkryj nasze loty</h3>
-            <div class="flights-tabs">
-                <button class="flights-tab active">Loty</button>
-            </div>
-        </div>
-        <p class="flights-subtitle">Odkryj nasze najlepsze okazje w Klasie <strong>Economy</strong> z wylotem z <strong>CPK</strong></p>
-        
-        <div class="flights-list">
-            <!-- Gdańsk -->
-            <div class="flight-showcase-card">
-                <div class="flight-showcase-image">
-                    <img src="https://zdjecianoclegi.pl/imagesfly/big/9154/gdansk_001-40vlP6LXFSRN.jpg" alt="Gdańsk">
-                </div>
-                <div class="flight-showcase-content">
-                    <h4>Gdańsk</h4>
-                    <p class="flight-country">(Polska)</p>
-                    <div class="flight-showcase-footer">
-                        <div class="flight-type">
-                            <span class="flight-icon">✈</span>
-                            <span>W jedną stronę</span>
-                        </div>
-                        <div class="flight-price">
-                            <span class="price-label">Od</span>
-                            <span class="price-value">100 PLN*</span>
-                        </div>
-                    </div>
+                <h4>Klasa lotu</h4>
+                <div class="class-options">
+                    <label class="class-option">
+                        <input type="radio" name="class" value="economy" checked>
+                        <span>Ekonomiczna</span>
+                    </label>
+                    <label class="class-option">
+                        <input type="radio" name="class" value="business">
+                        <span>Biznes</span>
+                    </label>
+                    <label class="class-option">
+                        <input type="radio" name="class" value="first">
+                        <span>Pierwsza</span>
+                    </label>
                 </div>
             </div>
 
-            <!-- Nicea -->
-            <div class="flight-showcase-card">
-                <div class="flight-showcase-image">
-                    <img src="https://s7.tvp.pl/images2/7/8/1/uid_7818e08f53554ed4a7a002e66d48f743_width_943_play_0_pos_0_gs_0_height_0_nicea-wieczorowa-pora-to-francuskie-miasto-lezy-w-regionie-prowansja-alpy-lazurowe-wybrzeze-fot-fokke-baarssenshutterstock.jpg" alt="Nicea">
-                </div>
-                <div class="flight-showcase-content">
-                    <h4>Nicea</h4>
-                    <p class="flight-country">(Francja)</p>
-                    <div class="flight-showcase-footer">
-                        <div class="flight-type">
-                            <span class="flight-icon">✈</span>
-                            <span>W jedną stronę</span>
-                        </div>
-                        <div class="flight-price">
-                            <span class="price-label">Od</span>
-                            <span class="price-value">250 PLN*</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Nowy Jork -->
-            <div class="flight-showcase-card">
-                <div class="flight-showcase-image">
-                    <img src="https://res.cloudinary.com/shipit-cdn/images/c_scale,w_448,h_299,dpr_2/f_auto,q_auto/v1733410609/wordpress/new-york/new-york.jpg?_i=AA" alt="Nowy Jork">
-                </div>
-                <div class="flight-showcase-content">
-                    <h4>Nowy Jork</h4>
-                    <p class="flight-country">(USA)</p>
-                    <div class="flight-showcase-footer">
-                        <div class="flight-type">
-                            <span class="flight-icon">✈</span>
-                            <span>W jedną stronę</span>
-                        </div>
-                        <div class="flight-price">
-                            <span class="price-label">Wkrótce</span>
-                            <span class="price-value-coming">Już niedługo</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Sekcja Na skróty - NOWA NOWOCZESNA WERSJA -->
-    <section class="shortcuts-section">
-        <h3>Przydatne informacje</h3>
-        <div class="shortcuts-grid-new">
-            <a href="#" class="shortcut-card-new">
-                <div class="shortcut-icon-new">🧳</div>
-                <div class="shortcut-content-new">
-                    <h4>Bagaż</h4>
-                    <p>Sprawdź limity bagażowe</p>
-                </div>
-                <span class="shortcut-arrow">→</span>
-            </a>
-            
-            <a href="#" class="shortcut-card-new">
-                <div class="shortcut-icon-new">📋</div>
-                <div class="shortcut-content-new">
-                    <h4>Zamów fakturę</h4>
-                    <p>Pobierz fakturę VAT</p>
-                </div>
-                <span class="shortcut-arrow">→</span>
-            </a>
-            
-            <a href="#" class="shortcut-card-new">
-                <div class="shortcut-icon-new">🐾</div>
-                <div class="shortcut-content-new">
-                    <h4>Podróż ze zwierzętami</h4>
-                    <p>Zasady przewozu pupili</p>
-                </div>
-                <span class="shortcut-arrow">→</span>
-            </a>
-            
-            <a href="#" class="shortcut-card-new">
-                <div class="shortcut-icon-new">💰</div>
-                <div class="shortcut-content-new">
-                    <h4>Tanie loty</h4>
-                    <p>Znajdź najlepsze oferty</p>
-                </div>
-                <span class="shortcut-arrow">→</span>
-            </a>
-            
-            <a href="#" class="shortcut-card-new">
-                <div class="shortcut-icon-new">👜</div>
-                <div class="shortcut-content-new">
-                    <h4>Bagaż podręczny</h4>
-                    <p>Co możesz zabrać na pokład</p>
-                </div>
-                <span class="shortcut-arrow">→</span>
-            </a>
-            
-            <a href="#" class="shortcut-card-new">
-                <div class="shortcut-icon-new">✈️</div>
-                <div class="shortcut-content-new">
-                    <h4>Odprawa online</h4>
-                    <p>Odpraw się przed lotem</p>
-                </div>
-                <span class="shortcut-arrow">→</span>
-            </a>
-            
-            <a href="#" class="shortcut-card-new">
-                <div class="shortcut-icon-new">🔄</div>
-                <div class="shortcut-content-new">
-                    <h4>Przesiadka w Warszawie</h4>
-                    <p>Informacje o transferze</p>
-                </div>
-                <span class="shortcut-arrow">→</span>
-            </a>
-            
-            <a href="#" class="shortcut-card-new">
-                <div class="shortcut-icon-new">💼</div>
-                <div class="shortcut-content-new">
-                    <h4>Bagaż rejestrowany</h4>
-                    <p>Dodaj bagaż do rezerwacji</p>
-                </div>
-                <span class="shortcut-arrow">→</span>
-            </a>
-            
-            <a href="#" class="shortcut-card-new">
-                <div class="shortcut-icon-new">🍽️</div>
-                <div class="shortcut-content-new">
-                    <h4>Posiłki i napoje</h4>
-                    <p>Menu na pokładzie</p>
-                </div>
-                <span class="shortcut-arrow">→</span>
-            </a>
-            
-            <a href="#" class="shortcut-card-new">
-                <div class="shortcut-icon-new">🎁</div>
-                <div class="shortcut-content-new">
-                    <h4>Promocje i oferty</h4>
-                    <p>Aktualne rabaty</p>
-                </div>
-                <span class="shortcut-arrow">→</span>
-            </a>
-        </div>
-    </section>
-</main>
-
-<footer class="footer-main">
-    <div class="footer-container">
-        <div class="footer-grid">
-            <!-- Kolumna 1: O VIS -->
-            <div class="footer-column">
-                <h4>O VIS</h4>
-                <ul class="footer-links">
-                    <li><a href="#">O nas</a></li>
-                    <li><a href="#">Kariera</a></li>
-                    <li><a href="#">Biuro Prasowe</a></li>
-                    <li><a href="#">Corporate</a></li>
-                    <li><a href="#">Newsletter</a></li>
-                    <li><a href="#">Blog podróżniczy</a></li>
-                    <li><a href="#">Dostępność cyfrowa</a></li>
-                </ul>
-            </div>
-
-            <!-- Kolumna 2: Oferta dodatkowa -->
-            <div class="footer-column">
-                <h4>Oferta dodatkowa</h4>
-                <ul class="footer-links">
-                    <li><a href="#">VIS dla Grup</a></li>
-                    <li><a href="#">VIS Dla Firm</a></li>
-                    <li><a href="#">VIS Cargo</a></li>
-                    <li><a href="#">VIS Charters</a></li>
-                    <li><a href="#">VIS dla Agentów</a></li>
-                    <li><a href="#">VIS MICE</a></li>
-                    <li><a href="#">Sklep VIS</a></li>
-                </ul>
-            </div>
-
-            <!-- Kolumna 3: Podróż z VIS -->
-            <div class="footer-column">
-                <h4>Podróż z VIS</h4>
-                <ul class="footer-links">
-                    <li><a href="#">Usługi dodatkowe</a></li>
-                    <li><a href="#">Bagaż</a></li>
-                    <li><a href="#">VIS Upgrade</a></li>
-                    <li><a href="#">Nasze kierunki</a></li>
-                    <li><a href="#">Obsługa pasażera</a></li>
-                    <li><a href="#">Miles & More</a></li>
-                </ul>
-            </div>
-
-            <!-- Kolumna 4: Social Media -->
-            <div class="footer-column">
-                <h4>Śledź nas na</h4>
-                <div class="social-icons">
-                    <a href="#" class="social-icon" aria-label="Facebook">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-                            <path d="M9.197 21v-8.196H6V9.466h3.197V7.073c0-3.16 1.93-4.88 4.75-4.88 1.35 0 2.51.1 2.85.145v3.305h-1.956c-1.534 0-1.832.73-1.832 1.8v2.36h3.662l-.477 3.338h-3.185V21"/>
-                        </svg>
-                    </a>
-                    <a href="#" class="social-icon" aria-label="YouTube">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-                            <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
-                        </svg>
-                    </a>
-                    <a href="#" class="social-icon" aria-label="LinkedIn">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-                            <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
-                        </svg>
-                    </a>
-                    <a href="#" class="social-icon" aria-label="Instagram">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-                            <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
-                        </svg>
-                    </a>
-                    <a href="#" class="social-icon" aria-label="Twitter/X">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-                            <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
-                        </svg>
-                    </a>
-                </div>
-                <div class="footer-apps">
-                    <p style="margin-bottom: 12px; font-size: 0.9rem; color: #ccc;">Ściągnij naszą aplikację</p>
-                    <div class="app-badges">
-                        <a href="#" class="app-badge">
-                            <img src="https://upload.wikimedia.org/wikipedia/commons/7/78/Google_Play_Store_badge_EN.svg" alt="Google Play" style="height: 40px;">
-                        </a>
-                        <a href="#" class="app-badge">
-                            <img src="https://upload.wikimedia.org/wikipedia/commons/3/3c/Download_on_the_App_Store_Badge.svg" alt="App Store" style="height: 40px;">
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Nagrody/Certyfikaty -->
-        <div class="footer-awards">
-            <p style="color: #aaa; font-size: 0.9rem; margin-bottom: 15px;">Nasze wyróżnienia</p>
-            <div style="display: flex; gap: 20px; align-items: center;">
-                <div style="width: 60px; height: 60px; background: #ffd700; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 0.7rem; text-align: center; color: #1a1a1a;">Skytrax<br>5★</div>
-                <div style="width: 60px; height: 60px; background: #ffd700; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 0.7rem; text-align: center; color: #1a1a1a;">World's<br>Best</div>
-            </div>
-        </div>
-
-        <!-- Metody płatności -->
-        <div class="footer-payments">
-            <h5 style="color: #fff; margin-bottom: 15px; font-size: 1rem;">Metody płatności</h5>
-            <div class="payment-methods">
-                <div class="payment-icon">VISA</div>
-                <div class="payment-icon">Mastercard</div>
-                <div class="payment-icon">PayPal</div>
-                <div class="payment-icon">Klarna</div>
-                <div class="payment-icon">PayU</div>
-                <div class="payment-icon">Blik</div>
-            </div>
-        </div>
-
-        <!-- Sojusz -->
-        <div class="footer-alliance">
-            <p style="color: #aaa; font-size: 0.9rem; margin-bottom: 12px;">Jesteśmy częścią</p>
-            <div style="display: flex; align-items: center; gap: 15px;">
-                <div style="background: white; padding: 12px 24px; border-radius: 6px; display: flex; align-items: center; gap: 10px;">
-                    <span style="font-size: 1.8rem; color: #e30613;">✈</span>
-                    <span style="font-weight: 700; color: #1a1a1a; font-size: 1.1rem;">oneworld</span>
-                    <span style="color: #888; font-size: 0.8rem; margin-left: 5px;">ALLIANCE MEMBER</span>
-                </div>
-            </div>
-        </div>
-
-        <!-- Dolna belka z linkami -->
-        <div class="footer-bottom">
-            <div class="footer-bottom-links">
-                <a href="#">Kontakt</a>
-                <a href="#">Regulacje lotnicze</a>
-                <a href="#">Regulaminy</a>
-                <a href="#">Ochrona Danych Osobowych</a>
-                <a href="#">Cyberbezpieczeństwo</a>
-                <a href="#">Mapa serwisu</a>
-                <a href="#">BIP - Biuletyn Informacji Publicznej</a>
-            </div>
-            <p class="footer-copyright">&copy; VIS.com 2024. Wszelkie prawa zastrzeżone.</p>
-        </div>
-    </div>
-</footer>
-
-<!-- Modal logowania -->
-<div id="loginModal" class="modal hidden">
-    <div class="modal-content" style="max-width: 400px;">
-        <button class="modal-close" id="loginModalClose">&times;</button>
-        <h2 id="loginModalTitle">Zaloguj się</h2>
-        <form id="loginForm" style="margin-top: 20px;">
-            <div style="margin-bottom: 15px;">
-                <label style="display: block; margin-bottom: 5px; font-weight: 600; color: #555;">Email</label>
-                <input type="email" placeholder="Wprowadź email" style="width: 100%; padding: 10px; border: 1px solid #d0d0d0; border-radius: 4px;">
-            </div>
-            <div style="margin-bottom: 20px;">
-                <label style="display: block; margin-bottom: 5px; font-weight: 600; color: #555;">Hasło</label>
-                <input type="password" placeholder="Wprowadź hasło" style="width: 100%; padding: 10px; border: 1px solid #d0d0d0; border-radius: 4px;">
-            </div>
-            <button type="submit" class="btn-search" style="width: 100%;">Zaloguj się</button>
-        </form>
-        <p style="text-align: center; margin-top: 15px; color: #888; font-size: 0.9rem;">
-            <a href="#" id="switchToRegister" style="color: #2c3e50; text-decoration: none; font-weight: 600;">Nie masz konta? Zarejestruj się</a>
-        </p>
-    </div>
-</div>
-
-<!-- Modal wyboru lotniska -->
-<div id="airportModal" class="modal hidden">
-    <div class="modal-content" style="max-width: 500px;">
-        <button class="modal-close" id="airportModalClose">&times;</button>
-        <h2 id="airportModalTitle">Wybierz lotnisko</h2>
-        <div id="airportList" style="margin-top: 20px;">
-            <!-- Będzie wypełnione dynamicznie -->
+            <button class="btn-primary" id="confirmPassenger">Potwierdź</button>
         </div>
     </div>
 </div>
-
-<!-- Panel Informacje i pomoc -->
-<div id="infoHelpPanel" class="info-help-panel">
-    <div class="info-help-header">
-        <h2>Informacje i pomoc</h2>
-        <button class="info-help-close" id="infoHelpClose">&times;</button>
-    </div>
-    <div class="info-help-content">
-        <div class="info-help-section">
-            <h3>Specjalne wymagania</h3>
-            <ul class="info-help-links">
-                <li><a href="#">Dokumenty podróżne</a></li>
-                <li><a href="#">Podróż z dziećmi</a></li>
-                <li><a href="#">Podróżowanie ze zwierzętami</a></li>
-                <li><a href="#">Asysta i wsparcie</a></li>
-            </ul>
-        </div>
-
-        <div class="info-help-section">
-            <h3>Na pokładzie</h3>
-            <ul class="info-help-links">
-                <li><a href="#">Posiłki i napoje</a></li>
-                <li><a href="#">Klasy podróży</a></li>
-                <li><a href="#">Wybór miejsca</a></li>
-                <li><a href="#">Rozrywka na pokładzie</a></li>
-                <li><a href="#">Zobacz wszystko</a></li>
-            </ul>
-        </div>
-
-        <div class="info-help-section">
-            <h3>Na lotnisku</h3>
-            <ul class="info-help-links">
-                <li><a href="#">Odprawa</a></li>
-                <li><a href="#">Status lotu</a></li>
-                <li><a href="#">Lotnisko w Warszawie</a></li>
-                <li><a href="#">Fast Track</a></li>
-                <li><a href="#">Saloniki biznesowe</a></li>
-            </ul>
-        </div>
-
-        <div class="info-help-section">
-            <h3>Obsługa pasażera</h3>
-            <ul class="info-help-links">
-                <li><a href="#">Faktura</a></li>
-                <li><a href="#">Zmiana i zwrot biletu</a></li>
-                <li><a href="#">Programy lojalnościowe</a></li>
-                <li><a href="#">Kontakt</a></li>
-                <li><a href="#">Zobacz wszystko</a></li>
-            </ul>
-        </div>
-    </div>
-</div>
-
-<!-- Overlay dla panelu -->
-<div id="infoHelpOverlay" class="info-help-overlay"></div>
 
 <script src="script.js"></script>
-```
+
 
 </body>
 </html>
