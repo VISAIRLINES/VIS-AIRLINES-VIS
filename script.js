@@ -1,696 +1,404 @@
-// Lista lotnisk
-const airports = [
-{ value: ‘CPK’, name: ‘CPK’, country: ‘Polska’ },
-{ value: ‘GDN’, name: ‘Gdańsk’, country: ‘Polska’ },
-{ value: ‘NCE’, name: ‘Nicea’, country: ‘Francja’ },
-{ value: ‘JFK’, name: ‘Nowy Jork’, country: ‘USA’ }
-];
+// === DANE LOTNISK ===
+// Możesz łatwo dodawać nowe kraje i lotniska
+const airports = {
+‘Polska’: [
+{ code: ‘GDN’, name: ‘Lotnisko Gdańsk’, city: ‘Gdańsk’ }
+]
+};
 
-let currentSelectType = null;
+// === STAN APLIKACJI ===
+let state = {
+tripType: ‘oneWay’,
+from: null,
+to: null,
+departureDate: null,
+passengers: {
+adults: 1,
+children: 0,
+infants: 0
+},
+flightClass: ‘economy’
+};
 
-document.addEventListener(‘DOMContentLoaded’, () => {
-initCustomSelects();
+// === INICJALIZACJA ===
+document.addEventListener(‘DOMContentLoaded’, function() {
+initModals();
+initAuth();
+initAirportSearch();
 initCalendar();
-initReturnCalendar();
-initLanguageSelector();
-initAccountMenu();
-initPassengerPanel();
+initPassengerCounter();
 initTripType();
-initFormHandler();
-initInfoHelpPanel();
 });
 
-// ========== CUSTOM SELECT DROPDOWNS ==========
-function initCustomSelects() {
-const fromSelect = document.getElementById(‘fromSelect’);
-const toSelect = document.getElementById(‘toSelect’);
-const airportModal = document.getElementById(‘airportModal’);
-const airportModalClose = document.getElementById(‘airportModalClose’);
+// === OBSŁUGA MODALI ===
+function initModals() {
+// Otwieranie modali
+document.getElementById(‘userBtn’).addEventListener(‘click’, () => openModal(‘authModal’));
+document.getElementById(‘fromBtn’).addEventListener(‘click’, () => openModal(‘fromModal’));
+document.getElementById(‘toBtn’).addEventListener(‘click’, () => openModal(‘toModal’));
+document.getElementById(‘dateBtn’).addEventListener(‘click’, () => openModal(‘dateModal’));
+document.getElementById(‘passengerBtn’).addEventListener(‘click’, () => openModal(‘passengerModal’));
 
-```
-if (!fromSelect || !toSelect || !airportModal) return;
 
-initSingleSelect(fromSelect, 'from');
-initSingleSelect(toSelect, 'to');
-
-airportModalClose.addEventListener('click', () => {
-    airportModal.classList.add('hidden');
-    airportModal.style.display = 'none';
-});
-
-airportModal.addEventListener('click', (e) => {
-    if (e.target === airportModal) {
-        airportModal.classList.add('hidden');
-        airportModal.style.display = 'none';
-    }
-});
-```
-
-}
-
-function initSingleSelect(selectElement, inputId) {
-const header = selectElement.querySelector(’.select-header’);
-
-```
-if (!header) return;
-
-header.addEventListener('click', (e) => {
-    e.stopPropagation();
-    e.preventDefault();
-    
-    const airportModal = document.getElementById('airportModal');
-    const airportModalTitle = document.getElementById('airportModalTitle');
-    const airportList = document.getElementById('airportList');
-    
-    if (!airportModal || !airportModalTitle || !airportList) return;
-    
-    currentSelectType = inputId;
-    airportModalTitle.textContent = inputId === 'from' ? 'Wybierz lotnisko wylotu' : 'Wybierz lotnisko przylotu';
-    
-    renderAirportList(airportList, inputId);
-    
-    airportModal.classList.remove('hidden');
-    airportModal.style.display = 'flex';
-});
-```
-
-}
-
-function renderAirportList(container, inputId) {
-if (!container) return;
-
-```
-const countries = {};
-
-airports.forEach(airport => {
-    if (!countries[airport.country]) {
-        countries[airport.country] = [];
-    }
-    countries[airport.country].push(airport);
-});
-
-container.innerHTML = '';
-
-const sortedCountries = Object.keys(countries).sort();
-
-sortedCountries.forEach(country => {
-    const group = document.createElement('div');
-    group.className = 'airport-country-group';
-    
-    const label = document.createElement('div');
-    label.className = 'airport-country-label';
-    label.textContent = country;
-    group.appendChild(label);
-    
-    countries[country].forEach(airport => {
-        const option = document.createElement('div');
-        option.className = 'airport-option';
-        option.textContent = airport.name;
-        option.setAttribute('data-value', airport.value);
-        
-        option.addEventListener('click', () => {
-            selectAirport(airport.value, airport.name, inputId);
-        });
-        
-        group.appendChild(option);
+// Zamykanie modali
+document.querySelectorAll('.close-btn').forEach(btn => {
+    btn.addEventListener('click', function() {
+        closeModal(this.dataset.modal);
     });
-    
-    container.appendChild(group);
-});
-```
-
-}
-
-function selectAirport(value, name, inputId) {
-const selectElement = document.getElementById(inputId === ‘from’ ? ‘fromSelect’ : ‘toSelect’);
-const valueSpan = selectElement.querySelector(’.select-value’);
-const hiddenInput = document.getElementById(inputId);
-const airportModal = document.getElementById(‘airportModal’);
-
-```
-valueSpan.textContent = name;
-valueSpan.classList.remove('placeholder');
-hiddenInput.value = value;
-
-airportModal.classList.add('hidden');
-airportModal.style.display = 'none';
-```
-
-}
-
-// ========== MENU KONTA ==========
-function initAccountMenu() {
-const accountBtn = document.getElementById(‘accountBtn’);
-const loginModal = document.getElementById(‘loginModal’);
-const loginModalClose = document.getElementById(‘loginModalClose’);
-const loginModalTitle = document.getElementById(‘loginModalTitle’);
-const switchToRegister = document.getElementById(‘switchToRegister’);
-const loginForm = document.getElementById(‘loginForm’);
-
-```
-if (!accountBtn) return;
-
-accountBtn.addEventListener('click', (e) => {
-    e.stopPropagation();
-    loginModalTitle.textContent = 'Zaloguj się';
-    switchToRegister.textContent = 'Nie masz konta? Zarejestruj się';
-    loginForm.querySelector('button[type="submit"]').textContent = 'Zaloguj się';
-    loginModal.classList.remove('hidden');
 });
 
-loginModalClose.addEventListener('click', () => {
-    loginModal.classList.add('hidden');
-});
-
-loginModal.addEventListener('click', (e) => {
-    if (e.target === loginModal) {
-        loginModal.classList.add('hidden');
-    }
-});
-
-switchToRegister.addEventListener('click', (e) => {
-    e.preventDefault();
-    if (loginModalTitle.textContent === 'Zaloguj się') {
-        loginModalTitle.textContent = 'Zarejestruj się';
-        switchToRegister.textContent = 'Masz już konto? Zaloguj się';
-        loginForm.querySelector('button[type="submit"]').textContent = 'Zarejestruj się';
-    } else {
-        loginModalTitle.textContent = 'Zaloguj się';
-        switchToRegister.textContent = 'Nie masz konta? Zarejestruj się';
-        loginForm.querySelector('button[type="submit"]').textContent = 'Zaloguj się';
-    }
-});
-
-loginForm.addEventListener('submit', (e) => {
-    e.preventDefault();
-    alert('Funkcja będzie dostępna wkrótce!');
-    loginModal.classList.add('hidden');
-});
-```
-
-}
-
-// ========== WYBÓR RODZAJU PODRÓŻY ==========
-function initTripType() {
-const tripTypeInputs = document.querySelectorAll(‘input[name=“tripType”]’);
-const returnDateGroup = document.getElementById(‘returnDateGroup’);
-
-```
-tripTypeInputs.forEach(input => {
-    input.addEventListener('change', (e) => {
-        if (e.target.value === 'roundtrip') {
-            returnDateGroup.style.display = 'block';
-        } else {
-            returnDateGroup.style.display = 'none';
+// Zamykanie po kliknięciu w tło
+document.querySelectorAll('.modal').forEach(modal => {
+    modal.addEventListener('click', function(e) {
+        if (e.target === this) {
+            closeModal(this.id);
         }
     });
 });
-```
+
 
 }
 
-// ========== KALENDARZ WYLOTU ==========
-let selectedDate = null;
-let currentMonth = new Date().getMonth();
-let currentYear = new Date().getFullYear();
+function openModal(modalId) {
+document.getElementById(modalId).classList.add(‘active’);
+document.body.style.overflow = ‘hidden’;
+}
 
-function initCalendar() {
-const dateDisplay = document.getElementById(‘dateDisplay’);
-const calendarDropdown = document.getElementById(‘calendarDropdown’);
+function closeModal(modalId) {
+document.getElementById(modalId).classList.remove(‘active’);
+document.body.style.overflow = ‘auto’;
+}
 
-```
-dateDisplay.addEventListener('click', (e) => {
-    e.preventDefault();
-    e.stopPropagation();
-    calendarDropdown.classList.toggle('hidden');
+// === SYSTEM LOGOWANIA/REJESTRACJI ===
+function initAuth() {
+let authMode = ‘login’; // ‘login’ lub ‘register’
+
+
+const authTitle = document.getElementById('authTitle');
+const authSubmitBtn = document.getElementById('authSubmitBtn');
+const switchAuthBtn = document.getElementById('switchAuthMode');
+const nameGroup = document.getElementById('nameGroup');
+const confirmGroup = document.getElementById('confirmGroup');
+
+switchAuthBtn.addEventListener('click', function() {
+    authMode = authMode === 'login' ? 'register' : 'login';
     
-    if (!calendarDropdown.classList.contains('hidden')) {
-        renderCalendar();
+    if (authMode === 'login') {
+        authTitle.textContent = 'Zaloguj się';
+        authSubmitBtn.textContent = 'Zaloguj się';
+        switchAuthBtn.textContent = 'Nie masz konta? Zarejestruj się';
+        nameGroup.style.display = 'none';
+        confirmGroup.style.display = 'none';
+    } else {
+        authTitle.textContent = 'Zarejestruj się';
+        authSubmitBtn.textContent = 'Zarejestruj się';
+        switchAuthBtn.textContent = 'Masz już konto? Zaloguj się';
+        nameGroup.style.display = 'block';
+        confirmGroup.style.display = 'block';
     }
 });
 
-document.addEventListener('click', (e) => {
-    if (!e.target.closest('.form-group') || e.target.closest('#returnDateGroup')) {
-        calendarDropdown.classList.add('hidden');
-    }
+document.getElementById('authForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    alert(authMode === 'login' ? 'Logowanie...' : 'Rejestracja...');
+    closeModal('authModal');
 });
 
-const today = new Date();
-selectDate(today.getFullYear(), today.getMonth(), today.getDate());
-```
 
+}
+
+// === WYSZUKIWARKA LOTNISK ===
+function initAirportSearch() {
+renderAirports(‘fromAirportList’, ‘from’);
+renderAirports(‘toAirportList’, ‘to’);
+
+
+// Wyszukiwanie dla "Skąd"
+document.getElementById('searchFrom').addEventListener('input', function(e) {
+    filterAirports(e.target.value, 'fromAirportList');
+});
+
+// Wyszukiwanie dla "Dokąd"
+document.getElementById('searchTo').addEventListener('input', function(e) {
+    filterAirports(e.target.value, 'toAirportList');
+});
+
+
+}
+
+function renderAirports(containerId, type) {
+const container = document.getElementById(containerId);
+container.innerHTML = ‘’;
+
+
+Object.entries(airports).forEach(([country, airportList]) => {
+    const countryGroup = document.createElement('div');
+    countryGroup.className = 'country-group';
+    countryGroup.dataset.country = country;
+
+    const countryTitle = document.createElement('div');
+    countryTitle.className = 'country-title';
+    countryTitle.textContent = country;
+    countryGroup.appendChild(countryTitle);
+
+    airportList.forEach(airport => {
+        const airportItem = document.createElement('div');
+        airportItem.className = 'airport-item';
+        airportItem.dataset.search = `${airport.city} ${airport.name} ${airport.code}`.toLowerCase();
+        
+        airportItem.innerHTML = `
+            <div class="airport-name">${airport.city}</div>
+            <div class="airport-code">${airport.name} (${airport.code})</div>
+        `;
+
+        airportItem.addEventListener('click', () => selectAirport(airport, type));
+        countryGroup.appendChild(airportItem);
+    });
+
+    container.appendChild(countryGroup);
+});
+
+
+}
+
+function selectAirport(airport, type) {
+const displayText = `${airport.city} (${airport.code})`;
+
+
+if (type === 'from') {
+    state.from = airport;
+    document.getElementById('fromText').textContent = displayText;
+    closeModal('fromModal');
+} else {
+    state.to = airport;
+    document.getElementById('toText').textContent = displayText;
+    closeModal('toModal');
+}
+
+
+}
+
+function filterAirports(searchTerm, containerId) {
+const container = document.getElementById(containerId);
+const term = searchTerm.toLowerCase();
+
+
+const countryGroups = container.querySelectorAll('.country-group');
+
+countryGroups.forEach(group => {
+    const items = group.querySelectorAll('.airport-item');
+    let visibleCount = 0;
+
+    items.forEach(item => {
+        const searchText = item.dataset.search;
+        if (searchText.includes(term)) {
+            item.style.display = 'block';
+            visibleCount++;
+        } else {
+            item.style.display = 'none';
+        }
+    });
+
+    // Ukryj kraj jeśli nie ma żadnych pasujących lotnisk
+    group.style.display = visibleCount > 0 ? 'block' : 'none';
+});
+
+
+}
+
+// === KALENDARZ ===
+function initCalendar() {
+renderCalendar();
 }
 
 function renderCalendar() {
-const calendarDropdown = document.getElementById(‘calendarDropdown’);
-const monthNames = [‘Styczeń’, ‘Luty’, ‘Marzec’, ‘Kwiecień’, ‘Maj’, ‘Czerwiec’,
-‘Lipiec’, ‘Sierpień’, ‘Wrzesień’, ‘Październik’, ‘Listopad’, ‘Grudzień’];
+const calendar = document.getElementById(‘calendar’);
+calendar.innerHTML = ‘’;
 
-```
-const firstDay = new Date(currentYear, currentMonth, 1);
-const lastDay = new Date(currentYear, currentMonth + 1, 0);
-
-const firstDayIndex = firstDay.getDay() === 0 ? 6 : firstDay.getDay() - 1;
-const lastDayDate = lastDay.getDate();
 
 const today = new Date();
 today.setHours(0, 0, 0, 0);
 
-let calendarHTML = `
-    <div class="calendar-header">
-        <h3>${monthNames[currentMonth]} ${currentYear}</h3>
-        <div class="calendar-nav">
-            <button type="button" class="cal-prev">&lt;</button>
-            <button type="button" class="cal-next">&gt;</button>
-        </div>
-    </div>
-    <div class="calendar-weekdays">
-        <div class="calendar-weekday">Pn</div>
-        <div class="calendar-weekday">Wt</div>
-        <div class="calendar-weekday">Śr</div>
-        <div class="calendar-weekday">Cz</div>
-        <div class="calendar-weekday">Pt</div>
-        <div class="calendar-weekday">So</div>
-        <div class="calendar-weekday">Nd</div>
-    </div>
-    <div class="calendar-days">
-`;
-
-for (let i = firstDayIndex; i > 0; i--) {
-    calendarHTML += `<button type="button" class="calendar-day empty"></button>`;
+// Renderuj 12 miesięcy do przodu
+for (let i = 0; i < 12; i++) {
+    const currentDate = new Date(today.getFullYear(), today.getMonth() + i, 1);
+    calendar.appendChild(createMonthCalendar(currentDate, today));
 }
 
-for (let day = 1; day <= lastDayDate; day++) {
-    const date = new Date(currentYear, currentMonth, day);
-    const isPast = date < today;
-    const isToday = date.getTime() === today.getTime();
-    const isSelected = selectedDate && date.getTime() === selectedDate.getTime();
-    
-    let classes = 'calendar-day';
-    if (isPast) classes += ' disabled';
-    if (isToday) classes += ' today';
-    if (isSelected) classes += ' selected';
 
-    calendarHTML += `<button type="button" class="${classes}" 
-        data-year="${currentYear}" data-month="${currentMonth}" data-day="${day}"
-        ${isPast ? 'disabled' : ''}>${day}</button>`;
 }
 
-calendarHTML += '</div>';
-calendarDropdown.innerHTML = calendarHTML;
+function createMonthCalendar(date, today) {
+const monthDiv = document.createElement(‘div’);
+monthDiv.className = ‘month-calendar’;
 
-const prevBtn = calendarDropdown.querySelector('.cal-prev');
-const nextBtn = calendarDropdown.querySelector('.cal-next');
 
-prevBtn.addEventListener('click', (e) => {
-    e.stopPropagation();
-    changeMonth(-1);
+const monthTitle = document.createElement('div');
+monthTitle.className = 'month-title';
+monthTitle.textContent = date.toLocaleDateString('pl-PL', { month: 'long', year: 'numeric' });
+monthDiv.appendChild(monthTitle);
+
+const grid = document.createElement('div');
+grid.className = 'calendar-grid';
+
+// Dni tygodnia
+const dayNames = ['Pn', 'Wt', 'Śr', 'Cz', 'Pt', 'So', 'Nd'];
+dayNames.forEach(name => {
+    const dayName = document.createElement('div');
+    dayName.className = 'calendar-day-name';
+    dayName.textContent = name;
+    grid.appendChild(dayName);
 });
 
-nextBtn.addEventListener('click', (e) => {
-    e.stopPropagation();
-    changeMonth(1);
-});
+// Dni miesiąca
+const firstDay = new Date(date.getFullYear(), date.getMonth(), 1);
+const lastDay = new Date(date.getFullYear(), date.getMonth() + 1, 0);
 
-const dayBtns = calendarDropdown.querySelectorAll('.calendar-day:not(.disabled):not(.empty)');
-dayBtns.forEach(btn => {
-    btn.addEventListener('click', (e) => {
-        e.stopPropagation();
-        const year = parseInt(btn.getAttribute('data-year'));
-        const month = parseInt(btn.getAttribute('data-month'));
-        const day = parseInt(btn.getAttribute('data-day'));
-        selectDate(year, month, day);
-    });
-});
-```
+// Poniedziałek = 1, Niedziela = 0 -> zmieniamy na 7
+let startPadding = firstDay.getDay();
+startPadding = startPadding === 0 ? 6 : startPadding - 1;
 
+// Puste komórki przed pierwszym dniem
+for (let i = 0; i < startPadding; i++) {
+    const emptyDay = document.createElement('div');
+    emptyDay.className = 'calendar-day empty';
+    grid.appendChild(emptyDay);
 }
 
-function changeMonth(direction) {
-currentMonth += direction;
-if (currentMonth < 0) {
-currentMonth = 11;
-currentYear–;
-} else if (currentMonth > 11) {
-currentMonth = 0;
-currentYear++;
-}
-renderCalendar();
-}
+// Dni miesiąca
+for (let day = 1; day <= lastDay.getDate(); day++) {
+    const dayDate = new Date(date.getFullYear(), date.getMonth(), day);
+    const dayDiv = document.createElement('div');
+    dayDiv.className = 'calendar-day';
+    dayDiv.textContent = day;
 
-function selectDate(year, month, day) {
-selectedDate = new Date(year, month, day);
-const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-
-```
-document.getElementById('date').value = dateStr;
-document.getElementById('dateDisplay').value = formatDateDisplay(selectedDate);
-document.getElementById('calendarDropdown').classList.add('hidden');
-```
-
-}
-
-function formatDateDisplay(date) {
-const options = { day: ‘numeric’, month: ‘long’, year: ‘numeric’ };
-return date.toLocaleDateString(‘pl-PL’, options);
-}
-
-// ========== KALENDARZ POWROTU ==========
-let selectedReturnDate = null;
-let returnCurrentMonth = new Date().getMonth();
-let returnCurrentYear = new Date().getFullYear();
-
-function initReturnCalendar() {
-const returnDateDisplay = document.getElementById(‘returnDateDisplay’);
-const returnCalendarDropdown = document.getElementById(‘returnCalendarDropdown’);
-
-```
-if (!returnDateDisplay) return;
-
-returnDateDisplay.addEventListener('click', (e) => {
-    e.preventDefault();
-    e.stopPropagation();
-    returnCalendarDropdown.classList.toggle('hidden');
-    
-    if (!returnCalendarDropdown.classList.contains('hidden')) {
-        renderReturnCalendar();
+    if (dayDate < today) {
+        dayDiv.classList.add('disabled');
+    } else {
+        dayDiv.addEventListener('click', () => selectDate(dayDate));
     }
-});
 
-document.addEventListener('click', (e) => {
-    if (!e.target.closest('#returnDateGroup')) {
-        returnCalendarDropdown.classList.add('hidden');
-    }
-});
-```
+    grid.appendChild(dayDiv);
+}
+
+monthDiv.appendChild(grid);
+return monthDiv;
+
 
 }
 
-function renderReturnCalendar() {
-const returnCalendarDropdown = document.getElementById(‘returnCalendarDropdown’);
-const monthNames = [‘Styczeń’, ‘Luty’, ‘Marzec’, ‘Kwiecień’, ‘Maj’, ‘Czerwiec’,
-‘Lipiec’, ‘Sierpień’, ‘Wrzesień’, ‘Październik’, ‘Listopad’, ‘Grudzień’];
-
-```
-const firstDay = new Date(returnCurrentYear, returnCurrentMonth, 1);
-const lastDay = new Date(returnCurrentYear, returnCurrentMonth + 1, 0);
-
-const firstDayIndex = firstDay.getDay() === 0 ? 6 : firstDay.getDay() - 1;
-const lastDayDate = lastDay.getDate();
-
-const minDate = selectedDate ? new Date(selectedDate.getTime() + 86400000) : new Date();
-minDate.setHours(0, 0, 0, 0);
-
-let calendarHTML = `
-    <div class="calendar-header">
-        <h3>${monthNames[returnCurrentMonth]} ${returnCurrentYear}</h3>
-        <div class="calendar-nav">
-            <button type="button" class="ret-cal-prev">&lt;</button>
-            <button type="button" class="ret-cal-next">&gt;</button>
-        </div>
-    </div>
-    <div class="calendar-weekdays">
-        <div class="calendar-weekday">Pn</div>
-        <div class="calendar-weekday">Wt</div>
-        <div class="calendar-weekday">Śr</div>
-        <div class="calendar-weekday">Cz</div>
-        <div class="calendar-weekday">Pt</div>
-        <div class="calendar-weekday">So</div>
-        <div class="calendar-weekday">Nd</div>
-    </div>
-    <div class="calendar-days">
-`;
-
-for (let i = firstDayIndex; i > 0; i--) {
-    calendarHTML += `<button type="button" class="calendar-day empty"></button>`;
-}
-
-for (let day = 1; day <= lastDayDate; day++) {
-    const date = new Date(returnCurrentYear, returnCurrentMonth, day);
-    const isPast = date < minDate;
-    const isSelected = selectedReturnDate && date.getTime() === selectedReturnDate.getTime();
-    
-    let classes = 'calendar-day';
-    if (isPast) classes += ' disabled';
-    if (isSelected) classes += ' selected';
-
-    calendarHTML += `<button type="button" class="${classes}" 
-        data-year="${returnCurrentYear}" data-month="${returnCurrentMonth}" data-day="${day}"
-        ${isPast ? 'disabled' : ''}>${day}</button>`;
-}
-
-calendarHTML += '</div>';
-returnCalendarDropdown.innerHTML = calendarHTML;
-
-const prevBtn = returnCalendarDropdown.querySelector('.ret-cal-prev');
-const nextBtn = returnCalendarDropdown.querySelector('.ret-cal-next');
-
-prevBtn.addEventListener('click', (e) => {
-    e.stopPropagation();
-    changeReturnMonth(-1);
+function selectDate(date) {
+state.departureDate = date;
+const formatted = date.toLocaleDateString(‘pl-PL’, {
+day: ‘numeric’,
+month: ‘long’,
+year: ‘numeric’
 });
+document.getElementById(‘dateText’).textContent = formatted;
 
-nextBtn.addEventListener('click', (e) => {
-    e.stopPropagation();
-    changeReturnMonth(1);
-});
 
-const dayBtns = returnCalendarDropdown.querySelectorAll('.calendar-day:not(.disabled):not(.empty)');
-dayBtns.forEach(btn => {
-    btn.addEventListener('click', (e) => {
-        e.stopPropagation();
-        const year = parseInt(btn.getAttribute('data-year'));
-        const month = parseInt(btn.getAttribute('data-month'));
-        const day = parseInt(btn.getAttribute('data-day'));
-        selectReturnDate(year, month, day);
-    });
+// Oznacz wybrany dzień
+document.querySelectorAll('.calendar-day').forEach(day => {
+    day.classList.remove('selected');
 });
-```
+event.target.classList.add('selected');
+
+closeModal('dateModal');
+
 
 }
 
-function changeReturnMonth(direction) {
-returnCurrentMonth += direction;
-if (returnCurrentMonth < 0) {
-returnCurrentMonth = 11;
-returnCurrentYear–;
-} else if (returnCurrentMonth > 11) {
-returnCurrentMonth = 0;
-returnCurrentYear++;
-}
-renderReturnCalendar();
-}
+// === PASAŻEROWIE I KLASA ===
+function initPassengerCounter() {
+const counters = document.querySelectorAll(’.counter-btn’);
 
-function selectReturnDate(year, month, day) {
-selectedReturnDate = new Date(year, month, day);
-const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
 
-```
-document.getElementById('returnDate').value = dateStr;
-document.getElementById('returnDateDisplay').value = formatDateDisplay(selectedReturnDate);
-document.getElementById('returnCalendarDropdown').classList.add('hidden');
-```
-
-}
-
-// ========== SELEKTOR JĘZYKA ==========
-function initLanguageSelector() {
-const langBtn = document.getElementById(‘langBtn’);
-const langDropdown = document.getElementById(‘langDropdown’);
-
-```
-if (!langBtn) return;
-
-langBtn.addEventListener('click', (e) => {
-    e.stopPropagation();
-    langDropdown.classList.toggle('hidden');
-});
-
-document.addEventListener('click', () => {
-    langDropdown.classList.add('hidden');
-});
-
-const langOptions = document.querySelectorAll('.lang-option');
-langOptions.forEach(option => {
-    option.addEventListener('click', (e) => {
-        e.preventDefault();
-        alert('Funkcja tłumaczenia będzie dostępna wkrótce!');
-    });
-});
-```
-
-}
-
-// ========== PANEL PASAŻERÓW ==========
-let passengers = {
-adult: 1,
-teen: 0,
-child: 0,
-disabled: 0
-};
-
-function initPassengerPanel() {
-const passengerBtn = document.getElementById(‘passengerBtn’);
-const passengerPanel = document.getElementById(‘passengerPanel’);
-const doneBtn = document.getElementById(‘doneBtn’);
-
-```
-passengerBtn.addEventListener('click', () => {
-    passengerPanel.classList.toggle('hidden');
-});
-
-doneBtn.addEventListener('click', () => {
-    passengerPanel.classList.add('hidden');
-    updatePassengerSummary();
-});
-
-const counters = document.querySelectorAll('.btn-counter');
 counters.forEach(btn => {
-    btn.addEventListener('click', () => {
-        const type = btn.getAttribute('data-type');
-        const action = btn.getAttribute('data-action');
-        updateCounter(type, action);
+    btn.addEventListener('click', function() {
+        const action = this.dataset.action;
+        const type = this.dataset.type;
+        
+        if (action === 'increase') {
+            state.passengers[type]++;
+        } else if (action === 'decrease' && state.passengers[type] > 0) {
+            // Dorośli muszą być minimum 1
+            if (type === 'adults' && state.passengers[type] === 1) return;
+            state.passengers[type]--;
+        }
+        
+        updatePassengerDisplay();
     });
 });
 
-const classInputs = document.querySelectorAll('input[name="class"]');
-classInputs.forEach(input => {
-    input.addEventListener('change', updatePassengerSummary);
-});
-```
-
-}
-
-function updateCounter(type, action) {
-const countElement = document.getElementById(`${type}Count`);
-let currentValue = passengers[type];
-
-```
-if (action === 'plus') {
-    if (getTotalPassengers() < 9) {
-        passengers[type]++;
-    }
-} else if (action === 'minus') {
-    if (currentValue > 0) {
-        if (type === 'adult' && currentValue === 1) {
-            alert('Musi być przynajmniej 1 dorosły pasażer');
-            return;
-        }
-        passengers[type]--;
-    }
-}
-
-countElement.textContent = passengers[type];
-updatePassengerSummary();
-```
-
-}
-
-function getTotalPassengers() {
-return passengers.adult + passengers.teen + passengers.child + passengers.disabled;
-}
-
-function updatePassengerSummary() {
-const selectedClass = document.querySelector(‘input[name=“class”]:checked’).value;
-const classNames = {
-economy: ‘Ekonomiczna’,
-premium: ‘Premium’,
-business: ‘Biznes’,
-first: ‘Pierwsza’
-};
-
-```
-const parts = [];
-if (passengers.adult > 0) parts.push(`${passengers.adult} Dorosły(ch)`);
-if (passengers.teen > 0) parts.push(`${passengers.teen} Nastolatek/Nastolatków`);
-if (passengers.child > 0) parts.push(`${passengers.child} Dziecko/Dzieci`);
-if (passengers.disabled > 0) parts.push(`${passengers.disabled} Osoba niepełnosprawna`);
-
-const passengerText = parts.join(', ');
-document.getElementById('passengerSummary').textContent = 
-    `${passengerText}, ${classNames[selectedClass]}`;
-```
-
-}
-
-// ========== PANEL INFORMACJE I POMOC ==========
-function initInfoHelpPanel() {
-const infoHelpBtn = document.getElementById(‘infoHelpBtn’);
-const infoHelpPanel = document.getElementById(‘infoHelpPanel’);
-const infoHelpOverlay = document.getElementById(‘infoHelpOverlay’);
-const infoHelpClose = document.getElementById(‘infoHelpClose’);
-
-```
-if (!infoHelpBtn) return;
-
-infoHelpBtn.addEventListener('click', (e) => {
-    e.preventDefault();
-    infoHelpPanel.classList.add('active');
-    infoHelpOverlay.classList.add('active');
-    document.body.style.overflow = 'hidden';
+// Klasa lotu
+document.querySelectorAll('input[name="class"]').forEach(radio => {
+    radio.addEventListener('change', function() {
+        state.flightClass = this.value;
+        updatePassengerDisplay();
+    });
 });
 
-infoHelpClose.addEventListener('click', () => {
-    closeInfoHelpPanel();
+// Przycisk potwierdzenia
+document.getElementById('confirmPassenger').addEventListener('click', () => {
+    closeModal('passengerModal');
 });
 
-infoHelpOverlay.addEventListener('click', () => {
-    closeInfoHelpPanel();
+
+}
+
+function updatePassengerDisplay() {
+// Aktualizuj liczniki w modalu
+document.getElementById(‘adultsCount’).textContent = state.passengers.adults;
+document.getElementById(‘childrenCount’).textContent = state.passengers.children;
+document.getElementById(‘infantsCount’).textContent = state.passengers.infants;
+
+
+// Aktualizuj tekst na przycisku
+const total = state.passengers.adults + state.passengers.children + state.passengers.infants;
+const passengerText = `${total} ${total === 1 ? 'Pasażer' : total < 5 ? 'Pasażerów' : 'Pasażerów'}`;
+
+const classText = state.flightClass === 'economy' ? 'Ekonomiczna' : 
+                  state.flightClass === 'business' ? 'Biznes' : 'Pierwsza';
+
+document.getElementById('passengerText').textContent = `${passengerText}, ${classText}`;
+
+
+}
+
+// === TYP PODRÓŻY ===
+function initTripType() {
+document.querySelectorAll(‘input[name=“tripType”]’).forEach(radio => {
+radio.addEventListener(‘change’, function() {
+state.tripType = this.value;
+console.log(‘Typ podróży:’, state.tripType);
 });
-
-function closeInfoHelpPanel() {
-    infoHelpPanel.classList.remove('active');
-    infoHelpOverlay.classList.remove('active');
-    document.body.style.overflow = 'auto';
-}
-```
-
+});
 }
 
-// ========== OBSŁUGA FORMULARZA ==========
-function initFormHandler() {
-const searchForm = document.getElementById(‘searchForm’);
-searchForm.addEventListener(‘submit’, handleSubmit);
+// === PRZYCISK SZUKAJ ===
+document.querySelector(’.search-btn’).addEventListener(‘click’, function() {
+console.log(‘Wyszukiwanie lotów:’, state);
+
+
+// Walidacja
+if (!state.from) {
+    alert('Wybierz lotnisko wylotu');
+    return;
 }
-
-function handleSubmit(e) {
-e.preventDefault();
-
-```
-const from = document.getElementById('from').value;
-const to = document.getElementById('to').value;
-const date = document.getElementById('date').value;
-const tripType = document.querySelector('input[name="tripType"]:checked').value;
-const returnDate = tripType === 'roundtrip' ? document.getElementById('returnDate').value : null;
-const travelClass = document.querySelector('input[name="class"]:checked').value;
-
-if (!date) {
-    alert('Proszę wybrać datę wylotu');
+if (!state.to) {
+    alert('Wybierz lotnisko przylotu');
+    return;
+}
+if (!state.departureDate) {
+    alert('Wybierz datę wylotu');
     return;
 }
 
-if (tripType === 'roundtrip' && !returnDate) {
-    alert('Proszę wybrać datę powrotu');
-    return;
-}
+// Tutaj będzie przekierowanie do strony wyników
+alert('Szukam lotów...\n\n' + 
+      'Z: ' + state.from.city + '\n' +
+      'Do: ' + state.to.city + '\n' +
+      'Data: ' + state.departureDate.toLocaleDateString('pl-PL'));
 
-if (from === to) {
-    alert('Miasto wylotu i przylotu muszą być różne!');
-    return;
-}
 
-const searchData = {
-    from,
-    to,
-    date,
-    tripType,
-    returnDate,
-    class: travelClass,
-    passengers: { ...passengers }
-};
-
-localStorage.setItem('searchData', JSON.stringify(searchData));
-window.location.href = 'results.html';
-```
-
-}
+});
