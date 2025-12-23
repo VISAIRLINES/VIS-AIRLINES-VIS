@@ -12,7 +12,7 @@
             box-sizing: border-box;
         }
 
-
+```
     body {
         font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
         background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
@@ -43,6 +43,7 @@
         font-size: 32px;
         font-weight: 900;
         letter-spacing: 3px;
+        cursor: pointer;
     }
 
     .header-right {
@@ -148,6 +149,11 @@
         background: white;
     }
 
+    .field-btn:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+
     .search-btn {
         width: 100%;
         background: linear-gradient(135deg, #4a5568 0%, #2d3748 100%);
@@ -199,6 +205,10 @@
         display: flex;
         justify-content: space-between;
         align-items: center;
+        position: sticky;
+        top: 0;
+        background: white;
+        z-index: 10;
     }
 
     .modal-header h3 {
@@ -271,11 +281,25 @@
         color: #718096;
     }
 
+    .date-info {
+        background: #4a5568;
+        color: white;
+        padding: 20px;
+        border-radius: 12px;
+        margin-bottom: 20px;
+        text-align: center;
+    }
+
+    .date-info-text {
+        font-size: 18px;
+        font-weight: 700;
+    }
+
     .calendar-grid {
         display: grid;
         grid-template-columns: repeat(7, 1fr);
-        gap: 8px;
-        margin-bottom: 20px;
+        gap: 6px;
+        margin-bottom: 30px;
     }
 
     .calendar-day {
@@ -283,16 +307,46 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        border-radius: 10px;
+        border-radius: 8px;
         cursor: pointer;
         border: 2px solid #e2e8f0;
-        transition: all 0.3s;
+        transition: all 0.2s;
+        font-weight: 500;
+        font-size: 14px;
     }
 
-    .calendar-day:hover {
+    .calendar-day:hover:not(.disabled):not(.empty) {
+        background: #cbd5e0;
+        border-color: #a0aec0;
+    }
+
+    .calendar-day.departure {
+        background: #2d3748;
+        color: white;
+        border-color: #2d3748;
+        font-weight: 700;
+    }
+
+    .calendar-day.return {
         background: #4a5568;
         color: white;
         border-color: #4a5568;
+        font-weight: 700;
+    }
+
+    .calendar-day.in-range {
+        background: #e2e8f0;
+        border-color: #cbd5e0;
+    }
+
+    .calendar-day.disabled {
+        opacity: 0.3;
+        cursor: not-allowed;
+    }
+
+    .calendar-day.empty {
+        border: none;
+        cursor: default;
     }
 
     .passenger-row {
@@ -332,6 +386,47 @@
         font-weight: 700;
         min-width: 30px;
         text-align: center;
+    }
+
+    .class-section {
+        margin-top: 30px;
+        padding-top: 20px;
+        border-top: 2px solid #e2e8f0;
+    }
+
+    .class-section h4 {
+        font-size: 18px;
+        font-weight: 700;
+        color: #2d3748;
+        margin-bottom: 15px;
+    }
+
+    .class-option {
+        padding: 15px;
+        margin-bottom: 10px;
+        border: 2px solid #e2e8f0;
+        border-radius: 12px;
+        cursor: pointer;
+        transition: all 0.3s;
+        display: flex;
+        align-items: center;
+    }
+
+    .class-option:hover {
+        border-color: #4a5568;
+        background: #f7fafc;
+    }
+
+    .class-option input {
+        margin-right: 12px;
+        width: 20px;
+        height: 20px;
+        accent-color: #4a5568;
+    }
+
+    .class-option.selected {
+        border-color: #4a5568;
+        background: #f7fafc;
     }
 
     .btn-primary {
@@ -408,14 +503,14 @@
         }
     }
 </style>
-
+```
 
 </head>
 <body>
     <header class="header">
         <div class="container">
             <div class="header-content">
-                <h1 class="logo">VIS</h1>
+                <h1 class="logo" onclick="window.location.href='index.html'">VIS</h1>
                 <div class="header-right">
                     <button class="language-btn" onclick="openModal('languageModal')">
                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -442,7 +537,7 @@
         </div>
     </header>
 
-
+```
 <section class="hero">
     <div class="container">
         <div class="search-box">
@@ -450,11 +545,11 @@
             
             <div class="trip-type">
                 <label class="radio-label">
-                    <input type="radio" name="tripType" value="oneWay" checked>
+                    <input type="radio" name="tripType" value="oneWay" checked onchange="changeTripType('oneWay')">
                     <span>W jedną stronę</span>
                 </label>
                 <label class="radio-label">
-                    <input type="radio" name="tripType" value="roundTrip">
+                    <input type="radio" name="tripType" value="roundTrip" onchange="changeTripType('roundTrip')">
                     <span>W obie strony</span>
                 </label>
             </div>
@@ -472,12 +567,17 @@
 
                 <div class="form-field">
                     <label>Data wylotu</label>
-                    <button class="field-btn" onclick="openModal('dateModal')" id="dateText">Wybierz datę</button>
+                    <button class="field-btn" onclick="openDateModal('departure')" id="departureText">Wybierz datę</button>
+                </div>
+
+                <div class="form-field" id="returnDateField" style="display: none;">
+                    <label>Data powrotu</label>
+                    <button class="field-btn" onclick="openDateModal('return')" id="returnText" disabled>Wybierz datę</button>
                 </div>
 
                 <div class="form-field">
                     <label>Pasażerowie i klasa</label>
-                    <button class="field-btn" onclick="openModal('passengerModal')" id="passengerText">1 Pasażer, Ekonomiczna</button>
+                    <button class="field-btn" onclick="openModal('passengerModal')" id="passengerText">1 Pasażer, Ekonomi</button>
                 </div>
             </div>
 
@@ -604,10 +704,13 @@
 <div class="modal" id="dateModal">
     <div class="modal-content">
         <div class="modal-header">
-            <h3>Wybierz datę</h3>
+            <h3 id="dateModalTitle">Wybierz datę wylotu</h3>
             <button class="close-btn" onclick="closeModal('dateModal')">×</button>
         </div>
         <div class="modal-body">
+            <div id="dateInfo" class="date-info" style="display: none;">
+                <div class="date-info-text" id="dateInfoText"></div>
+            </div>
             <div id="calendar"></div>
         </div>
     </div>
@@ -656,6 +759,26 @@
                 </div>
             </div>
 
+            <div class="class-section">
+                <h4>Klasa podróży</h4>
+                <div class="class-option" onclick="selectClass('economy')">
+                    <input type="radio" name="class" value="economy" checked>
+                    <span>Ekonomi</span>
+                </div>
+                <div class="class-option" onclick="selectClass('premium')">
+                    <input type="radio" name="class" value="premium">
+                    <span>Ekonomi Premium</span>
+                </div>
+                <div class="class-option" onclick="selectClass('business')">
+                    <input type="radio" name="class" value="business">
+                    <span>Biznes</span>
+                </div>
+                <div class="class-option" onclick="selectClass('first')">
+                    <input type="radio" name="class" value="first">
+                    <span>Pierwsza</span>
+                </div>
+            </div>
+
             <button class="btn-primary" onclick="closeModal('passengerModal')">Potwierdź</button>
         </div>
     </div>
@@ -663,28 +786,56 @@
 
 <script>
     var state = {
+        tripType: 'oneWay',
         from: null,
         to: null,
-        date: null,
+        departureDate: null,
+        returnDate: null,
         passengers: { adults: 1, children: 0, infants: 0 },
-        language: 'PL'
+        flightClass: 'economy',
+        language: 'PL',
+        currentDateSelection: 'departure'
     };
+
+    function changeTripType(type) {
+        state.tripType = type;
+        var returnField = document.getElementById('returnDateField');
+        var returnBtn = document.getElementById('returnText');
+        
+        if (type === 'roundTrip') {
+            returnField.style.display = 'block';
+            if (state.departureDate) {
+                returnBtn.disabled = false;
+            }
+        } else {
+            returnField.style.display = 'none';
+            state.returnDate = null;
+            document.getElementById('returnText').textContent = 'Wybierz datę';
+        }
+    }
 
     function openModal(id) {
         document.getElementById(id).classList.add('active');
-        if (id === 'dateModal') {
-            renderCalendar();
-        }
     }
 
     function closeModal(id) {
         document.getElementById(id).classList.remove('active');
     }
 
+    function openDateModal(type) {
+        state.currentDateSelection = type;
+        if (type === 'departure') {
+            document.getElementById('dateModalTitle').textContent = 'Wybierz datę wylotu';
+        } else {
+            document.getElementById('dateModalTitle').textContent = 'Wybierz datę powrotu';
+        }
+        openModal('dateModal');
+        renderCalendar();
+    }
+
     function changeLanguage(lang) {
         state.language = lang;
         closeModal('languageModal');
-        alert('Język zmieniony na: ' + lang);
     }
 
     function showAuth(type) {
@@ -709,12 +860,34 @@
         }
     }
 
+    function selectClass(className) {
+        state.flightClass = className;
+        var options = document.querySelectorAll('.class-option');
+        options.forEach(function(opt) {
+            opt.classList.remove('selected');
+        });
+        event.currentTarget.classList.add('selected');
+        updatePassengerDisplay();
+    }
+
     function renderCalendar() {
         var cal = document.getElementById('calendar');
+        var dateInfo = document.getElementById('dateInfo');
+        var dateInfoText = document.getElementById('dateInfoText');
         cal.innerHTML = '';
-        var today = new Date();
         
-        for (var m = 0; m < 3; m++) {
+        var today = new Date();
+        today.setHours(0, 0, 0, 0);
+
+        if (state.tripType === 'roundTrip' && state.departureDate && state.returnDate) {
+            var days = Math.ceil((state.returnDate - state.departureDate) / (1000 * 60 * 60 * 24));
+            dateInfo.style.display = 'block';
+            dateInfoText.textContent = 'Długość podróży: ' + days + ' ' + (days === 1 ? 'dzień' : 'dni');
+        } else {
+            dateInfo.style.display = 'none';
+        }
+        
+        for (var m = 0; m < 12; m++) {
             var date = new Date(today.getFullYear(), today.getMonth() + m, 1);
             var monthDiv = document.createElement('div');
             monthDiv.innerHTML = '<h4 style="text-align: center; margin-bottom: 15px; font-weight: 700; color: #2d3748;">' + 
@@ -816,9 +989,18 @@
         
         state.passengers[type] = newVal;
         document.getElementById(type + 'Count').textContent = newVal;
-        
+        updatePassengerDisplay();
+    }
+
+    function updatePassengerDisplay() {
         var total = state.passengers.adults + state.passengers.children + state.passengers.infants;
-        document.getElementById('passengerText').textContent = total + ' Pasażer, Ekonomiczna';
+        var classNames = {
+            economy: 'Ekonomi',
+            premium: 'Ekonomi Premium',
+            business: 'Biznes',
+            first: 'Pierwsza'
+        };
+        document.getElementById('passengerText').textContent = total + ' Pasażer, ' + classNames[state.flightClass];
     }
 
     function searchFlights() {
@@ -838,14 +1020,9 @@
             alert('Wybierz datę powrotu');
             return;
         }
-        
-        var message = 'Szukam lotów...\n\nZ: ' + state.from.city + '\nDo: ' + state.to.city + '\nWylot: ' + state.departureDate.toLocaleDateString('pl-PL');
-        if (state.tripType === 'roundTrip') {
-            message += '\nPowrót: ' + state.returnDate.toLocaleDateString('pl-PL');
-            var days = Math.ceil((state.returnDate - state.departureDate) / (1000 * 60 * 60 * 24));
-            message += '\nDługość: ' + days + ' dni';
-        }
-        alert(message);
+
+        localStorage.setItem('flightSearch', JSON.stringify(state));
+        window.location.href = 'results.html';
     }
 
     window.onclick = function(event) {
@@ -854,89 +1031,7 @@
         }
     };
 </script>
-
-
-</body>
-</html>ik', 'Listopad', 'Grudzień'][date.getMonth()] + 
-                    ' ' + date.getFullYear() + '</h4>';
-
-
-            var grid = document.createElement('div');
-            grid.className = 'calendar-grid';
-            
-            ['Pn', 'Wt', 'Śr', 'Cz', 'Pt', 'So', 'Nd'].forEach(function(d) {
-                var dayName = document.createElement('div');
-                dayName.textContent = d;
-                dayName.style.textAlign = 'center';
-                dayName.style.fontWeight = '600';
-                dayName.style.fontSize = '13px';
-                dayName.style.color = '#718096';
-                grid.appendChild(dayName);
-            });
-            
-            var firstDay = new Date(date.getFullYear(), date.getMonth(), 1);
-            var lastDay = new Date(date.getFullYear(), date.getMonth() + 1, 0);
-            var startPadding = firstDay.getDay() === 0 ? 6 : firstDay.getDay() - 1;
-            
-            for (var i = 0; i < startPadding; i++) {
-                grid.appendChild(document.createElement('div'));
-            }
-            
-            for (var day = 1; day <= lastDay.getDate(); day++) {
-                var dayDiv = document.createElement('div');
-                dayDiv.className = 'calendar-day';
-                dayDiv.textContent = day;
-                var fullDate = new Date(date.getFullYear(), date.getMonth(), day);
-                dayDiv.onclick = (function(d) {
-                    return function() {
-                        state.date = d;
-                        document.getElementById('dateText').textContent = d.getDate() + '.' + (d.getMonth() + 1) + '.' + d.getFullYear();
-                        closeModal('dateModal');
-                    };
-                })(fullDate);
-                grid.appendChild(dayDiv);
-            }
-            
-            monthDiv.appendChild(grid);
-            cal.appendChild(monthDiv);
-        }
-    }
-
-    function changePassenger(type, change) {
-        var newVal = state.passengers[type] + change;
-        if (type === 'adults' && newVal < 1) return;
-        if (newVal < 0) return;
-        
-        state.passengers[type] = newVal;
-        document.getElementById(type + 'Count').textContent = newVal;
-        
-        var total = state.passengers.adults + state.passengers.children + state.passengers.infants;
-        document.getElementById('passengerText').textContent = total + ' Pasażer, Ekonomiczna';
-    }
-
-    function searchFlights() {
-        if (!state.from) {
-            alert('Wybierz lotnisko wylotu');
-            return;
-        }
-        if (!state.to) {
-            alert('Wybierz lotnisko przylotu');
-            return;
-        }
-        if (!state.date) {
-            alert('Wybierz datę');
-            return;
-        }
-        alert('Szukam lotów z ' + state.from.city + ' do ' + state.to.city);
-    }
-
-    window.onclick = function(event) {
-        if (event.target.classList.contains('modal')) {
-            event.target.classList.remove('active');
-        }
-    };
-</script>
-
+```
 
 </body>
 </html>
